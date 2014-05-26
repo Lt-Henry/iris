@@ -12,7 +12,7 @@ APP_NAME=iris
 LIBS=gsl lua5.1
 
 #objects
-OBJECTS=main.o
+OBJECTS=main.o Core.o
 
 #cflags
 LIBS_CFLAGS=`pkg-config $(LIBS) --cflags`
