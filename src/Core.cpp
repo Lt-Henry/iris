@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include "Core.hpp"
+#include "MeshLoader.hpp"
 
 using namespace std;
 using namespace com::toxiclabs::iris;
@@ -15,6 +16,7 @@ Core::Core(int argc,char * argv[])
 	else
 	{
 		cout<<"* loading:"<<argv[1]<<endl;
+		MeshLoader::Load(argv[1]);
 	}
 }
 
