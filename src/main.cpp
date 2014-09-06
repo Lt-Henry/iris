@@ -16,5 +16,5 @@ int main(int argc,char * argv[])
 	
 	core.Run();
 	
-	return 1;
+	return 0;
 }
