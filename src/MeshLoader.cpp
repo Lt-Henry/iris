@@ -44,6 +44,7 @@ void MeshLoader::Load(string filename)
 		if(regex_match(line,results,mtllib))
 		{
 			cout<<"mtllib:"<<results[1]<<endl;
+			MeshLoader::LoadMaterialLib(results[1]);
 		}
 		
 		
@@ -54,13 +55,41 @@ void MeshLoader::Load(string filename)
 		
 		if(regex_match(line,results,f))
 		{
-			cout<<"Face"<<endl;
+			//cout<<"Face"<<endl;
 			for(int n=1;n<results.size();n++)
 			{
-				cout<<results[n]<<endl;
+				//cout<<results[n]<<endl;
 			}
 		}
 
+	}
+	
+	file.close();
+}
+
+
+void MeshLoader::LoadMaterialLib(string filename)
+{
+	//regex patterns
+	regex comment("^#(.|\\s)*");
+	regex newmtl("^newmtl\\s+(.+)");
+	regex illum("^illum\\s+(\\d)");
+	regex K("^(Ka|Kd|Ks)\\s+(-?\\d+\\.\\d+)\\s+(-?\\d+\\.\\d+)\\s+(-?\\d+\\.\\d+)");
+	
+	ifstream file(filename);
+	
+	while(!file.eof())
+	{
+		string line;
+		getline(file,line);
+		
+		match_results<string::const_iterator> results;
+		
+		if(regex_match(line,results,newmtl))
+		{
+			cout<<"Material:"<<results[1]<<endl;
+		}
+		
 	}
 	
 	file.close();

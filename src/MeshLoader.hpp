@@ -16,6 +16,10 @@ namespace com
 				public:
 				
 				static void Load(std::string filename);
+				
+				private:
+				
+				static void LoadMaterialLib(std::string filename);
 			};
 		}
 	}
