@@ -15,18 +15,60 @@ Core::Core(int argc,char * argv[])
 	}
 	else
 	{
-		cout<<"* loading:"<<argv[1]<<endl;
+		cout<<"[Core] loading:"<<argv[1]<<endl;
 		MeshLoader::Load(argv[1]);
 	}
+	
+	
+	/* default render settings */
+	
+	screen_w=1024;
+	screen_h=768;
+	num_threads=2;
 }
 
 Core::~Core()
 {
-	cout<<"* closing..."<<endl;
+	cout<<"[Core] closing..."<<endl;
 }
 
 void Core::Run()
 {
-	cout<<"* running..."<<endl;
+	cout<<"[Core] running..."<<endl;
 	
+}
+
+RenderChunk Core::GetChunk()
+{
+	RenderChunk * chunk = nullptr;
+	
+	chunk_mutex.lock();
+	
+	if(chunks.size()>0)
+	{
+		chunk = chunks.back();
+		chunks.pop_back();
+	}
+	
+	chunk_mutex.unlock();
+	
+	return chunk;
+}
+
+void Core::CommitChunk(RenderChunk * chunk)
+{
+	cout<<"[Core] Chunk "<<chunk->x<<","<<chunk->y<<" commited"<<endl;
+}
+
+void Core::RenderThread(int id)
+{
+	cout<<"[Core] Thread "<<id<<" entered rendering"<<endl;
+
+	RenderChunk * chunk = GetChunk();
+	while(chunk!=nullptr)
+	{
+		/* render goes here */
+	}
+
+	cout<<"[Core] Thread "<<id<<" exit rendering"<<endl;
 }
