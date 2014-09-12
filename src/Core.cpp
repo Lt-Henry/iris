@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <chrono>
 #include "Core.hpp"
 #include "MeshLoader.hpp"
 
@@ -25,6 +26,14 @@ Core::Core(int argc,char * argv[])
 	screen_w=1024;
 	screen_h=768;
 	num_threads=2;
+	
+	/* fake chunks */
+	
+	chunks.push_back(new RenderChunk());
+	chunks.push_back(new RenderChunk());
+	chunks.push_back(new RenderChunk());
+		
+		
 }
 
 Core::~Core()
@@ -34,11 +43,27 @@ Core::~Core()
 
 void Core::Run()
 {
-	cout<<"[Core] running..."<<endl;
+	cout<<"[Core] run"<<endl;
+	
+	cout<<"[Core] Spawning threads"<<endl;
+	
+	vector<thread> threads;
+	
+	for(int n=0;n<num_threads;n++)
+	{
+		threads.push_back(thread(&Core::RenderThread,this,n));
+	}
+	
+	for(int n=0;n<threads.size();n++)
+	{
+		threads[n].join();
+	}
+	
+	cout<<"[Core] render finished"<<endl;
 	
 }
 
-RenderChunk Core::GetChunk()
+RenderChunk * Core::GetChunk()
 {
 	RenderChunk * chunk = nullptr;
 	
@@ -68,6 +93,10 @@ void Core::RenderThread(int id)
 	while(chunk!=nullptr)
 	{
 		/* render goes here */
+		std::chrono::milliseconds dura(3000);
+		std::this_thread::sleep_for( dura );
+		CommitChunk(chunk);
+		chunk = GetChunk();
 	}
 
 	cout<<"[Core] Thread "<<id<<" exit rendering"<<endl;

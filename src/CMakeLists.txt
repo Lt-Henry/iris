@@ -24,7 +24,12 @@ link_directories(${GSL_LIBRARY_DIRS})
 add_definitions(${GSL_CFLAGS_OTHER})
 
 #set link libraries
-target_link_libraries(iris ${GSL_LIBRARIES})
+target_link_libraries(iris ${GSL_LIBRARIES} pthread)
 
-#gcc extra options
-set(CMAKE_CXX_FLAGS "-std=c++0x")
+#set compiler
+set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
+
+#compiler extra options
+set(CMAKE_CXX_FLAGS "-std=c++0x -stdlib=libc++")
+
+
