@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 2.6)
 project (Iris)
 
 #create an executable as target
-add_executable(iris main.cpp Core.cpp MeshLoader.cpp)
+add_executable(iris main.cpp Core.cpp MeshLoader.cpp Math.cpp)
 
 #require pkg-config support
 find_package(PkgConfig REQUIRED)
@@ -24,7 +24,7 @@ link_directories(${GSL_LIBRARY_DIRS})
 add_definitions(${GSL_CFLAGS_OTHER})
 
 #set link libraries
-target_link_libraries(iris ${GSL_LIBRARIES} pthread)
+target_link_libraries(iris ${GSL_LIBRARIES} pthread c++abi)
 
 #set compiler
 set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
