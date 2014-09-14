@@ -14,6 +14,11 @@ using namespace std;
 void MeshLoader::Load(string filename)
 {
 
+	//storage
+	vector<float> vertices;
+	vector<float> normals;
+	vector<int> faces;
+
 	//regex patterns
 	regex comment("^#(.|\\s)*");
 	regex usemtl("^usemtl\\s+([a-zA-Z]+)");
@@ -38,7 +43,7 @@ void MeshLoader::Load(string filename)
 				
 		if(regex_match(line,results,usemtl))
 		{
-			cout<<"usemtl:"<<results[1]<<endl;
+			//cout<<"usemtl:"<<results[1]<<endl;
 		}
 		
 		if(regex_match(line,results,mtllib))
@@ -50,15 +55,24 @@ void MeshLoader::Load(string filename)
 		
 		if(regex_match(line,results,o))
 		{
-			cout<<"Object:"<<results[1]<<endl;
+			//cout<<"Object:"<<results[1]<<endl;
 		}
 		
 		if(regex_match(line,results,f))
 		{
 			//cout<<"Face"<<endl;
-			for(int n=1;n<results.size();n++)
+			for(int n=1;n<results.size();n+=3)
 			{
 				//cout<<results[n]<<endl;
+				faces.push_back(std::stoi(results[n]));
+			}
+		}
+		
+		if(regex_match(line,results,v))
+		{
+			for(int n=1;n<results.size();n++)
+			{
+				vertices.push_back(std::stof(results[n]));
 			}
 		}
 
