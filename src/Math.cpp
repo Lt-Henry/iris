@@ -5,9 +5,6 @@
 #include <unistd.h>
 #include <iostream>
 
-#define _IRIS_SSE_
-#define _IRIS_SSE4_
-
 
 #ifdef _IRIS_SSE_
 #warning "Using SSE Instrinsics"
