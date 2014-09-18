@@ -3,10 +3,12 @@
 #ifndef _IRIS_CORE_
 #define _IRIS_CORE_
 
+#include "Render.hpp"
+#include "Scene.hpp"
+
 #include <vector>
 #include <thread>
 #include <mutex>
-#include "Render.hpp"
 
 
 namespace com
@@ -18,6 +20,8 @@ namespace com
 			class Core
 			{
 				public:
+				
+				Scene scene;
 				
 				std::vector<RenderChunk *> chunks;
 				std::mutex chunk_mutex;

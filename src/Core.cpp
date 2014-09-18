@@ -17,7 +17,7 @@ Core::Core(int argc,char * argv[])
 	else
 	{
 		cout<<"[Core] loading:"<<argv[1]<<endl;
-		MeshLoader::Load(argv[1]);
+		MeshLoader::Load(argv[1],scene.triangles,scene.materials);
 	}
 	
 	

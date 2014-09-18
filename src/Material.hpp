@@ -1,5 +1,5 @@
 
-#ifdef _IRIS_MATERIAL_
+#ifndef _IRIS_MATERIAL_
 #define _IRIS_MATERIAL_
 
 #include <string>

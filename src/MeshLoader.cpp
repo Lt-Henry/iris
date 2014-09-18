@@ -11,7 +11,7 @@ using namespace std;
 
 
 
-void MeshLoader::Load(string filename)
+void MeshLoader::Load(string filename, vector<Triangle *> & triangles, vector<Material *> & materials)
 {
 
 	//storage
@@ -29,6 +29,7 @@ void MeshLoader::Load(string filename)
 	regex vt("^vt\\s+(-?\\d+\\.\\d+)\\s+(-?\\d+\\.\\d+)\\s+(-?\\d+\\.\\d+)");
 	regex f("^f\\s+(\\d+)/(\\d+|)/(\\d+|)\\s+(\\d+)/(\\d+|)/(\\d+|)\\s+(\\d+)/(\\d+|)/(\\d+|)");
 	
+	cout<<"[MeshLoader]: parsing "<<filename<<endl;
 	ifstream file(filename);
 	
 	while(!file.eof())
@@ -79,6 +80,15 @@ void MeshLoader::Load(string filename)
 	}
 	
 	file.close();
+	
+	cout<<"[MeshLoader]: building mesh..."<<endl;
+	
+	for(int n=0;n<faces.size();n+=3)
+	{
+		
+	}
+	
+	
 }
 
 

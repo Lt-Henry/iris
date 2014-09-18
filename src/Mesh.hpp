@@ -5,7 +5,6 @@
 
 #include "Math.hpp"
 
-#include <vector>
 #include <array>
 
 namespace com
@@ -22,13 +21,6 @@ namespace com
 				std::array<Vector,3> normals;
 				
 				int material;
-			};
-			
-			class Mesh
-			{
-				public:
-								
-				std::vector<Triangle> triangles;
 			};
 		}
 	}
