@@ -6,8 +6,7 @@ cmake_minimum_required (VERSION 2.6)
 project (Iris)
 
 #create an executable as target
-add_executable(iris main.cpp Core.cpp MeshLoader.cpp Math.cpp 
-Spectrum.cpp)
+add_executable(iris main.cpp Core.cpp MeshLoader.cpp Math.cpp Spectrum.cpp)
 
 #require pkg-config support
 find_package(PkgConfig REQUIRED)
