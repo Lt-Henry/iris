@@ -1,8 +1,10 @@
 
 #include <iostream>
 #include <chrono>
+
 #include "Core.hpp"
 #include "MeshLoader.hpp"
+#include "Spectrum.hpp"
 
 using namespace std;
 using namespace com::toxiclabs::iris;
@@ -32,6 +34,8 @@ Core::Core(int argc,char * argv[])
 	chunks.push_back(new RenderChunk());
 	chunks.push_back(new RenderChunk());
 	chunks.push_back(new RenderChunk());
+	
+	SampledSpectrum spd("VC_palik.k.spd");
 		
 		
 }
@@ -93,7 +97,7 @@ void Core::RenderThread(int id)
 	while(chunk!=nullptr)
 	{
 		/* render goes here */
-		std::chrono::milliseconds dura(3000);
+		std::chrono::milliseconds dura(500);
 		std::this_thread::sleep_for( dura );
 		CommitChunk(chunk);
 		chunk = GetChunk();

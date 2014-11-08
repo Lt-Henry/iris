@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <map>
 
 #include "Spectrum.hpp"
 
@@ -20,6 +21,40 @@ SampledSpectrum::SampledSpectrum()
 SampledSpectrum::SampledSpectrum(string filename)
 {
 
+	map<float,float> spd;
+
+	regex comment("^#(.|\\s)*");
+	regex entry("\\s*(-?\\d+\\.\\d+)\\s+(-?\\d+\\.\\d+)");
+	
+	ifstream file(filename);
+	
+	while(!file.eof())
+	{
+		string line;
+		getline(file,line);
+		
+		match_results<string::const_iterator> results;
+		
+		
+		if(regex_match(line,results,entry))
+		{
+		
+			spd[std::stof(results[1])]=std::stof(results[2]);
+					
+		}
+		
+	}
+	
+	file.close();
+	
+	
+	cout<<"Parsed SPD:"<<endl;
+	
+	for(pair<float,float> q : spd)
+	{
+		cout<<q.first<<":"<<q.second<<endl;  
+	}
+
 }
 
 void SampledSpectrum::Clear()
@@ -32,6 +67,7 @@ void SampledSpectrum::Clear()
 
 string SampledSpectrum::ToString()
 {
+	string ret="";
 
 	int wl = SampledSpectrum::lambdaStart;
 	
@@ -39,6 +75,8 @@ string SampledSpectrum::ToString()
 	{
 		
 	}
+	
+	return ret;
 }
 
 SampledSpectrum operator+(SampledSpectrum a,SampledSpectrum & b)
