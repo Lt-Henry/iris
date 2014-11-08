@@ -54,6 +54,50 @@ SampledSpectrum::SampledSpectrum(string filename)
 	{
 		cout<<q.first<<":"<<q.second<<endl;  
 	}
+	
+	int wl = SampledSpectrum::lambdaStart;
+	int N = 0;
+	
+	map<float,float>::iterator p1;
+	map<float,float>::iterator p2;
+	
+	p1 = spd.begin();
+	p2 = spd.begin();
+	p2++;
+	
+	while(p2!=spd.end())
+	{
+		float wl1=p1->first;
+		float wl2=p2->first;
+		
+		if(wl1< wl && wl2>=wl)
+		{
+			float dist = wl2 - wl1;
+			float center = wl - wl1;
+			
+			float f = center / dist;
+			
+			this->data[N]=p1->second + (dist*f);
+			N++;
+			wl = wl + SampledSpectrum::lambdaStep;
+		}
+		else
+		{
+			p1++;
+			p2++;
+		}
+	}
+	
+	
+	cout<<"Computed SPD:"<<endl;
+	
+	wl = SampledSpectrum::lambdaStart;
+	for(int n=0;n<32;n++)
+	{
+		cout<<"["<<wl<<"]="<<data[n]<<endl;
+	
+		wl = wl + SampledSpectrum::lambdaStep;
+	}
 
 }
 
