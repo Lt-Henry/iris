@@ -35,7 +35,9 @@ Core::Core(int argc,char * argv[])
 	chunks.push_back(new RenderChunk());
 	chunks.push_back(new RenderChunk());
 	
-	SampledSpectrum spd("VC_palik.k.spd");
+	Spectrum spd("VC_palik.k.spd");
+	
+	cout<<"Spectrum:"<<endl<<spd.ToString()<<endl;
 		
 		
 }

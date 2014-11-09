@@ -5,6 +5,7 @@
 #include <fstream>
 #include <vector>
 #include <map>
+#include <sstream>
 
 #include "Spectrum.hpp"
 
@@ -12,13 +13,13 @@ using namespace std;
 using namespace com::toxiclabs::iris;
 
 
-SampledSpectrum::SampledSpectrum()
+Spectrum::Spectrum()
 {
 	Clear();
 }
 
 
-SampledSpectrum::SampledSpectrum(string filename)
+Spectrum::Spectrum(string filename)
 {
 
 	map<float,float> spd;
@@ -55,7 +56,14 @@ SampledSpectrum::SampledSpectrum(string filename)
 		cout<<q.first<<":"<<q.second<<endl;  
 	}
 	
-	int wl = SampledSpectrum::lambdaStart;
+	
+	
+	/*
+	 there is room for improvment here
+	 as left and right sides not covered by input spd can be 0.0
+	 and may be should be interpolated from near points
+	*/
+	int wl = Spectrum::lambdaStart;
 	int N = 0;
 	
 	map<float,float>::iterator p1;
@@ -77,9 +85,11 @@ SampledSpectrum::SampledSpectrum(string filename)
 			
 			float f = center / dist;
 			
-			this->data[N]=p1->second + (dist*f);
+			cout<<"["<<wl1<<","<<wl<<","<<wl2<<"]"<<endl;
+			
+			this->data[N]=p1->second + ((p2->second-p1->second)*f);
 			N++;
-			wl = wl + SampledSpectrum::lambdaStep;
+			wl = wl + Spectrum::lambdaStep;
 		}
 		else
 		{
@@ -89,19 +99,10 @@ SampledSpectrum::SampledSpectrum(string filename)
 	}
 	
 	
-	cout<<"Computed SPD:"<<endl;
-	
-	wl = SampledSpectrum::lambdaStart;
-	for(int n=0;n<32;n++)
-	{
-		cout<<"["<<wl<<"]="<<data[n]<<endl;
-	
-		wl = wl + SampledSpectrum::lambdaStep;
-	}
 
 }
 
-void SampledSpectrum::Clear()
+void Spectrum::Clear()
 {
 	for(int n=0;n<32;n++)
 	{
@@ -109,23 +110,26 @@ void SampledSpectrum::Clear()
 	}
 }
 
-string SampledSpectrum::ToString()
+string Spectrum::ToString()
 {
-	string ret="";
 
-	int wl = SampledSpectrum::lambdaStart;
+	stringstream ss;
+
+	int wl = Spectrum::lambdaStart;
 	
 	for(int n=0;n<32;n++)
 	{
+		ss<<"["<<wl<<"]= "<<data[n]<<endl;
 		
+		wl=wl+Spectrum::lambdaStep;
 	}
 	
-	return ret;
+	return ss.str();
 }
 
-SampledSpectrum operator+(SampledSpectrum a,SampledSpectrum & b)
+Spectrum operator+(Spectrum a,Spectrum & b)
 {
-	SampledSpectrum ret;
+	Spectrum ret;
 	
 	for(int n=0;n<32;n++)
 	{
@@ -136,9 +140,9 @@ SampledSpectrum operator+(SampledSpectrum a,SampledSpectrum & b)
 }
 
 
-SampledSpectrum operator-(SampledSpectrum a,SampledSpectrum & b)
+Spectrum operator-(Spectrum a,Spectrum & b)
 {
-	SampledSpectrum ret;
+	Spectrum ret;
 
 	for(int n=0;n<32;n++)
 	{
@@ -148,9 +152,9 @@ SampledSpectrum operator-(SampledSpectrum a,SampledSpectrum & b)
 	return ret;
 }
 
-SampledSpectrum operator*(SampledSpectrum a,SampledSpectrum & b)
+Spectrum operator*(Spectrum a,Spectrum & b)
 {
-	SampledSpectrum ret;
+	Spectrum ret;
 
 	for(int n=0;n<32;n++)
 	{

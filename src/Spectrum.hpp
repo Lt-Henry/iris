@@ -12,7 +12,7 @@ namespace com
 	{
 		namespace iris
 		{
-			class SampledSpectrum
+			class Spectrum
 			{
 				public:
 				
@@ -24,16 +24,16 @@ namespace com
 				/* using 32 samples, in order to take profit from sse operations*/
 				std::array<float,32> data;
 				
-				SampledSpectrum();
-				SampledSpectrum(std::string filename);
+				Spectrum();
+				Spectrum(std::string filename);
 
 				void Clear();
 				std::string ToString();
 			};
 			
-			SampledSpectrum operator+(SampledSpectrum a,SampledSpectrum & b);
-			SampledSpectrum operator-(SampledSpectrum a,SampledSpectrum & b);
-			SampledSpectrum operator*(SampledSpectrum a,SampledSpectrum & b);
+			Spectrum operator+(Spectrum a,Spectrum & b);
+			Spectrum operator-(Spectrum a,Spectrum & b);
+			Spectrum operator*(Spectrum a,Spectrum & b);
 			
 		}
 	}
