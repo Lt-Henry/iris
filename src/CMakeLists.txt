@@ -1,10 +1,4 @@
 
-#minimum cmake version
-cmake_minimum_required (VERSION 2.6)
-
-#project name
-project (Iris)
-
 #create an executable as target
 add_executable(iris main.cpp Core.cpp MeshLoader.cpp Math.cpp Spectrum.cpp)
 
