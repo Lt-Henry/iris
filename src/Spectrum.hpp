@@ -16,9 +16,15 @@ namespace com
 			{
 				public:
 				
-				/* sampled range */
-				static const int lambdaStart = 380;
-				static const int lambdaEnd = 700;
+				/* CIE XYZ precomputed tables */
+				
+				static std::array<float,32> CIE_X;
+				static std::array<float,32> CIE_Y;
+				static std::array<float,32> CIE_Z;
+				
+				/* sampled range [390 - 710[  */
+				static const int lambdaStart = 390; 
+				static const int lambdaEnd = 710; 
 				static const int lambdaStep = 10;
 				
 				/* using 32 samples, in order to take profit from sse operations*/
