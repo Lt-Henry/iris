@@ -12,7 +12,7 @@
 using namespace std;
 using namespace com::toxiclabs::iris;
 
-array<float,32> Spectrum::CIE_X = {
+array<float,32> Spectrum::X = {
 0.09564000f,0.06327000f,0.5945000f,1.0622000f, //420
 0.4479000f,0.04677000f,0.002899327f,0.0001661505f,0.00001025398f, //470
 0.0003699140f,0.03846824f,0.3390941f,0.03641283f,0.1538542f, //520
@@ -22,7 +22,7 @@ array<float,32> Spectrum::CIE_X = {
 0.01294868f,0.0008007503f,0.00004767654f }; //700
 
 
-array<float,32> Spectrum::CIE_Y = {
+array<float,32> Spectrum::Y = {
 0.1390200f,0.7100000f,0.9950000f,0.6310000f, //420
 0.1750000f,0.01700000f,0.001047000f,0.00006000000f,0.000003702900f, //470
 0.00001104323f,0.001069880f,0.03622571f,0.1994180f,0.8494916f, //520
@@ -32,7 +32,7 @@ array<float,32> Spectrum::CIE_Y = {
 0.004676404f,0.0002891656f,0.00001721687f }; //700
 
 
-array<float,32> Spectrum::CIE_Z = {
+array<float,32> Spectrum::Z = {
 0.8129501f,0.07824999f,0.003900000f,0.0008000000f, //420
 0.00002000000f,0.0f,0.0f,0.0f,0.0f, //470
 0.001734286f,0.1832568f,1.7758671f,0.4919673f,0.04489859f, //520
@@ -41,6 +41,18 @@ array<float,32> Spectrum::CIE_Z = {
 0.3013375f,0.02378716f,0.001711200f,0.0002119600f,0.0f, //670
 0.0f,0.0f,0.0f }; //700
 
+
+float Spectrum::yint=8.01135f;
+
+
+/*
+XYZ to RGB matrix
+
+rgb[0] =  3.240479f*xyz[0] - 1.537150f*xyz[1] - 0.498535f*xyz[2];
+rgb[1] = -0.969256f*xyz[0] + 1.875991f*xyz[1] + 0.041556f*xyz[2];
+rgb[2] =  0.055648f*xyz[0] - 0.204043f*xyz[1] + 1.057311f*xyz[2];
+
+*/
 
 Spectrum::Spectrum()
 {
@@ -154,6 +166,28 @@ string Spectrum::ToString()
 	}
 	
 	return ss.str();
+}
+
+void Spectrum::ToXYZ()
+{
+	float xyz[4];
+	
+	xyz[0]=0.0f;
+	xyz[1]=0.0f;
+	xyz[2]=0.0f;
+	
+	for(int n=0;n<32;n++)
+	{
+		xyz[0]=xyz[0] + Spectrum::X[n]*data[n];
+		xyz[1]=xyz[1] + Spectrum::Y[n]*data[n];
+		xyz[2]=xyz[2] + Spectrum::Z[n]*data[n];
+	}
+	
+	xyz[0]=xyz[0]/Spectrum::yint;
+	xyz[1]=xyz[1]/Spectrum::yint;
+	xyz[2]=xyz[2]/Spectrum::yint;
+	
+	cout<<"XYZ: ["<<xyz[0]<<","<<xyz[1]<<","<<xyz[2]<<"]"<<endl;
 }
 
 Spectrum operator+(Spectrum a,Spectrum & b)

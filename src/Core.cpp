@@ -38,6 +38,7 @@ Core::Core(int argc,char * argv[])
 	Spectrum spd("VC_palik.k.spd");
 	
 	cout<<"Spectrum:"<<endl<<spd.ToString()<<endl;
+	spd.ToXYZ();
 		
 		
 }

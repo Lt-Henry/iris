@@ -18,9 +18,10 @@ namespace com
 				
 				/* CIE XYZ precomputed tables */
 				
-				static std::array<float,32> CIE_X;
-				static std::array<float,32> CIE_Y;
-				static std::array<float,32> CIE_Z;
+				static std::array<float,32> X;
+				static std::array<float,32> Y;
+				static std::array<float,32> Z;
+				static float yint;
 				
 				/* sampled range [390 - 710[  */
 				static const int lambdaStart = 390; 
@@ -35,6 +36,8 @@ namespace com
 
 				void Clear();
 				std::string ToString();
+				
+				void ToXYZ();
 			};
 			
 			Spectrum operator+(Spectrum a,Spectrum & b);
