@@ -2,6 +2,8 @@
 #ifndef _IRIS_SPECTRUM_
 #define _IRIS_SPECTRUM_
 
+#include "Color.hpp"
+
 #include <string>
 #include <array>
 
@@ -37,7 +39,8 @@ namespace com
 				void Clear();
 				std::string ToString();
 				
-				void ToXYZ();
+				void ToXYZ(Color * color);
+				void ToRGB(Color * color);
 			};
 			
 			Spectrum operator+(Spectrum a,Spectrum & b);

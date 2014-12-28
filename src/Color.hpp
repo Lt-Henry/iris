@@ -21,7 +21,7 @@ namespace com
 						float r;
 						float g;
 						float b;
-						float w;
+						float a;
 					};
 					
 					struct
@@ -29,7 +29,7 @@ namespace com
 						float x;
 						float y;
 						float z;
-						float q;
+						float w;
 					};
 					
 					float data[4];	

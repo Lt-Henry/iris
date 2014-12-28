@@ -45,14 +45,6 @@ array<float,32> Spectrum::Z = {
 float Spectrum::yint=8.01135f;
 
 
-/*
-XYZ to RGB matrix
-
-rgb[0] =  3.240479f*xyz[0] - 1.537150f*xyz[1] - 0.498535f*xyz[2];
-rgb[1] = -0.969256f*xyz[0] + 1.875991f*xyz[1] + 0.041556f*xyz[2];
-rgb[2] =  0.055648f*xyz[0] - 0.204043f*xyz[1] + 1.057311f*xyz[2];
-
-*/
 
 Spectrum::Spectrum()
 {
@@ -168,26 +160,36 @@ string Spectrum::ToString()
 	return ss.str();
 }
 
-void Spectrum::ToXYZ()
+void Spectrum::ToXYZ(Color * color)
 {
-	float xyz[4];
 	
-	xyz[0]=0.0f;
-	xyz[1]=0.0f;
-	xyz[2]=0.0f;
 	
+	color->Clear();
+		
 	for(int n=0;n<32;n++)
 	{
-		xyz[0]=xyz[0] + Spectrum::X[n]*data[n];
-		xyz[1]=xyz[1] + Spectrum::Y[n]*data[n];
-		xyz[2]=xyz[2] + Spectrum::Z[n]*data[n];
+		color->x+=Spectrum::X[n]*data[n];
+		color->y+=Spectrum::Y[n]*data[n];
+		color->z+=Spectrum::Z[n]*data[n];
 	}
 	
-	xyz[0]=xyz[0]/Spectrum::yint;
-	xyz[1]=xyz[1]/Spectrum::yint;
-	xyz[2]=xyz[2]/Spectrum::yint;
+	color->x/=Spectrum::yint;
+	color->y/=Spectrum::yint;
+	color->z/=Spectrum::yint;
+
+}
+
+void Spectrum::ToRGB(Color * color)
+{
+	Color tmp;
 	
-	cout<<"XYZ: ["<<xyz[0]<<","<<xyz[1]<<","<<xyz[2]<<"]"<<endl;
+	ToXYZ(&tmp);
+	
+	color->r=3.240479f*tmp.x - 1.537150f*tmp.y - 0.498535f*tmp.z;
+	color->g=-0.969256f*tmp.x + 1.875991f*tmp.y + 0.041556f*tmp.z;
+	color->b=0.055648f*tmp.x - 0.204043f*tmp.y + 1.057311f*tmp.z;
+	color->a=1.0f;
+
 }
 
 Spectrum operator+(Spectrum a,Spectrum & b)
