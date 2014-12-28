@@ -1,6 +1,6 @@
 
 #create an executable as target
-add_executable(iris main.cpp Core.cpp MeshLoader.cpp Math.cpp Spectrum.cpp)
+add_executable(iris main.cpp Core.cpp MeshLoader.cpp Math.cpp Spectrum.cpp Color.cpp)
 
 #require pkg-config support
 find_package(PkgConfig REQUIRED)

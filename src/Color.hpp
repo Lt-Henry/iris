@@ -2,6 +2,8 @@
 #ifndef _IRIS_COLOR_
 #define _IRIS_COLOR_
 
+#include <cstdint>
+
 namespace com
 {
 	namespace toxiclabs
@@ -27,11 +29,15 @@ namespace com
 						float x;
 						float y;
 						float z;
-						float w;
+						float q;
 					};
 					
 					float data[4];	
 				};
+				
+				void Clear();
+				void Clamp();
+				uint32_t ToPixelRGBA();			
 			};
 		}
 	}
