@@ -179,18 +179,7 @@ void Spectrum::ToXYZ(Color * color)
 
 }
 
-void Spectrum::ToRGB(Color * color)
-{
-	Color tmp;
-	
-	ToXYZ(&tmp);
-	
-	color->r=3.240479f*tmp.x - 1.537150f*tmp.y - 0.498535f*tmp.z;
-	color->g=-0.969256f*tmp.x + 1.875991f*tmp.y + 0.041556f*tmp.z;
-	color->b=0.055648f*tmp.x - 0.204043f*tmp.y + 1.057311f*tmp.z;
-	color->a=1.0f;
 
-}
 
 Spectrum operator+(Spectrum a,Spectrum & b)
 {

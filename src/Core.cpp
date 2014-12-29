@@ -29,18 +29,47 @@ Core::Core(int argc,char * argv[])
 	screen_h=768;
 	num_threads=2;
 	
-	/* fake chunks */
+	/* computing chunks */
+	int wchunk=60;
+	int hchunk=60;
+		
+	while(screen_w%wchunk!=0)
+	{
+		wchunk++;
+	}
 	
-	chunks.push_back(new RenderChunk());
-	chunks.push_back(new RenderChunk());
-	chunks.push_back(new RenderChunk());
+	while(screen_h%hchunk!=0)
+	{
+		hchunk++;
+	}
+	
+	for(int i=0;i<(screen_w/wchunk);i++)
+	{
+		for(int j=0;j<(screen_h/hchunk);j++)
+		{
+			
+			RenderChunk * chunk = new RenderChunk();
+			
+			chunk->x=i*wchunk;
+			chunk->y=j*hchunk;
+			chunk->w=wchunk;
+			chunk->h=hchunk;
+			
+			chunks.push_back(chunk);
+			
+		}
+	}
+	
+	cout<<"Chunk size: "<<wchunk<<"x"<<hchunk<<endl;
+	
 	
 	Spectrum spd("VC_palik.k.spd");
 	
 	cout<<"Spectrum:"<<endl<<spd.ToString()<<endl;
 	
 	Color tmp;
-	spd.ToRGB(&tmp);
+	spd.ToXYZ(&tmp);
+	tmp=tmp.XYZtoRGB();
 	cout<<"rgb: "<<tmp.r<<","<<tmp.g<<","<<tmp.b<<endl;
 		
 		
@@ -92,7 +121,11 @@ RenderChunk * Core::GetChunk()
 
 void Core::CommitChunk(RenderChunk * chunk)
 {
+	chunk_mutex.lock();
+	
 	cout<<"[Core] Chunk "<<chunk->x<<","<<chunk->y<<" commited"<<endl;
+	
+	chunk_mutex.unlock();
 }
 
 void Core::RenderThread(int id)
@@ -103,7 +136,7 @@ void Core::RenderThread(int id)
 	while(chunk!=nullptr)
 	{
 		/* render goes here */
-		std::chrono::milliseconds dura(500);
+		std::chrono::milliseconds dura(50);
 		std::this_thread::sleep_for( dura );
 		CommitChunk(chunk);
 		chunk = GetChunk();

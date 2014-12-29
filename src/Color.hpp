@@ -37,7 +37,9 @@ namespace com
 				
 				void Clear();
 				void Clamp();
-				uint32_t ToPixelRGBA();			
+				uint32_t ToPixelRGBA();
+				
+				Color XYZtoRGB();			
 			};
 		}
 	}

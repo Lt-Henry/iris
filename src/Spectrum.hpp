@@ -40,7 +40,7 @@ namespace com
 				std::string ToString();
 				
 				void ToXYZ(Color * color);
-				void ToRGB(Color * color);
+				
 			};
 			
 			Spectrum operator+(Spectrum a,Spectrum & b);

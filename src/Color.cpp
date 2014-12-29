@@ -43,3 +43,15 @@ uint32_t Color::ToPixelRGBA()
 	
 	return pixel;
 }
+
+Color Color::XYZtoRGB()
+{
+	Color ret;
+		
+	ret.r=3.240479f*x - 1.537150f*y - 0.498535f*z;
+	ret.g=-0.969256f*x + 1.875991f*y + 0.041556f*z;
+	ret.b=0.055648f*x - 0.204043f*y + 1.057311f*z;
+	ret.a=1.0f;
+	
+	return ret;
+}
