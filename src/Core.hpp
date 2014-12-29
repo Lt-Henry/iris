@@ -10,6 +10,8 @@
 #include <thread>
 #include <mutex>
 
+#include <FreeImagePlus.h>
+
 
 namespace com
 {
@@ -27,9 +29,12 @@ namespace com
 				std::mutex chunk_mutex;
 				
 				/* render settings */
-				int screen_w;
-				int screen_h;
+				int width;
+				int height;
 				int num_threads;
+				
+				/* render target */
+				fipImage * image;
 				
 				/**
 				 * constructor

@@ -20,7 +20,12 @@ namespace com
 				std::array<Vector,3> vertices;
 				std::array<Vector,3> normals;
 				
+				/* computed normal, used for backface culling */
+				Vector pnormal;
+				
 				int material;
+				
+				bool RayCollision(Vector & origin,Vector & direction,Vector & collision);
 			};
 		}
 	}

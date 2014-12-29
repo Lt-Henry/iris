@@ -85,7 +85,30 @@ void MeshLoader::Load(string filename, vector<Triangle *> & triangles, vector<Ma
 	
 	for(int n=0;n<faces.size();n+=3)
 	{
+		Triangle * triangle = new Triangle();
 		
+				
+		triangle->vertices[0]=Vector(
+		vertices[faces[n]],
+		vertices[faces[n]]+1,
+		vertices[faces[n]]+2);
+		
+		triangle->vertices[1]=Vector(
+		vertices[faces[n+1]],
+		vertices[faces[n+1]]+1,
+		vertices[faces[n+1]]+2);
+		
+		triangle->vertices[2]=Vector(
+		vertices[faces[n+2]],
+		vertices[faces[n+2]]+1,
+		vertices[faces[n+2]]+2);
+		
+		
+		
+		Vector ab = triangle->vertices[1] - triangle->vertices[0];
+		Vector ac = triangle->vertices[2] - triangle->vertices[0];
+		
+		triangle->pnormal = ab ^ ac;
 	}
 	
 	

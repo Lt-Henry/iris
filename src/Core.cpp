@@ -1,10 +1,15 @@
 
-#include <iostream>
-#include <chrono>
-
 #include "Core.hpp"
 #include "MeshLoader.hpp"
 #include "Spectrum.hpp"
+
+
+#include <iostream>
+#include <chrono>
+#include <cmath>
+
+
+
 
 using namespace std;
 using namespace com::toxiclabs::iris;
@@ -25,27 +30,30 @@ Core::Core(int argc,char * argv[])
 	
 	/* default render settings */
 	
-	screen_w=1024;
-	screen_h=768;
+	width=1024;
+	height=768;
 	num_threads=2;
+	
+	/* creating render target */
+	image = new fipImage(FIT_BITMAP,width,height,32);
 	
 	/* computing chunks */
 	int wchunk=60;
 	int hchunk=60;
 		
-	while(screen_w%wchunk!=0)
+	while(width%wchunk!=0)
 	{
 		wchunk++;
 	}
 	
-	while(screen_h%hchunk!=0)
+	while(height%hchunk!=0)
 	{
 		hchunk++;
 	}
 	
-	for(int i=0;i<(screen_w/wchunk);i++)
+	for(int i=0;i<(width/wchunk);i++)
 	{
-		for(int j=0;j<(screen_h/hchunk);j++)
+		for(int j=0;j<(height/hchunk);j++)
 		{
 			
 			RenderChunk * chunk = new RenderChunk();
@@ -78,6 +86,7 @@ Core::Core(int argc,char * argv[])
 Core::~Core()
 {
 	cout<<"[Core] closing..."<<endl;
+	delete image;
 }
 
 void Core::Run()
@@ -97,6 +106,8 @@ void Core::Run()
 	{
 		threads[n].join();
 	}
+	
+	image->save("out.png");
 	
 	cout<<"[Core] render finished"<<endl;
 	
@@ -130,11 +141,48 @@ void Core::CommitChunk(RenderChunk * chunk)
 
 void Core::RenderThread(int id)
 {
+
 	cout<<"[Core] Thread "<<id<<" entered rendering"<<endl;
+
+	float fov=45.0f;
+	float beta=fov/2.0f;
+	float v = -5.0f * tan(DegToRad(beta));//replace -5 with camera Z
+	float fwidth,fheight;
+	float pw,ph;
+	
+	//far plane dimensions
+	fheight = v * 2.0f;
+	fwidth = fheight * 1.333f; // hardcoded aspect ratio
+	 
+	//pixel dimensions
+	pw = fwidth/width;
+	ph = fheight/height;
+	
+	Vector origin;
+	Vector direction;
+
 
 	RenderChunk * chunk = GetChunk();
 	while(chunk!=nullptr)
 	{
+	
+		for(int j=chunk->y;j<(chunk->y+chunk->h);j++)
+		{
+			for(int i=chunk->x;i<(chunk->x+chunk->w);i++)
+			{
+				origin.Set(0.0f,0.0f,-5.0f,1.0f);
+				
+				direction.Set
+				((i*pw)+(pw*0.5f)-(width*pw*0.5f),
+				(ph*0.5f)+(height*ph*0.5f)-(j*ph),5.0f,
+				0.0f);
+				
+				direction.Normalize();
+				
+				//raycast here
+			}
+		}
+	
 		/* render goes here */
 		std::chrono::milliseconds dura(50);
 		std::this_thread::sleep_for( dura );

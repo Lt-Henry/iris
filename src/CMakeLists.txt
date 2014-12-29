@@ -1,6 +1,6 @@
 
 #create an executable as target
-add_executable(iris main.cpp Core.cpp MeshLoader.cpp Math.cpp Spectrum.cpp Color.cpp)
+add_executable(iris main.cpp Core.cpp MeshLoader.cpp Mesh.cpp Math.cpp Spectrum.cpp Color.cpp)
 
 #require pkg-config support
 find_package(PkgConfig REQUIRED)
@@ -18,7 +18,7 @@ link_directories(${GSL_LIBRARY_DIRS})
 add_definitions(${GSL_CFLAGS_OTHER} -D_IRIS_SSE_ -D_IRIS_SSE4_)
 
 #set link libraries
-target_link_libraries(iris ${GSL_LIBRARIES} pthread c++abi)
+target_link_libraries(iris ${GSL_LIBRARIES} freeimageplus pthread c++abi)
 
 #set compiler
 set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
