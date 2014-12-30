@@ -14,33 +14,39 @@ namespace com
 			{
 				public:
 				
-				union
-				{
-					struct
-					{
-						float r;
-						float g;
-						float b;
-						float a;
-					};
-					
-					struct
-					{
-						float x;
-						float y;
-						float z;
-						float w;
-					};
-					
-					float data[4];	
-				};
 				
-				void Clear();
-				void Clamp();
-				uint32_t ToPixelRGBA();
+				virtual void Black()=0;
+				virtual void White()=0;
 				
-				Color XYZtoRGB();			
+				virtual void Clamp()=0;
+				
 			};
+			
+			
+			class ColorRGB : public Color
+			{
+				public:
+				
+				void Black();
+				void White();
+				void Clamp();
+				
+				uint32_t ToPixel();
+				
+			};
+
+			class ColorXYZ : public Color
+			{
+				public:
+				
+				void Black();
+				void White();
+				void Clamp();
+				
+				ColorRGB ToRGB();
+			};
+			
+			
 		}
 	}
 }
