@@ -136,6 +136,16 @@ void Core::CommitChunk(RenderChunk * chunk)
 	
 	cout<<"[Core] Chunk "<<chunk->x<<","<<chunk->y<<" commited"<<endl;
 	
+	for(int j=chunk->y;j<(chunk->y+chunk->h);j++)
+	{
+		for(int i=chunk->x;i<(chunk->x+chunk->w);i++)
+		{
+			
+		}
+	}
+	
+	delete [] chunk->image;
+	
 	chunk_mutex.unlock();
 }
 
@@ -165,6 +175,7 @@ void Core::RenderThread(int id)
 	RenderChunk * chunk = GetChunk();
 	while(chunk!=nullptr)
 	{
+		chunk->image=new Color[chunk->w * chunk->h];
 	
 		for(int j=chunk->y;j<(chunk->y+chunk->h);j++)
 		{
@@ -178,6 +189,11 @@ void Core::RenderThread(int id)
 				0.0f);
 				
 				direction.Normalize();
+				
+				int px = i-chunk->x;
+				int py = j-chunk->y;
+				
+				chunk->image[i+j*chunk->w].Clear();
 				
 				//raycast here
 			}

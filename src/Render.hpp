@@ -2,6 +2,8 @@
 #ifndef _IRIS_RENDER_
 #define _IRIS_RENDER_
 
+#include "Color.hpp"
+
 namespace com
 {
 	namespace toxiclabs
@@ -11,6 +13,8 @@ namespace com
 			class RenderChunk
 			{
 				public:
+				
+				Color * image;
 				
 				int x;
 				int y;
