@@ -75,10 +75,10 @@ Core::Core(int argc,char * argv[])
 	
 	cout<<"Spectrum:"<<endl<<spd.ToString()<<endl;
 	
-	Color tmp;
-	spd.ToXYZ(&tmp);
-	tmp=tmp.XYZtoRGB();
-	cout<<"rgb: "<<tmp.r<<","<<tmp.g<<","<<tmp.b<<endl;
+	ColorXYZ tmp;
+	tmp=spd.ToXYZ();
+	
+	cout<<"xyz: "<<tmp.x<<","<<tmp.y<<","<<tmp.z<<endl;
 		
 		
 }
@@ -140,7 +140,19 @@ void Core::CommitChunk(RenderChunk * chunk)
 	{
 		for(int i=chunk->x;i<(chunk->x+chunk->w);i++)
 		{
+			int px = i-chunk->x;
+			int py = j-chunk->y;
 			
+			RGBQUAD pixel;
+			ColorRGB rgb;
+			rgb = chunk->image[px+py*chunk->w].ToRGB();
+			
+			pixel.rgbRed=255*rgb.r;
+			pixel.rgbGreen=255*rgb.g;
+			pixel.rgbBlue=255*rgb.b; 
+			pixel.rgbReserved=255;
+			
+			image->setPixelColor(i,j,&pixel);
 		}
 	}
 	
@@ -175,7 +187,7 @@ void Core::RenderThread(int id)
 	RenderChunk * chunk = GetChunk();
 	while(chunk!=nullptr)
 	{
-		chunk->image=new Color[chunk->w * chunk->h];
+		chunk->image=new ColorXYZ[chunk->w * chunk->h];
 	
 		for(int j=chunk->y;j<(chunk->y+chunk->h);j++)
 		{
@@ -193,15 +205,14 @@ void Core::RenderThread(int id)
 				int px = i-chunk->x;
 				int py = j-chunk->y;
 				
-				chunk->image[i+j*chunk->w].Clear();
+				chunk->image[px+py*chunk->w].Black();
 				
 				//raycast here
 			}
 		}
 	
 		/* render goes here */
-		std::chrono::milliseconds dura(50);
-		std::this_thread::sleep_for( dura );
+		
 		CommitChunk(chunk);
 		chunk = GetChunk();
 	}

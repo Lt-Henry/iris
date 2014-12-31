@@ -14,7 +14,7 @@ namespace com
 			{
 				public:
 				
-				Color * image;
+				ColorXYZ * image;
 				
 				int x;
 				int y;

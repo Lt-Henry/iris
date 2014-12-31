@@ -39,7 +39,7 @@ namespace com
 				void Clear();
 				std::string ToString();
 				
-				void ToXYZ(Color * color);
+				ColorXYZ ToXYZ();
 				
 			};
 			

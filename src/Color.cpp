@@ -7,25 +7,52 @@ using namespace com::toxiclabs::iris;
 using namespace std;
 
 
-void Color::Clear()
+ColorType Color::GetType()
 {
-	data[0]=0.0f;
-	data[1]=0.0f;
-	data[2]=0.0f;
-	data[3]=0.0f;
+	return type;
 }
 
 
-void Color::Clamp()
+ColorRGB::ColorRGB()
+{
+	type=ColorType::RGB;
+}
+
+ColorRGB::ColorRGB(float r,float g,float b,float a) : ColorRGB()
+{
+	this->r=r;
+	this->g=g;
+	this->b=b;
+	this->a=a;
+}
+
+void ColorRGB::Black()
+{
+	r=0.0f;
+	g=0.0f;
+	b=0.0f;
+	a=1.0f;
+}
+
+void ColorRGB::White()
+{
+	r=1.0f;
+	g=1.0f;
+	b=1.0f;
+	a=1.0f;
+}
+
+void ColorRGB::Clamp()
 {
 	for(int n=0;n<4;n++)
 	{
 		if(data[n]>1.0f)data[n]=1.0f;
 		if(data[n]<0.0f)data[n]=0.0f;
 	}
+	
 }
 
-uint32_t Color::ToPixelRGBA()
+uint32_t ColorRGB::ToPixel()
 {
 	uint32_t pixel = 0;
 	
@@ -44,9 +71,47 @@ uint32_t Color::ToPixelRGBA()
 	return pixel;
 }
 
-Color Color::XYZtoRGB()
+
+ColorXYZ::ColorXYZ()
 {
-	Color ret;
+	type=ColorType::XYZ;
+}
+
+
+ColorXYZ::ColorXYZ(float x,float y,float z) : ColorXYZ()
+{
+	this->x=x;
+	this->y=y;
+	this->z=z;
+}
+
+void ColorXYZ::Black()
+{
+	x=0.0f;
+	y=0.0f;
+	z=0.0f;	
+}
+
+void ColorXYZ::White()
+{
+	x=1.0f;
+	y=1.0f;
+	z=1.0f;
+}
+
+void ColorXYZ::Clamp()
+{
+	for(int n=0;n<4;n++)
+	{
+		if(data[n]>1.0f)data[n]=1.0f;
+		if(data[n]<0.0f)data[n]=0.0f;
+	}
+}
+
+
+ColorRGB ColorXYZ::ToRGB()
+{
+	ColorRGB ret;
 		
 	ret.r=3.240479f*x - 1.537150f*y - 0.498535f*z;
 	ret.g=-0.969256f*x + 1.875991f*y + 0.041556f*z;
@@ -55,3 +120,4 @@ Color Color::XYZtoRGB()
 	
 	return ret;
 }
+

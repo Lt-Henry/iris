@@ -160,23 +160,25 @@ string Spectrum::ToString()
 	return ss.str();
 }
 
-void Spectrum::ToXYZ(Color * color)
+ColorXYZ Spectrum::ToXYZ()
 {
 	
+	ColorXYZ color;
 	
-	color->Clear();
+	color.Black();
 		
 	for(int n=0;n<32;n++)
 	{
-		color->x+=Spectrum::X[n]*data[n];
-		color->y+=Spectrum::Y[n]*data[n];
-		color->z+=Spectrum::Z[n]*data[n];
+		color.x+=Spectrum::X[n]*data[n];
+		color.y+=Spectrum::Y[n]*data[n];
+		color.z+=Spectrum::Z[n]*data[n];
 	}
 	
-	color->x/=Spectrum::yint;
-	color->y/=Spectrum::yint;
-	color->z/=Spectrum::yint;
+	color.x/=Spectrum::yint;
+	color.y/=Spectrum::yint;
+	color.z/=Spectrum::yint;
 
+	return color;
 }
 
 
