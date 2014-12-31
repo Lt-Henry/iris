@@ -15,6 +15,7 @@ using namespace std;
 using namespace com::toxiclabs::iris;
 
 
+
 Core::Core(int argc,char * argv[])
 {
 	if(argc<2)
@@ -111,6 +112,7 @@ void Core::Run()
 	
 	cout<<"[Core] render finished"<<endl;
 	
+	
 }
 
 RenderChunk * Core::GetChunk()
@@ -168,7 +170,8 @@ void Core::RenderThread(int id)
 
 	float fov=45.0f;
 	float beta=fov/2.0f;
-	float v = -5.0f * tan(DegToRad(beta));//replace -5 with camera Z
+	float Z=20.0f; //Hack camera Z coord
+	float v = Z * tan(DegToRad(beta));
 	float fwidth,fheight;
 	float pw,ph;
 	
@@ -183,6 +186,7 @@ void Core::RenderThread(int id)
 	Vector origin;
 	Vector direction;
 
+	Spectrum incoming;
 
 	RenderChunk * chunk = GetChunk();
 	while(chunk!=nullptr)
@@ -193,21 +197,25 @@ void Core::RenderThread(int id)
 		{
 			for(int i=chunk->x;i<(chunk->x+chunk->w);i++)
 			{
-				origin.Set(0.0f,0.0f,-5.0f,1.0f);
+				origin.Set(0.0f,0.0f,-Z,1.0f);
 				
 				direction.Set
 				((i*pw)+(pw*0.5f)-(width*pw*0.5f),
 				(ph*0.5f)+(height*ph*0.5f)-(j*ph),5.0f,
 				0.0f);
 				
+				direction = direction - origin;
+				
 				direction.Normalize();
 				
 				int px = i-chunk->x;
 				int py = j-chunk->y;
 				
-				chunk->image[px+py*chunk->w].Black();
+				//chunk->image[px+py*chunk->w].Black();
 				
-				//raycast here
+				RayCast(origin,direction,incoming);
+				
+				chunk->image[px+py*chunk->w]=incoming.ToXYZ();
 			}
 		}
 	
@@ -218,4 +226,30 @@ void Core::RenderThread(int id)
 	}
 
 	cout<<"[Core] Thread "<<id<<" exit rendering"<<endl;
+}
+
+void Core::RayCast(Vector & origin,Vector & direction,Spectrum & output)
+{
+	float min_dist=100000.0f;
+	Vector collision;
+	Vector oc;
+	float dist;
+	
+	output.Clear();
+	
+
+	for(Triangle * triangle : scene.triangles)
+	{
+		if(triangle->RayCollision(origin,direction,collision))
+		{
+			oc=collision-origin;
+			dist=oc.Module();
+			
+			if(dist<min_dist)
+			{
+				min_dist=dist;
+				output.data[2]=1.0f-(dist/25.0);
+			}
+		}				
+	}
 }

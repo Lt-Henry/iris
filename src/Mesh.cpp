@@ -1,6 +1,9 @@
 
 #include "Mesh.hpp"
 
+#include <iostream>
+
+using namespace std;
 using namespace com::toxiclabs::iris;
 
 
@@ -124,4 +127,12 @@ bool Triangle::RayCollision(Vector & origin,Vector & direction,Vector & collisio
 	}
 	
 	return ret;
+}
+
+void Triangle::Print()
+{
+	for(int n=0;n<3;n++)
+		cout<<"["<<vertices[n].x<<","<<vertices[n].y<<","<<vertices[n].z<<"] ";
+	
+	cout<<endl;	
 }

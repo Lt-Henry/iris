@@ -26,6 +26,8 @@ namespace com
 				int material;
 				
 				bool RayCollision(Vector & origin,Vector & direction,Vector & collision);
+				
+				void Print();
 			};
 		}
 	}

@@ -5,6 +5,8 @@
 
 #include "Render.hpp"
 #include "Scene.hpp"
+#include "Spectrum.hpp"
+#include "Math.hpp"
 
 #include <vector>
 #include <thread>
@@ -65,6 +67,8 @@ namespace com
 				* Render thread method
 				*/
 				void RenderThread(int id);
+				
+				void RayCast(Vector & origin,Vector & direction,Spectrum & output); 
 			};
 		}
 	}
