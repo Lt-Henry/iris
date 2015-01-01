@@ -14,6 +14,7 @@
 using namespace std;
 using namespace com::toxiclabs::iris;
 
+Spectrum material;
 
 
 Core::Core(int argc,char * argv[])
@@ -73,7 +74,7 @@ Core::Core(int argc,char * argv[])
 	
 	
 	Spectrum spd("VC_palik.k.spd");
-	
+	material=spd;
 	cout<<"Spectrum:"<<endl<<spd.ToString()<<endl;
 	
 	ColorXYZ tmp;
@@ -107,6 +108,14 @@ void Core::Run()
 	{
 		threads[n].join();
 	}
+	
+	Spectrum stest;
+	
+	stest.data[20]=20.0f;
+	ColorXYZ ctest = stest.ToXYZ();
+	cout<<"XYZ:"<<ctest.x<<","<<ctest.y<<","<<ctest.z<<endl;
+	ColorRGB rtest=ctest.ToRGB();
+	cout<<"RGB:"<<rtest.r<<","<<rtest.g<<","<<rtest.b<<endl;
 	
 	image->save("out.png");
 	
@@ -248,7 +257,10 @@ void Core::RayCast(Vector & origin,Vector & direction,Spectrum & output)
 			if(dist<min_dist)
 			{
 				min_dist=dist;
-				output.data[2]=1.0f-(dist/25.0);
+				//output.data[2]=1.0f-(dist/15.0);
+				int nm = ((590)-390)/10; 
+				output.data[nm]=20.0f*(dist/20.0f);
+				
 			}
 		}				
 	}

@@ -118,6 +118,7 @@ ColorRGB ColorXYZ::ToRGB()
 	ret.b=0.055648f*x - 0.204043f*y + 1.057311f*z;
 	ret.a=1.0f;
 	
+	ret.Clamp();
 	return ret;
 }
 
