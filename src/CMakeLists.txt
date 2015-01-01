@@ -1,6 +1,6 @@
 
 #create an executable as target
-add_executable(iris main.cpp Core.cpp MeshLoader.cpp Mesh.cpp Math.cpp Spectrum.cpp Color.cpp)
+add_executable(iris main.cpp Core.cpp MeshLoader.cpp Mesh.cpp Math.cpp Spectrum.cpp Color.cpp Camera.cpp Scene.cpp)
 
 #require pkg-config support
 find_package(PkgConfig REQUIRED)
@@ -15,7 +15,7 @@ include_directories(${GSL_INCLUDE_DIRS})
 link_directories(${GSL_LIBRARY_DIRS})
 
 #add custom lib flags
-add_definitions(${GSL_CFLAGS_OTHER} -D_IRIS_SSE_ -D_IRIS_SSE4_)
+#add_definitions(${GSL_CFLAGS_OTHER} -D_IRIS_SSE_ -D_IRIS_SSE4_)
 
 #set link libraries
 target_link_libraries(iris ${GSL_LIBRARIES} freeimageplus pthread c++abi)

@@ -72,6 +72,13 @@ Core::Core(int argc,char * argv[])
 	
 	cout<<"Chunk size: "<<wchunk<<"x"<<hchunk<<endl;
 	
+	/* create a default camera */
+	Vector origin(2.0,6.0,-20.0);
+	Vector target(0.0,0.0,0.0);
+	Camera * camera = new Camera("camera-0",origin,target);
+	scene.cameras.push_back(camera);
+	
+	scene.ApplyCamera();
 	
 	Spectrum spd("VC_palik.k.spd");
 	material=spd;
@@ -163,7 +170,7 @@ void Core::CommitChunk(RenderChunk * chunk)
 			pixel.rgbBlue=255*rgb.b; 
 			pixel.rgbReserved=255;
 			
-			image->setPixelColor(i,j,&pixel);
+			image->setPixelColor(i,(height-1)-j,&pixel);
 		}
 	}
 	
@@ -179,7 +186,7 @@ void Core::RenderThread(int id)
 
 	float fov=45.0f;
 	float beta=fov/2.0f;
-	float Z=20.0f; //Hack camera Z coord
+	float Z=6.0f; //Hack camera Z coord
 	float v = Z * tan(DegToRad(beta));
 	float fwidth,fheight;
 	float pw,ph;
@@ -259,8 +266,11 @@ void Core::RayCast(Vector & origin,Vector & direction,Spectrum & output)
 				min_dist=dist;
 				//output.data[2]=1.0f-(dist/15.0);
 				int nm = ((590)-390)/10; 
-				output.data[nm]=20.0f*(dist/20.0f);
+				output.data[nm]=20.0f*(dist/45.0f);
+				//output.data[nm]=25.0f;
 				
+				nm = ((490)-390)/10;
+				output.data[nm]=5.0f;
 			}
 		}				
 	}

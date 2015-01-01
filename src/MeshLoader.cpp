@@ -65,7 +65,7 @@ void MeshLoader::Load(string filename, vector<Triangle *> & triangles, vector<Ma
 			for(int n=1;n<results.size();n+=3)
 			{
 				//cout<<results[n]<<endl;
-				faces.push_back(std::stoi(results[n]));
+				faces.push_back(std::stoi(results[n])-1);
 			}
 		}
 		
@@ -91,26 +91,32 @@ void MeshLoader::Load(string filename, vector<Triangle *> & triangles, vector<Ma
 		triangle->vertices[0]=Vector(
 		vertices[(3*faces[n])+0],
 		vertices[(3*faces[n])+1],
-		vertices[(3*faces[n])+2]);
+		-vertices[(3*faces[n])+2],
+		1.0f);
 		
 		triangle->vertices[1]=Vector(
 		vertices[(3*faces[n+1])+0],
 		vertices[(3*faces[n+1])+1],
-		vertices[(3*faces[n+1])+2]);
+		-vertices[(3*faces[n+1])+2],
+		1.0f);
 		
 		triangle->vertices[2]=Vector(
 		vertices[(3*faces[n+2])+0],
 		vertices[(3*faces[n+2])+1],
-		vertices[(3*faces[n+2])+2]);
+		-vertices[(3*faces[n+2])+2],
+		1.0f);
 		
 		
 		
-		Vector ab = triangle->vertices[1] - triangle->vertices[0];
-		Vector ac = triangle->vertices[2] - triangle->vertices[0];
+		Vector ac = triangle->vertices[0] - triangle->vertices[1];
+		Vector ab = triangle->vertices[0] - triangle->vertices[2];
 		
-		triangle->pnormal = ab ^ ac;
+		triangle->pnormal = ac ^ ab;
+		triangle->pnormal.Normalize();
+		triangle->pnormal.w=0.0f;
 		
 		triangles.push_back(triangle);
+		triangle->Print();
 	}
 	
 	cout<<"Triangles: "<<triangles.size()<<endl;

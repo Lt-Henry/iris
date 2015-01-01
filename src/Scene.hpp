@@ -4,6 +4,7 @@
 
 #include "Material.hpp"
 #include "Mesh.hpp"
+#include "Camera.hpp"
 
 #include <vector>
 
@@ -19,7 +20,10 @@ namespace com
 				
 				std::vector<Triangle *> triangles;
 				std::vector<Material *> materials;
-						
+				
+				std::vector<Camera *> cameras;
+				
+				void ApplyCamera(int n=0);		
 				
 			};
 		}
