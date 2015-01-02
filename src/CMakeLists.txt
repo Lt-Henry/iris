@@ -15,7 +15,7 @@ include_directories(${GSL_INCLUDE_DIRS})
 link_directories(${GSL_LIBRARY_DIRS})
 
 #add custom lib flags
-#add_definitions(${GSL_CFLAGS_OTHER} -D_IRIS_SSE_ -D_IRIS_SSE4_)
+add_definitions(${GSL_CFLAGS_OTHER} -D_IRIS_SSE_ -D_IRIS_SSE4_)
 
 #set link libraries
 target_link_libraries(iris ${GSL_LIBRARIES} freeimageplus pthread c++abi)
@@ -24,7 +24,7 @@ target_link_libraries(iris ${GSL_LIBRARIES} freeimageplus pthread c++abi)
 set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
 
 #compiler extra options
-set(CMAKE_CXX_FLAGS "-std=c++0x -stdlib=libc++ -march=native -O2")
+set(CMAKE_CXX_FLAGS "-std=c++0x -stdlib=libc++ -march=native -O3")
 
 
 

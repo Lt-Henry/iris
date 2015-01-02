@@ -16,6 +16,8 @@ using namespace com::toxiclabs::iris;
 
 Spectrum material;
 
+Vector light(2.0,8.0,0.0,1.0);
+
 
 Core::Core(int argc,char * argv[])
 {
@@ -35,7 +37,7 @@ Core::Core(int argc,char * argv[])
 	width=1024;
 	height=768;
 	num_threads=2;
-	samples=1;
+	samples=2;
 	
 	/* creating render target */
 	image = new fipImage(FIT_BITMAP,width,height,32);
@@ -81,8 +83,7 @@ Core::Core(int argc,char * argv[])
 	
 	scene.ApplyCamera();
 	
-	Spectrum spd("VC_palik.k.spd");
-	//Spectrum spd("Ag.k.spd");
+	Spectrum spd("macbeth-5.spd");
 	material=spd;
 	cout<<"Spectrum:"<<endl<<spd.ToString()<<endl;
 	
@@ -268,6 +269,9 @@ void Core::RayCast(Vector & origin,Vector & direction,Spectrum & output)
 	Vector oc;
 	float dist;
 	
+	Vector target_collision;
+	Triangle * target_triangle=nullptr;
+	
 	output.Clear();
 	
 
@@ -281,16 +285,21 @@ void Core::RayCast(Vector & origin,Vector & direction,Spectrum & output)
 			if(dist<min_dist)
 			{
 				min_dist=dist;
-				//output.data[2]=1.0f-(dist/15.0);
-				int nm = ((590)-390)/10; 
-				output.data[nm]=20.0f*(1.0f-(dist/45.0f));
-				//output.data[nm]=25.0f;
-				
-				nm = ((490)-390)/10;
-				output.data[nm]=5.0f;
-				
+				target_collision=collision;
+				target_triangle=triangle;
 				
 			}
 		}				
+	}
+	
+	
+	if(target_triangle!=nullptr)
+	{
+		Vector w = target_collision - light;
+		w.Normalize();
+		
+		float cosPhi = w * target_triangle->pnormal;
+		
+		output = material * cosPhi;
 	}
 }
