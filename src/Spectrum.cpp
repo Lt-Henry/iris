@@ -186,7 +186,7 @@ ColorXYZ Spectrum::ToXYZ()
 
 
 
-Spectrum operator+(Spectrum a,Spectrum & b)
+Spectrum com::toxiclabs::iris::operator+(Spectrum a,Spectrum & b)
 {
 	Spectrum ret;
 	
@@ -199,7 +199,7 @@ Spectrum operator+(Spectrum a,Spectrum & b)
 }
 
 
-Spectrum operator-(Spectrum a,Spectrum & b)
+Spectrum com::toxiclabs::iris::operator-(Spectrum a,Spectrum & b)
 {
 	Spectrum ret;
 
@@ -211,7 +211,7 @@ Spectrum operator-(Spectrum a,Spectrum & b)
 	return ret;
 }
 
-Spectrum operator*(Spectrum a,Spectrum & b)
+Spectrum com::toxiclabs::iris::operator*(Spectrum a,Spectrum & b)
 {
 	Spectrum ret;
 
@@ -222,3 +222,18 @@ Spectrum operator*(Spectrum a,Spectrum & b)
 	
 	return ret;
 }
+
+Spectrum com::toxiclabs::iris::operator*(Spectrum a,float b)
+{
+	Spectrum ret;
+	
+	
+	for(int n=0;n<32;n++)
+	{
+		ret.data[n]=a.data[n]*b;
+	}
+	
+	return ret;
+}
+
+

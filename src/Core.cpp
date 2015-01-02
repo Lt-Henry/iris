@@ -35,6 +35,7 @@ Core::Core(int argc,char * argv[])
 	width=1024;
 	height=768;
 	num_threads=2;
+	samples=1;
 	
 	/* creating render target */
 	image = new fipImage(FIT_BITMAP,width,height,32);
@@ -81,6 +82,7 @@ Core::Core(int argc,char * argv[])
 	scene.ApplyCamera();
 	
 	Spectrum spd("VC_palik.k.spd");
+	//Spectrum spd("Ag.k.spd");
 	material=spd;
 	cout<<"Spectrum:"<<endl<<spd.ToString()<<endl;
 	
@@ -189,7 +191,8 @@ void Core::RenderThread(int id)
 	float Z=6.0f; //Hack camera Z coord
 	float v = Z * tan(DegToRad(beta));
 	float fwidth,fheight;
-	float pw,ph;
+	float pw,ph; //pixel dimensions
+	float pdw,pdh; //pixel fraction dimension
 	
 	//far plane dimensions
 	fheight = v * 2.0f;
@@ -199,10 +202,14 @@ void Core::RenderThread(int id)
 	pw = fwidth/width;
 	ph = fheight/height;
 	
+	pdw = pw/samples;
+	pdh = ph/samples;
+	
 	Vector origin;
 	Vector direction;
 
 	Spectrum incoming;
+	Spectrum outcoming;
 
 	RenderChunk * chunk = GetChunk();
 	while(chunk!=nullptr)
@@ -213,25 +220,35 @@ void Core::RenderThread(int id)
 		{
 			for(int i=chunk->x;i<(chunk->x+chunk->w);i++)
 			{
-				origin.Set(0.0f,0.0f,-Z,1.0f);
-				
-				direction.Set
-				((i*pw)+(pw*0.5f)-(width*pw*0.5f),
-				(ph*0.5f)+(height*ph*0.5f)-(j*ph),5.0f,
-				0.0f);
-				
-				direction = direction - origin;
-				
-				direction.Normalize();
-				
+			
 				int px = i-chunk->x;
 				int py = j-chunk->y;
 				
-				//chunk->image[px+py*chunk->w].Black();
+				origin.Set(0.0f,0.0f,-Z,1.0f);
 				
-				RayCast(origin,direction,incoming);
+				outcoming.Clear();
 				
-				chunk->image[px+py*chunk->w]=incoming.ToXYZ();
+				for(int sy=0;sy<samples;sy++)
+				{
+					for(int sx=0;sx<samples;sx++)
+					{
+						direction.Set
+						((i*pw)+((pdw*sx)+pw*0.25f)-(width*pw*0.5f),
+						((pdh*sy)+ph*0.25f)+(height*ph*0.5f)-(j*ph),5.0f,
+						0.0f);
+	
+						direction = direction - origin;
+				
+						direction.Normalize();
+						RayCast(origin,direction,incoming);
+												
+						incoming=incoming*(1.0f/(samples*samples));
+						outcoming=outcoming+incoming;
+					}
+				}
+				
+				
+				chunk->image[px+py*chunk->w]=outcoming.ToXYZ();
 			}
 		}
 	
@@ -266,11 +283,13 @@ void Core::RayCast(Vector & origin,Vector & direction,Spectrum & output)
 				min_dist=dist;
 				//output.data[2]=1.0f-(dist/15.0);
 				int nm = ((590)-390)/10; 
-				output.data[nm]=20.0f*(dist/45.0f);
+				output.data[nm]=20.0f*(1.0f-(dist/45.0f));
 				//output.data[nm]=25.0f;
 				
 				nm = ((490)-390)/10;
 				output.data[nm]=5.0f;
+				
+				
 			}
 		}				
 	}

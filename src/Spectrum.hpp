@@ -41,11 +41,14 @@ namespace com
 				
 				ColorXYZ ToXYZ();
 				
+				
+				
 			};
 			
 			Spectrum operator+(Spectrum a,Spectrum & b);
 			Spectrum operator-(Spectrum a,Spectrum & b);
 			Spectrum operator*(Spectrum a,Spectrum & b);
+			Spectrum operator*(Spectrum a,float b);
 			
 		}
 	}

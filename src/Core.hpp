@@ -34,6 +34,7 @@ namespace com
 				int width;
 				int height;
 				int num_threads;
+				int samples;
 				
 				/* render target */
 				fipImage * image;
