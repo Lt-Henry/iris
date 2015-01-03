@@ -136,3 +136,14 @@ void Triangle::Print()
 	
 	cout<<endl;	
 }
+
+Vector Triangle::GetCentroid()
+{
+	Vector ret;
+	
+	ret = vertices[0] + vertices[1] + vertices[2];
+	
+	ret = ret * 0.3333f;
+	
+	return ret; 
+}

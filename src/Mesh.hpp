@@ -28,6 +28,8 @@ namespace com
 				bool RayCollision(Vector & origin,Vector & direction,Vector & collision);
 				
 				void Print();
+				
+				Vector GetCentroid();
 			};
 		}
 	}

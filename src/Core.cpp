@@ -103,6 +103,9 @@ Core::~Core()
 
 void Core::Run()
 {
+	
+	auto start = std::chrono::high_resolution_clock::now();
+		
 	cout<<"[Core] run"<<endl;
 	
 	cout<<"[Core] Spawning threads"<<endl;
@@ -131,7 +134,11 @@ void Core::Run()
 	
 	cout<<"[Core] render finished"<<endl;
 	
+	auto end = std::chrono::high_resolution_clock::now();
 	
+	auto elapsed =  std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+	
+	cout<<"Render time: "<<elapsed.count()<<"ms"<<endl;
 }
 
 RenderChunk * Core::GetChunk()
