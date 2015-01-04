@@ -47,6 +47,11 @@ namespace com
 				~KdTree();
 				
 				void Build(KdNode * node,std::vector<Triangle *> & triangles);
+				
+				void Free();
+				void Free(KdNode * node);
+				
+				void Traverse(Vector & origin,Vector & destination,KdNode * node);
 			};
 		}
 	}

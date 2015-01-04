@@ -22,7 +22,7 @@ KdTree::KdTree(vector<Triangle *> & triangles)
 
 KdTree::~KdTree()
 {
-
+	Free();
 }
 
 void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
@@ -34,6 +34,9 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 		cout<<"Child node with "<<triangles.size()<<" triangles"<<endl;
 		node->type=KdNodeType::Child;
 		node->triangles=triangles;
+		node->left=nullptr;
+		node->right=nullptr;
+
 		return;
 	}
 	
@@ -135,12 +138,61 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 		
 	}
 	
-	//ToDo:
-	//check if one side couldn't be splited
+	cout<<"total: "<<triangles.size()<<endl;
+	cout<<"left: "<<left.size()<<endl;
+	cout<<"right: "<<right.size()<<endl;
+	
+	if(left.size()==triangles.size() || right.size()==triangles.size())
+	{
+		cout<<"Couldn't split anymore"<<endl;
+		node->type=KdNodeType::Child;
+		node->triangles=triangles;
+		node->left=nullptr;
+		node->right=nullptr;
+		return;
+		
+	}
 	
 	node->left=new KdNode();
 	node->right=new KdNode();
 	
 	Build(node->left,left);
 	Build(node->right,right);
+}
+
+
+void KdTree::Free()
+{
+	Free(root);
+}
+
+void KdTree::Free(KdNode * node)
+{
+
+	if(node->left!=nullptr)
+		Free(node->left);
+		
+	if(node->right!=nullptr)
+		Free(node->right);
+		
+	node->triangles.clear();
+	
+	delete node;
+}
+
+
+void KdTree::Traverse(Vector & origin,Vector & destination,KdNode * node)
+{
+	if(node->type==KdNodeType::Child)
+	{
+		return;
+	}
+	
+	int s = static_cast<int>(node->type);
+	
+	Vector normals[3];
+	
+	normals[0].Set(1.0f,0.0f,0.0f,0.0f);
+	normals[1].Set(0.0f,1.0f,0.0f,0.0f);
+	normals[2].Set(0.0f,0.0f,1.0f,0.0f);
 }

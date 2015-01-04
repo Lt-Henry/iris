@@ -7,6 +7,7 @@
 #include "Scene.hpp"
 #include "Spectrum.hpp"
 #include "Math.hpp"
+#include "KdTree.hpp"
 
 #include <vector>
 #include <thread>
@@ -26,6 +27,7 @@ namespace com
 				public:
 				
 				Scene scene;
+				KdTree * tree;
 				
 				std::vector<RenderChunk *> chunks;
 				std::mutex chunk_mutex;

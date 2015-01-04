@@ -32,7 +32,7 @@ Core::Core(int argc,char * argv[])
 		MeshLoader::Load(argv[1],scene.triangles,scene.materials);
 	}
 	
-	KdTree tree(scene.triangles);
+	tree = new KdTree(scene.triangles);
 	
 	
 	/* default render settings */
@@ -101,6 +101,7 @@ Core::Core(int argc,char * argv[])
 Core::~Core()
 {
 	cout<<"[Core] closing..."<<endl;
+	delete tree;
 	delete image;
 }
 
