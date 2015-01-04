@@ -147,3 +147,40 @@ Vector Triangle::GetCentroid()
 	
 	return ret; 
 }
+
+BoundBox Triangle::GetBoundBox()
+{
+
+	BoundBox ret;
+	
+	ret.min=vertices[0];
+	ret.max=vertices[0];
+
+	for(int n=0;n<3;n++)
+	{
+		if(vertices[n].x>ret.max.x)ret.max.x=vertices[n].x;
+		if(vertices[n].y>ret.max.y)ret.max.y=vertices[n].y;
+		if(vertices[n].z>ret.max.z)ret.max.z=vertices[n].z;
+		
+		if(vertices[n].x<ret.min.x)ret.min.x=vertices[n].x;
+		if(vertices[n].y<ret.min.y)ret.min.y=vertices[n].y;
+		if(vertices[n].z<ret.min.z)ret.min.z=vertices[n].z;
+	}
+	
+	return ret;
+}
+
+BoundBox operator+(BoundBox & a,BoundBox & b)
+{
+	BoundBox ret;
+	
+	ret.min.x = (a.min.x<b.min.x) ? a.min.x : b.min.x;
+	ret.min.y = (a.min.y<b.min.y) ? a.min.y : b.min.y;
+	ret.min.z = (a.min.z<b.min.z) ? a.min.z : b.min.z;
+	
+	ret.max.x = (a.max.x>b.max.x) ? a.max.x : b.max.x;
+	ret.max.y = (a.max.y>b.max.y) ? a.max.y : b.max.y;
+	ret.max.z = (a.max.z>b.max.z) ? a.max.z : b.max.z;
+		
+	return ret;
+}

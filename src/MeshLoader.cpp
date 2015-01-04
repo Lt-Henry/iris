@@ -116,7 +116,7 @@ void MeshLoader::Load(string filename, vector<Triangle *> & triangles, vector<Ma
 		triangle->pnormal.w=0.0f;
 		
 		triangles.push_back(triangle);
-		triangle->Print();
+		//triangle->Print();
 	}
 	
 	cout<<"Triangles: "<<triangles.size()<<endl;

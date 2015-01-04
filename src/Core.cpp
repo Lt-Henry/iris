@@ -2,6 +2,7 @@
 #include "Core.hpp"
 #include "MeshLoader.hpp"
 #include "Spectrum.hpp"
+#include "KdTree.hpp"
 
 
 #include <iostream>
@@ -31,13 +32,15 @@ Core::Core(int argc,char * argv[])
 		MeshLoader::Load(argv[1],scene.triangles,scene.materials);
 	}
 	
+	KdTree tree(scene.triangles);
+	
 	
 	/* default render settings */
 	
 	width=1024;
 	height=768;
 	num_threads=2;
-	samples=2;
+	samples=1;
 	
 	/* creating render target */
 	image = new fipImage(FIT_BITMAP,width,height,32);

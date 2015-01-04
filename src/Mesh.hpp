@@ -13,6 +13,17 @@ namespace com
 	{
 		namespace iris
 		{
+		
+			class BoundBox
+			{
+				public:
+				
+				Vector min;
+				Vector max;
+				
+				
+			};
+			
 			class Triangle
 			{
 				public:
@@ -30,7 +41,10 @@ namespace com
 				void Print();
 				
 				Vector GetCentroid();
+				BoundBox GetBoundBox();
 			};
+			
+			BoundBox operator+(BoundBox & a,BoundBox & b);
 		}
 	}
 }
