@@ -7,6 +7,63 @@
 using namespace std;
 using namespace com::toxiclabs::iris;
 
+KdIterator::KdIterator()
+{
+	end=true;
+}
+
+KdIterator::KdIterator(vector<KdNode *> & nodes)
+{
+	this->nodes=nodes;
+	Begin();
+}
+
+void KdIterator::Begin()
+{
+	end=false;
+	n=0;
+	m=0;
+	
+}
+
+bool KdIterator::End()
+{
+	return end;
+}
+
+Triangle * KdIterator::Next()
+{
+	Triangle * ret = nullptr;
+	
+	if(n<nodes.size())
+	{
+		if(m<nodes[n]->triangles.size())
+		{
+			ret=nodes[n]->triangles[m];
+			m++;
+		}
+		else
+		{
+			m=0;
+			n++;
+			
+			if(n<nodes.size())
+			{
+				ret=nodes[n]->triangles[m];
+			}
+			else
+			{
+				end=true;
+			}
+		}
+	}
+	else
+	{
+		end=true;
+	}
+	
+	return ret;
+}
 
 KdTree::KdTree(vector<Triangle *> & triangles)
 {
@@ -31,7 +88,7 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 	if(triangles.size()<small)
 	{
 	
-		cout<<"Child node with "<<triangles.size()<<" triangles"<<endl;
+		cout<<"* Child node with "<<triangles.size()<<" triangles"<<endl;
 		node->type=KdNodeType::Child;
 		node->triangles=triangles;
 		node->left=nullptr;
@@ -106,7 +163,8 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 		}
 	}
 	
-	partition=(min.data[s]+max.data[s])/2.0f;
+		
+	partition=min.data[s]+(max.data[s]-min.data[s])/2.0f;
 	
 	node->partition=partition;
 	
@@ -145,6 +203,7 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 	if(left.size()==triangles.size() || right.size()==triangles.size())
 	{
 		cout<<"Couldn't split anymore"<<endl;
+		cout<<"* Child node with "<<triangles.size()<<" triangles"<<endl;
 		node->type=KdNodeType::Child;
 		node->triangles=triangles;
 		node->left=nullptr;
@@ -181,18 +240,70 @@ void KdTree::Free(KdNode * node)
 }
 
 
-void KdTree::Traverse(Vector & origin,Vector & destination,KdNode * node)
+KdIterator KdTree::Traverse(Vector & origin,Vector & direction)
+{
+	vector<KdNode *> nodes;
+	
+	Traverse(origin,direction,root,nodes);
+	
+	return KdIterator(nodes);
+}
+
+void KdTree::Traverse(Vector & origin,Vector & direction,KdNode * node,vector<KdNode *> & nodes)
 {
 	if(node->type==KdNodeType::Child)
 	{
+		nodes.push_back(node);
 		return;
 	}
 	
-	int s = static_cast<int>(node->type);
+	int span_axis = static_cast<int>(node->type);
 	
 	Vector normals[3];
 	
 	normals[0].Set(1.0f,0.0f,0.0f,0.0f);
 	normals[1].Set(0.0f,1.0f,0.0f,0.0f);
 	normals[2].Set(0.0f,0.0f,1.0f,0.0f);
+	
+	float v = normals[span_axis] * direction;
+	
+	/* ray is not parallel */
+	if(!AproxToZero(v))
+	{
+		/* right side */ 
+		if(origin[span_axis]>node->partition)
+		{	
+		
+			Traverse(origin,direction,node->right,nodes);
+			
+			
+			/* intersecting both sides */		
+			if(v<0.0f)
+			{
+				Traverse(origin,direction,node->left,nodes);
+			}
+		}
+		else
+		{
+			/* left side */
+			Traverse(origin,direction,node->left,nodes);
+			
+			/* intersecting both sides */
+			if(v>0.0f)
+			{
+				Traverse(origin,direction,node->right,nodes);
+			}
+		}
+	}
+	else
+	{
+		if(origin[span_axis]>node->partition)
+		{
+			Traverse(origin,direction,node->right,nodes);
+		}
+		else
+		{
+			Traverse(origin,direction,node->left,nodes);	
+		}
+	}
 }

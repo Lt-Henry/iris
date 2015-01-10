@@ -35,6 +35,27 @@ namespace com
 				KdNode * right;
 			};
 			
+			class KdIterator
+			{
+				protected:
+				
+				int n;
+				int m;
+				bool end;
+				
+				public:
+				
+				std::vector<KdNode *> nodes;
+				
+				KdIterator();
+				KdIterator(std::vector<KdNode *> & nodes);
+				
+				void Begin();
+				bool End();
+				Triangle * Next();
+				
+			};
+			
 			class KdTree
 			{
 				public:
@@ -51,7 +72,9 @@ namespace com
 				void Free();
 				void Free(KdNode * node);
 				
-				void Traverse(Vector & origin,Vector & destination,KdNode * node);
+				KdIterator Traverse(Vector & origin,Vector & direction);
+				void Traverse(Vector & origin,Vector & direction,
+					KdNode * node,std::vector<KdNode *> & nodes);
 			};
 		}
 	}

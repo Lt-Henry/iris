@@ -32,7 +32,7 @@ Core::Core(int argc,char * argv[])
 		MeshLoader::Load(argv[1],scene.triangles,scene.materials);
 	}
 	
-	tree = new KdTree(scene.triangles);
+	
 	
 	
 	/* default render settings */
@@ -40,7 +40,7 @@ Core::Core(int argc,char * argv[])
 	width=1024;
 	height=768;
 	num_threads=2;
-	samples=1;
+	samples=2;
 	
 	/* creating render target */
 	image = new fipImage(FIT_BITMAP,width,height,32);
@@ -94,7 +94,8 @@ Core::Core(int argc,char * argv[])
 	tmp=spd.ToXYZ();
 	
 	cout<<"xyz: "<<tmp.x<<","<<tmp.y<<","<<tmp.z<<endl;
-		
+	
+	tree = new KdTree(scene.triangles);	
 		
 }
 
@@ -286,7 +287,11 @@ void Core::RayCast(Vector & origin,Vector & direction,Spectrum & output)
 	output.Clear();
 	
 
-	for(Triangle * triangle : scene.triangles)
+	KdIterator it = tree->Traverse(origin,direction);
+	
+	Triangle * triangle=it.Next();
+	
+	while(triangle!=nullptr)
 	{
 		if(triangle->RayCollision(origin,direction,collision))
 		{
@@ -300,9 +305,12 @@ void Core::RayCast(Vector & origin,Vector & direction,Spectrum & output)
 				target_triangle=triangle;
 				
 			}
-		}				
+		}
+		
+		triangle=it.Next();				
 	}
 	
+	float r=it.nodes.size()/4.0f;
 	
 	if(target_triangle!=nullptr)
 	{
@@ -311,6 +319,7 @@ void Core::RayCast(Vector & origin,Vector & direction,Spectrum & output)
 		
 		float cosPhi = w * target_triangle->pnormal;
 		
-		output = material * cosPhi;
+		output = material * cosPhi * r;
+		
 	}
 }
