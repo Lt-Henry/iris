@@ -71,7 +71,7 @@ KdTree::KdTree(vector<Triangle *> & triangles)
 	cout<<"Computing KdTree"<<endl;
 	
 	small=triangles.size()/10;
-	
+		
 	root = new KdNode();
 	
 	Build(root,triangles);
@@ -101,8 +101,7 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 	Vector max;
 	
 	float dx,dy,dz;
-	float partition;
-	
+		
 	min = triangles[0]->GetCentroid();
 	max=min;
 	
@@ -163,13 +162,18 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 		}
 	}
 	
-		
-	partition=min.data[s]+(max.data[s]-min.data[s])/2.0f;
+	//averaged mid point
+	float partition=0.0f;
+	int n=1;
+	float score;
+	int best=1;
+	float best_score=0.0f;
+	bool found=false;
 	
-	node->partition=partition;
 	
-	cout<<"Partition: "<<partition<<endl;
+	recompute:	
 	
+	partition=min.data[s]+((max.data[s]-min.data[s])/20.0f)*n;
 	
 	vector<Triangle *> left;
 	vector<Triangle *> right;
@@ -196,11 +200,52 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 		
 	}
 	
+	float t,l,r;
+	
+	t=triangles.size();
+	l=left.size();
+	r=right.size();
+	
+	score = (t/(l+r))-(std::abs(r-l)/t);
+	
+	if(left.size()==triangles.size() || right.size()==triangles.size())
+		score=0.0f;
+	
+	cout<<"- score: "<<score<<" n="<<n<<endl;
+	
+	if(score>best_score)
+	{
+		best_score=score;
+		best=n;
+	}
+	
+	n++;
+	
+	if(!found)
+	{
+		if(n<20)goto recompute;
+		
+		if(best_score>0.0f)
+		{
+			n=best;
+			found=true;
+			goto recompute;
+		}
+	}
+	
+	
+	
+	
+	
+	cout<<"score: "<<best_score<<" n="<<best<<endl;
 	cout<<"total: "<<triangles.size()<<endl;
 	cout<<"left: "<<left.size()<<endl;
 	cout<<"right: "<<right.size()<<endl;
 	
-	if(left.size()==triangles.size() || right.size()==triangles.size())
+	
+	
+	
+	if(AproxToZero(best_score))
 	{
 		cout<<"Couldn't split anymore"<<endl;
 		cout<<"* Child node with "<<triangles.size()<<" triangles"<<endl;
@@ -211,6 +256,8 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 		return;
 		
 	}
+	
+	node->partition=partition;
 	
 	node->left=new KdNode();
 	node->right=new KdNode();

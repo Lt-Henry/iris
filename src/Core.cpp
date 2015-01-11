@@ -37,10 +37,10 @@ Core::Core(int argc,char * argv[])
 	
 	/* default render settings */
 	
-	width=1024;
-	height=768;
+	width=800;
+	height=600;
 	num_threads=2;
-	samples=2;
+	samples=1;
 	
 	/* creating render target */
 	image = new fipImage(FIT_BITMAP,width,height,32);
@@ -290,6 +290,7 @@ void Core::RayCast(Vector & origin,Vector & direction,Spectrum & output)
 	KdIterator it = tree->Traverse(origin,direction);
 	
 	Triangle * triangle=it.Next();
+		
 	
 	while(triangle!=nullptr)
 	{
@@ -307,10 +308,11 @@ void Core::RayCast(Vector & origin,Vector & direction,Spectrum & output)
 			}
 		}
 		
-		triangle=it.Next();				
+		triangle=it.Next();
+					
 	}
 	
-	float r=it.nodes.size()/4.0f;
+	//float r=it.nodes.size()/7.0f;
 	
 	if(target_triangle!=nullptr)
 	{
@@ -319,7 +321,7 @@ void Core::RayCast(Vector & origin,Vector & direction,Spectrum & output)
 		
 		float cosPhi = w * target_triangle->pnormal;
 		
-		output = material * cosPhi * r;
+		output = material *  cosPhi;
 		
 	}
 }
