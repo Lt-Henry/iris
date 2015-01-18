@@ -26,21 +26,21 @@ bool Triangle::RayCollision(Vector & origin,Vector & direction,Vector & collisio
 
 	float alpha,beta;
 	
-	Vector & trNormal = pnormal;
+	Nv = pnormal;
 	
 	bool ret=false;
 	 
 	
 	//first check
 	
-	cosAlpha = direction * trNormal;
+	cosAlpha = direction * Nv;
 	
 	//D=A*normal
-	D = vertices[0] * trNormal;
+	D = vertices[0] * Nv;
 	
 	
 	// deltaD = D - origin*normal;
-	deltaD = D - (origin * trNormal);
+	deltaD = D - (origin * Nv);
 	
 	//t=(deltaD/cosAlpha);
 	t=deltaD/cosAlpha;
@@ -57,7 +57,7 @@ bool Triangle::RayCollision(Vector & origin,Vector & direction,Vector & collisio
 		Nv[1]=fabs(trNormal[1]);
 		Nv[2]=fabs(trNormal[2]);
 		*/
-		Nv=trNormal;
+		
 		Nv.Abs();
 		
 		/*

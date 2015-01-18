@@ -21,11 +21,11 @@ add_definitions(${GSL_CFLAGS_OTHER} -D_IRIS_SSE_ -D_IRIS_SSE4_)
 target_link_libraries(iris ${GSL_LIBRARIES} freeimageplus pthread c++abi)
 
 #set compiler
-set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
+#set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
 
 #compiler extra options
-set(CMAKE_CXX_FLAGS "-std=c++0x -stdlib=libc++ -march=native -O3")
-
+#set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++ -march=native -O3")
+set(CMAKE_CXX_FLAGS "-std=c++11 -march=native -O3")
 
 
 

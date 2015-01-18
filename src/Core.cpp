@@ -37,10 +37,10 @@ Core::Core(int argc,char * argv[])
 	
 	/* default render settings */
 	
-	width=800;
-	height=600;
+	width=1024;
+	height=768;
 	num_threads=2;
-	samples=1;
+	samples=2;
 	
 	/* creating render target */
 	image = new fipImage(FIT_BITMAP,width,height,32);
