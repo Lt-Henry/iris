@@ -43,6 +43,9 @@ namespace com
 				int m;
 				bool end;
 				
+				int nsize;
+				KdNode * q;
+				
 				public:
 				
 				std::vector<KdNode *> nodes;

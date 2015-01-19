@@ -24,6 +24,9 @@ void KdIterator::Begin()
 	n=0;
 	m=0;
 	
+	nsize=nodes.size();
+	q=nodes[n];
+	
 }
 
 bool KdIterator::End()
@@ -35,22 +38,29 @@ Triangle * KdIterator::Next()
 {
 	Triangle * ret = nullptr;
 	
-	if(n==nodes.size())
-	{
-		end=true;
-		return nullptr;
-	}
+	if(end)return nullptr;
+		
 	
-	ret=nodes[n]->triangles[m];
+	
+	ret=q->triangles[m];
 	
 	m++;
 	
-	if(m==nodes[n]->triangles.size())
+	if(m==q->triangles.size())
 	{
 		n++;
 		m=0;
-	}
 	
+	
+		if(n==nsize)
+		{
+			end=true;
+		}
+		else
+		{
+			q=nodes[n];
+		}
+	}
 	
 	return ret;
 }

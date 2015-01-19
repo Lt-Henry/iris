@@ -37,10 +37,10 @@ Core::Core(int argc,char * argv[])
 	
 	/* default render settings */
 	
-	width=1024;
-	height=768;
+	width=800;
+	height=600;
 	num_threads=2;
-	samples=2;
+	samples=1;
 	
 	/* creating render target */
 	image = new fipImage(FIT_BITMAP,width,height,32);
@@ -289,28 +289,30 @@ void Core::RayCast(Vector & origin,Vector & direction,Spectrum & output)
 
 	KdIterator it = tree->Traverse(origin,direction);
 	
-	Triangle * triangle=it.Next();
-		
-	
-	while(triangle!=nullptr)
+	for(int n=0;n<it.nodes.size();n++)
 	{
-		if(triangle->RayCollision(origin,direction,collision))
+		vector<Triangle *>::iterator q;
+		KdNode * node = it.nodes[n];
+		
+		for(q=node->triangles.begin();q!=node->triangles.end();q++)
 		{
-			oc=collision-origin;
-			dist=oc.Module();
-			
-			if(dist<min_dist)
+			Triangle * triangle = *q;
+			if(triangle->RayCollision(origin,direction,collision))
 			{
-				min_dist=dist;
-				target_collision=collision;
-				target_triangle=triangle;
+				oc=collision-origin;
+				dist=oc.Module();
+			
+				if(dist<min_dist)
+				{
+					min_dist=dist;
+					target_collision=collision;
+					target_triangle=triangle;
 				
+				}
 			}
 		}
-		
-		triangle=it.Next();
-					
 	}
+	
 	
 	//float r=it.nodes.size()/7.0f;
 	

@@ -169,6 +169,7 @@ namespace com
 			void Vector::Normalize()
 			{
 			#ifdef _IRIS_SSE_
+				static const __m128 ONE=_mm_set1_ps(1.0f);
 				__m128 V;
 				__m128 R;
 				__m128 S;
@@ -176,7 +177,8 @@ namespace com
 								
 				V=_mm_loadu_ps(data);
 				S=_mm_dp_ps(V, V, 0x71);
-				S=_mm_rsqrt_ss(S);
+				S=_mm_sqrt_ss(S);
+				S=_mm_div_ss(ONE,S);
 				//_mm_store_ss(&s,S);
 				s=_mm_cvtss_f32(S);
 				
