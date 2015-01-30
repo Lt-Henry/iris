@@ -7,6 +7,51 @@
 using namespace std;
 using namespace com::toxiclabs::iris;
 
+
+
+bool KdNode::RayCollision(Vector & origin,Vector & direction)
+{
+	float xmin,ymin,zmin;
+	float xmax,ymax,zmax;
+	
+	xmin=(aabb.min.x - origin.x)/direction.x;
+	xmax=(aabb.max.x - origin.x)/direction.x;
+	
+	if(xmin > xmax)swap(xmin,xmax);	
+	
+	ymin=(aabb.min.y - origin.y)/direction.y;
+	ymax=(aabb.max.y - origin.y)/direction.y;
+	
+	if(ymin > ymax)swap(ymin,ymax);	
+		
+	
+	if((xmin > ymax) || (ymin > xmax))
+		return false;
+	
+	if(ymin > xmin)
+		xmin=ymin;
+	
+	if(ymax < xmax)
+		xmax=ymax;
+			
+	zmin=(aabb.min.z - origin.z)/direction.z;
+	zmax=(aabb.max.z - origin.z)/direction.z;
+	
+	if(zmin > zmax)swap(zmin,zmax);
+	
+	if((xmin > zmax) || (zmin > xmax))
+		return false;	
+
+	if(zmin > xmin)
+		xmin=zmin;
+		
+	if(zmax < xmax)
+		xmax=zmax;
+		
+	return true;
+		
+}
+
 KdIterator::KdIterator()
 {
 	end=true;
@@ -70,7 +115,7 @@ KdTree::KdTree(vector<Triangle *> & triangles)
 
 	cout<<"Computing KdTree"<<endl;
 	
-	small=triangles.size()/10;
+	small=triangles.size()/5;
 		
 	root = new KdNode();
 	
@@ -93,6 +138,19 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 		node->triangles=triangles;
 		node->left=nullptr;
 		node->right=nullptr;
+		
+		//compute aabb
+		node->aabb=triangles[0]->GetBoundBox();
+		
+		for(Triangle * triangle : triangles)
+		{
+			BoundBox b = triangle->GetBoundBox();
+			node->aabb=node->aabb + b;
+		}
+		
+		cout<<"Bound box: "<<endl;
+		node->aabb.min.Print();
+		node->aabb.max.Print();
 
 		return;
 	}
@@ -173,7 +231,7 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 	
 	recompute:	
 	
-	partition=min.data[s]+((max.data[s]-min.data[s])/20.0f)*n;
+	partition=min.data[s]+((max.data[s]-min.data[s])/40.0f)*n;
 	
 	vector<Triangle *> left;
 	vector<Triangle *> right;
@@ -211,7 +269,7 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 	if(left.size()==triangles.size() || right.size()==triangles.size())
 		score=0.0f;
 	
-	cout<<"- score: "<<score<<" n="<<n<<endl;
+	cout<<"- score: "<<score<<" n="<<n<<" left:"<<l<<" right:"<<r<<endl;
 	
 	if(score>best_score)
 	{
@@ -223,7 +281,7 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 	
 	if(!found)
 	{
-		if(n<20)goto recompute;
+		if(n<40)goto recompute;
 		
 		if(best_score>0.0f)
 		{
@@ -241,6 +299,7 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 	cout<<"total: "<<triangles.size()<<endl;
 	cout<<"left: "<<left.size()<<endl;
 	cout<<"right: "<<right.size()<<endl;
+	cout<<"shared:"<<((left.size()+right.size())-triangles.size())<<endl;
 	
 	
 	
@@ -253,6 +312,21 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 		node->triangles=triangles;
 		node->left=nullptr;
 		node->right=nullptr;
+		
+		//compute aabb
+		node->aabb=triangles[0]->GetBoundBox();
+		
+		for(Triangle * triangle : triangles)
+		{
+			BoundBox b = triangle->GetBoundBox();
+			node->aabb=node->aabb + b;
+		}
+		
+		cout<<"Bound box: "<<endl;
+		node->aabb.min.Print();
+		node->aabb.max.Print();
+		
+		
 		return;
 		
 	}

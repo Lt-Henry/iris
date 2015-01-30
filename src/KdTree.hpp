@@ -33,6 +33,10 @@ namespace com
 				
 				KdNode * left;
 				KdNode * right;
+				
+				BoundBox aabb;
+				
+				bool RayCollision(Vector & origin,Vector & direction);
 			};
 			
 			class KdIterator

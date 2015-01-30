@@ -223,6 +223,8 @@ void Core::RenderThread(int id)
 
 	Spectrum incoming;
 	Spectrum outcoming;
+	
+
 
 	RenderChunk * chunk = GetChunk();
 	while(chunk!=nullptr)
@@ -288,11 +290,14 @@ void Core::RayCast(Vector & origin,Vector & direction,Spectrum & output)
 	
 
 	KdIterator it = tree->Traverse(origin,direction);
-	
-	for(int n=0;n<it.nodes.size();n++)
+	int ns = it.nodes.size();
+	for(int n=0;n<ns;n++)
 	{
 		vector<Triangle *>::iterator q;
 		KdNode * node = it.nodes[n];
+		
+		if(!node->RayCollision(origin,direction))
+			continue;
 		
 		for(q=node->triangles.begin();q!=node->triangles.end();q++)
 		{

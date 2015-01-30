@@ -27,9 +27,12 @@ namespace com
 			class Triangle
 			{
 				public:
-				
+				/*
 				std::array<Vector,3> vertices;
 				std::array<Vector,3> normals;
+				*/
+				Vector vertices[3];
+				Vector normals[3];
 				
 				/* computed normal, used for backface culling */
 				Vector pnormal;

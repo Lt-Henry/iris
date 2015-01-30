@@ -11,15 +11,16 @@ bool Triangle::RayCollision(Vector & origin,Vector & direction,Vector & collisio
 {
 	Vector vab;
 	Vector vac;
+	Vector col;
+	Vector Nv;
+	
 	
 	float cosAlpha;
-	
 	float D;
 	float deltaD;
 	float t;
 	
-	Vector col;
-	Vector Nv;
+	
 	
 	int i0,i1,i2;
 	float u0,u1,u2,v0,v1,v2;
@@ -31,14 +32,13 @@ bool Triangle::RayCollision(Vector & origin,Vector & direction,Vector & collisio
 	bool ret=false;
 	 
 	
-	//first check
-	
-	cosAlpha = direction * Nv;
 	
 	//D=A*normal
 	D = vertices[0] * Nv;
 	
-	
+	//incident angle
+	cosAlpha = direction * Nv;
+		
 	// deltaD = D - origin*normal;
 	deltaD = D - (origin * Nv);
 	
@@ -51,7 +51,7 @@ bool Triangle::RayCollision(Vector & origin,Vector & direction,Vector & collisio
 		//col = origin + direction*t;
 		col = (direction * t) + origin;
 		
-			
+		//array<Vector,3> vertices=this->vertices;	
 		/*
 		Nv[0]=fabs(trNormal[0]);
 		Nv[1]=fabs(trNormal[1]);
@@ -170,7 +170,7 @@ BoundBox Triangle::GetBoundBox()
 	return ret;
 }
 
-BoundBox operator+(BoundBox & a,BoundBox & b)
+BoundBox com::toxiclabs::iris::operator+(BoundBox & a,BoundBox & b)
 {
 	BoundBox ret;
 	
