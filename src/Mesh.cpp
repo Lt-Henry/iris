@@ -2,6 +2,7 @@
 #include "Mesh.hpp"
 
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 using namespace com::toxiclabs::iris;
@@ -184,3 +185,45 @@ BoundBox com::toxiclabs::iris::operator+(BoundBox & a,BoundBox & b)
 		
 	return ret;
 }
+
+
+Vector Triangle::PerturbateNormal(float angle,float r1,float r2)
+{
+	Vector trNormal;
+	Vector R1;
+	Vector R2;
+	Vector pN;
+
+
+	float factor1 = M_PI * 2.0f * r1;
+	float factor2 =  angle*std::sqrt(r2);
+
+	/*
+	 I need to pick a normal
+	 which one is the best?
+	*/
+	trNormal=normals[0];
+	
+	
+	float x = std::cos( factor1 ) * factor2;
+	float y = std::sin( factor1 ) * factor2;
+	float z = std::sqrt( 1.0f - (factor2 * factor2) );
+	
+	R1 = vertices[0] - vertices[1];
+	R2 = R1 ^ trNormal;
+	
+	R1.Normalize();
+	R2.Normalize();	
+	
+	R1 = R1 * x;
+	R2 = R2 * y;
+	trNormal = trNormal * z;
+	
+	pN = R1 + R2 + trNormal;
+	pN.Normalize();
+	
+	return pN;	
+}
+
+
+

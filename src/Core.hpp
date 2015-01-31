@@ -71,7 +71,12 @@ namespace com
 				*/
 				void RenderThread(int id);
 				
+				/**
+				* Cast a visibility ray
+				*/
 				void RayCast(Vector & origin,Vector & direction,Spectrum & output); 
+				
+				Spectrum PathTrace(Vector & origin, Vector & direction,int depth=1);
 			};
 		}
 	}

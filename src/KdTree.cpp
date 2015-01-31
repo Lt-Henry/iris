@@ -8,7 +8,10 @@ using namespace std;
 using namespace com::toxiclabs::iris;
 
 
-
+/*
+Credits to:
+http://www.scratchapixel.com/old/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-box-intersection/
+*/
 bool KdNode::RayCollision(Vector & origin,Vector & direction)
 {
 	float xmin,ymin,zmin;
@@ -52,63 +55,7 @@ bool KdNode::RayCollision(Vector & origin,Vector & direction)
 		
 }
 
-KdIterator::KdIterator()
-{
-	end=true;
-}
 
-KdIterator::KdIterator(vector<KdNode *> & nodes)
-{
-	this->nodes=nodes;
-	Begin();
-}
-
-void KdIterator::Begin()
-{
-	end=false;
-	n=0;
-	m=0;
-	
-	nsize=nodes.size();
-	q=nodes[n];
-	
-}
-
-bool KdIterator::End()
-{
-	return end;
-}
-
-Triangle * KdIterator::Next()
-{
-	Triangle * ret = nullptr;
-	
-	if(end)return nullptr;
-		
-	
-	
-	ret=q->triangles[m];
-	
-	m++;
-	
-	if(m==q->triangles.size())
-	{
-		n++;
-		m=0;
-	
-	
-		if(n==nsize)
-		{
-			end=true;
-		}
-		else
-		{
-			q=nodes[n];
-		}
-	}
-	
-	return ret;
-}
 
 KdTree::KdTree(vector<Triangle *> & triangles)
 {
@@ -361,13 +308,13 @@ void KdTree::Free(KdNode * node)
 }
 
 
-KdIterator KdTree::Traverse(Vector & origin,Vector & direction)
+vector<KdNode *> KdTree::Traverse(Vector & origin,Vector & direction)
 {
 	vector<KdNode *> nodes;
 	
 	Traverse(origin,direction,root,nodes);
 	
-	return KdIterator(nodes);
+	return nodes;
 }
 
 void KdTree::Traverse(Vector & origin,Vector & direction,KdNode * node,vector<KdNode *> & nodes)

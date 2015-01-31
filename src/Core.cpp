@@ -289,13 +289,12 @@ void Core::RayCast(Vector & origin,Vector & direction,Spectrum & output)
 	output.Clear();
 	
 
-	KdIterator it = tree->Traverse(origin,direction);
-	int ns = it.nodes.size();
-	for(int n=0;n<ns;n++)
+	vector<KdNode *> nodes = tree->Traverse(origin,direction);
+	
+	for(KdNode * node : nodes)
 	{
 		vector<Triangle *>::iterator q;
-		KdNode * node = it.nodes[n];
-		
+				
 		if(!node->RayCollision(origin,direction))
 			continue;
 		
@@ -331,4 +330,11 @@ void Core::RayCast(Vector & origin,Vector & direction,Spectrum & output)
 		output = material *  cosPhi;
 		
 	}
+}
+
+Spectrum Core::PathTrace(Vector & origin, Vector & direction,int depth)
+{
+	Spectrum black;
+	
+	return black;
 }

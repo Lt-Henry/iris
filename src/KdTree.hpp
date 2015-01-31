@@ -39,30 +39,7 @@ namespace com
 				bool RayCollision(Vector & origin,Vector & direction);
 			};
 			
-			class KdIterator
-			{
-				protected:
-				
-				int n;
-				int m;
-				bool end;
-				
-				int nsize;
-				KdNode * q;
-				
-				public:
-				
-				std::vector<KdNode *> nodes;
-				
-				KdIterator();
-				KdIterator(std::vector<KdNode *> & nodes);
-				
-				void Begin();
-				bool End();
-				Triangle * Next();
-				
-			};
-			
+						
 			class KdTree
 			{
 				public:
@@ -79,7 +56,7 @@ namespace com
 				void Free();
 				void Free(KdNode * node);
 				
-				KdIterator Traverse(Vector & origin,Vector & direction);
+				std::vector<KdNode *> Traverse(Vector & origin,Vector & direction);
 				void Traverse(Vector & origin,Vector & direction,
 					KdNode * node,std::vector<KdNode *> & nodes);
 			};

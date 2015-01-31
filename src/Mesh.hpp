@@ -45,6 +45,8 @@ namespace com
 				
 				Vector GetCentroid();
 				BoundBox GetBoundBox();
+				
+				Vector PerturbateNormal(float angle,float r1,float r2);
 			};
 			
 			BoundBox operator+(BoundBox & a,BoundBox & b);
