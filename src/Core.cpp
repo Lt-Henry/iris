@@ -45,6 +45,9 @@ Core::Core(int argc,char * argv[])
 	/* creating render target */
 	image = new fipImage(FIT_BITMAP,width,height,32);
 	
+	/* quasi-random generator */
+	qr=gsl_qrng_alloc (gsl_qrng_sobol, 2);
+	
 	/* computing chunks */
 	int wchunk=60;
 	int hchunk=60;
@@ -102,6 +105,9 @@ Core::Core(int argc,char * argv[])
 Core::~Core()
 {
 	cout<<"[Core] closing..."<<endl;
+	
+	gsl_qrng_free(qr);
+	
 	delete tree;
 	delete image;
 }
@@ -322,19 +328,93 @@ void Core::RayCast(Vector & origin,Vector & direction,Spectrum & output)
 	
 	if(target_triangle!=nullptr)
 	{
+		Vector offset = target_triangle->pnormal * 0.01f;
+		Vector perturbated_normal;
+		
+		target_collision=target_collision + offset;
+		
+		Spectrum incoming;
+		
+		incoming.Clear();
+		
+		gsl_qrng_init(qr);
+		
+		for(int n=0;n<8;n++)
+		{
+			double r[2];
+			gsl_qrng_get (qr, r);
+			perturbated_normal=target_triangle->PerturbateNormal(0.98f,r[0],r[1]);
+			incoming = PathTrace(target_collision,perturbated_normal,1) + incoming; 
+		}
+	
+		incoming = incoming * (1.0f/8.0f);
+		
+		
+		
 		Vector w = target_collision - light;
 		w.Normalize();
 		
 		float cosPhi = w * target_triangle->pnormal;
+		if(cosPhi<0.0f)cosPhi=0.0f;
+		if(cosPhi>1.0f)cosPhi=1.0f;
+		output = incoming *  cosPhi;
 		
-		output = material *  cosPhi;
 		
 	}
 }
 
 Spectrum Core::PathTrace(Vector & origin, Vector & direction,int depth)
 {
-	Spectrum black;
+	Spectrum energy;
+	float min_dist=100000.0f;
+	Vector collision;
+	Vector oc;
+	float dist;
 	
-	return black;
+	Vector target_collision;
+	Triangle * target_triangle=nullptr;
+	
+	energy.Clear();
+	
+	
+	vector<KdNode *> nodes = tree->Traverse(origin,direction);
+	
+	for(KdNode * node : nodes)
+	{
+		vector<Triangle *>::iterator q;
+				
+		if(!node->RayCollision(origin,direction))
+			continue;
+		
+		for(q=node->triangles.begin();q!=node->triangles.end();q++)
+		{
+			Triangle * triangle = *q;
+			if(triangle->RayCollision(origin,direction,collision))
+			{
+				oc=collision-origin;
+				dist=oc.Module();
+			
+				if(dist<min_dist)
+				{
+					min_dist=dist;
+					target_collision=collision;
+					target_triangle=triangle;
+				
+				}
+			}
+		}
+	}
+		
+	
+	if(target_triangle!=nullptr)
+	{
+		/* global illumination */
+	}
+	else
+	{
+		/* ambient illumination */
+		energy.data[1]=100.0f;
+	}	
+	
+	return energy;
 }
