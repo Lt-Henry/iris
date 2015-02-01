@@ -17,7 +17,8 @@ void MeshLoader::Load(string filename, vector<Triangle *> & triangles, vector<Ma
 	//storage
 	vector<float> vertices;
 	vector<float> normals;
-	vector<int> faces;
+	vector<int> facesv;
+	vector<int> facesn;
 
 	//regex patterns
 	regex comment("^#(.|\\s)*");
@@ -65,7 +66,8 @@ void MeshLoader::Load(string filename, vector<Triangle *> & triangles, vector<Ma
 			for(int n=1;n<results.size();n+=3)
 			{
 				//cout<<results[n]<<endl;
-				faces.push_back(std::stoi(results[n])-1);
+				facesv.push_back(std::stoi(results[n])-1);
+				facesn.push_back(std::stoi(results[n+2])-1);
 			}
 		}
 		
@@ -76,6 +78,14 @@ void MeshLoader::Load(string filename, vector<Triangle *> & triangles, vector<Ma
 				vertices.push_back(std::stof(results[n]));
 			}
 		}
+		
+		if(regex_match(line,results,vn))
+		{
+			for(int n=1;n<results.size();n++)
+			{
+				normals.push_back(std::stof(results[n]));
+			}
+		}
 
 	}
 	
@@ -83,30 +93,46 @@ void MeshLoader::Load(string filename, vector<Triangle *> & triangles, vector<Ma
 	
 	cout<<"[MeshLoader]: building mesh..."<<endl;
 	
-	for(int n=0;n<faces.size();n+=3)
+	for(int n=0;n<facesv.size();n+=3)
 	{
 		Triangle * triangle = new Triangle();
 		
 				
 		triangle->vertices[0]=Vector(
-		vertices[(3*faces[n])+0],
-		vertices[(3*faces[n])+1],
-		-vertices[(3*faces[n])+2],
+		vertices[(3*facesv[n])+0],
+		vertices[(3*facesv[n])+1],
+		-vertices[(3*facesv[n])+2],
 		1.0f);
 		
 		triangle->vertices[1]=Vector(
-		vertices[(3*faces[n+1])+0],
-		vertices[(3*faces[n+1])+1],
-		-vertices[(3*faces[n+1])+2],
+		vertices[(3*facesv[n+1])+0],
+		vertices[(3*facesv[n+1])+1],
+		-vertices[(3*facesv[n+1])+2],
 		1.0f);
 		
 		triangle->vertices[2]=Vector(
-		vertices[(3*faces[n+2])+0],
-		vertices[(3*faces[n+2])+1],
-		-vertices[(3*faces[n+2])+2],
+		vertices[(3*facesv[n+2])+0],
+		vertices[(3*facesv[n+2])+1],
+		-vertices[(3*facesv[n+2])+2],
 		1.0f);
 		
+		triangle->normals[0]=Vector(
+		normals[(3*facesn[n])+0],
+		normals[(3*facesn[n])+1],
+		-normals[(3*facesn[n])+2],
+		0.0f);
 		
+		triangle->normals[1]=Vector(
+		normals[(3*facesn[n+1])+0],
+		normals[(3*facesn[n+1])+1],
+		-normals[(3*facesn[n+1])+2],
+		0.0f);
+		
+		triangle->normals[2]=Vector(
+		normals[(3*facesn[n+2])+0],
+		normals[(3*facesn[n+2])+1],
+		-normals[(3*facesn[n+2])+2],
+		0.0f);
 		
 		Vector ac = triangle->vertices[0] - triangle->vertices[1];
 		Vector ab = triangle->vertices[0] - triangle->vertices[2];
@@ -114,6 +140,7 @@ void MeshLoader::Load(string filename, vector<Triangle *> & triangles, vector<Ma
 		triangle->pnormal = ac ^ ab;
 		triangle->pnormal.Normalize();
 		triangle->pnormal.w=0.0f;
+		//triangle->pnormal.Negate();
 		
 		triangles.push_back(triangle);
 		//triangle->Print();

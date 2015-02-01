@@ -25,7 +25,7 @@ target_link_libraries(iris ${GSL_LIBRARIES} freeimageplus pthread c++abi)
 
 #compiler extra options
 #set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++ -march=native -O3")
-set(CMAKE_CXX_FLAGS "-std=c++11 -march=native -O3")
+set(CMAKE_CXX_FLAGS "-std=c++11 -march=native -O2")
 
 
 

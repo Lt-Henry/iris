@@ -19,11 +19,11 @@ void Scene::ApplyCamera(int n)
 		triangle->vertices[0].Homogeneus();
 		triangle->vertices[1].Homogeneus();
 		triangle->vertices[2].Homogeneus();
-		/*
+		
 		triangle->normals[0]=triangle->normals[0] * mC;
 		triangle->normals[1]=triangle->normals[1] * mC;
 		triangle->normals[2]=triangle->normals[2] * mC;
-		*/
+		
 		triangle->pnormal=triangle->pnormal * mC;
 	}
 }

@@ -16,6 +16,7 @@ using namespace std;
 using namespace com::toxiclabs::iris;
 
 Spectrum material;
+Spectrum fluorescent;
 
 Vector light(2.0,8.0,0.0,1.0);
 
@@ -45,8 +46,7 @@ Core::Core(int argc,char * argv[])
 	/* creating render target */
 	image = new fipImage(FIT_BITMAP,width,height,32);
 	
-	/* quasi-random generator */
-	qr=gsl_qrng_alloc (gsl_qrng_sobol, 2);
+	
 	
 	/* computing chunks */
 	int wchunk=60;
@@ -91,7 +91,11 @@ Core::Core(int argc,char * argv[])
 	
 	Spectrum spd("macbeth-5.spd");
 	material=spd;
-	cout<<"Spectrum:"<<endl<<spd.ToString()<<endl;
+	
+	fluorescent=Spectrum("fluorescent.spd");
+	
+	
+	//cout<<"Spectrum:"<<endl<<spd.ToString()<<endl;
 	
 	ColorXYZ tmp;
 	tmp=spd.ToXYZ();
@@ -106,7 +110,8 @@ Core::~Core()
 {
 	cout<<"[Core] closing..."<<endl;
 	
-	gsl_qrng_free(qr);
+	for(int n=0;n<num_threads;n++)
+		gsl_qrng_free(qr[n]);
 	
 	delete tree;
 	delete image;
@@ -140,7 +145,7 @@ void Core::Run()
 	cout<<"XYZ:"<<ctest.x<<","<<ctest.y<<","<<ctest.z<<endl;
 	ColorRGB rtest=ctest.ToRGB();
 	cout<<"RGB:"<<rtest.r<<","<<rtest.g<<","<<rtest.b<<endl;
-	
+		
 	image->save("out.png");
 	
 	cout<<"[Core] render finished"<<endl;
@@ -204,6 +209,9 @@ void Core::RenderThread(int id)
 {
 
 	cout<<"[Core] Thread "<<id<<" entered rendering"<<endl;
+	
+	/* quasi-random generator */
+	qr[id]=gsl_qrng_alloc (gsl_qrng_sobol, 2);
 
 	float fov=45.0f;
 	float beta=fov/2.0f;
@@ -261,7 +269,7 @@ void Core::RenderThread(int id)
 						direction = direction - origin;
 				
 						direction.Normalize();
-						RayCast(origin,direction,incoming);
+						RayCast(id,origin,direction,incoming);
 												
 						incoming=incoming*(1.0f/(samples*samples));
 						outcoming=outcoming+incoming;
@@ -282,7 +290,7 @@ void Core::RenderThread(int id)
 	cout<<"[Core] Thread "<<id<<" exit rendering"<<endl;
 }
 
-void Core::RayCast(Vector & origin,Vector & direction,Spectrum & output)
+void Core::RayCast(int id,Vector & origin,Vector & direction,Spectrum & output)
 {
 	float min_dist=100000.0f;
 	Vector collision;
@@ -324,46 +332,49 @@ void Core::RayCast(Vector & origin,Vector & direction,Spectrum & output)
 	}
 	
 	
-	//float r=it.nodes.size()/7.0f;
+	
 	
 	if(target_triangle!=nullptr)
 	{
-		Vector offset = target_triangle->pnormal * 0.01f;
+		
 		Vector perturbated_normal;
-		
-		target_collision=target_collision + offset;
-		
+						
 		Spectrum incoming;
 		
 		incoming.Clear();
 		
-		gsl_qrng_init(qr);
+		//gsl_qrng_init(qr[id]);
 		
-		for(int n=0;n<8;n++)
+		for(int n=0;n<32;n++)
 		{
 			double r[2];
-			gsl_qrng_get (qr, r);
+			//gsl_qrng_get (qr[id], r);
+			r[0]=(rand()/(float)RAND_MAX);
+			r[1]=(rand()/(float)RAND_MAX);
 			perturbated_normal=target_triangle->PerturbateNormal(0.98f,r[0],r[1]);
-			incoming = PathTrace(target_collision,perturbated_normal,1) + incoming; 
+									
+			incoming = PathTrace(target_collision,perturbated_normal,target_triangle,1) + incoming; 
 		}
 	
-		incoming = incoming * (1.0f/8.0f);
+		output = incoming * (1.0f/32.0f);
+		 
 		
-		
-		
+		/*
 		Vector w = target_collision - light;
 		w.Normalize();
+		w.Negate();
 		
-		float cosPhi = w * target_triangle->pnormal;
+		float cosPhi = w * target_triangle->normals[0];
 		if(cosPhi<0.0f)cosPhi=0.0f;
 		if(cosPhi>1.0f)cosPhi=1.0f;
-		output = incoming *  cosPhi;
+		output =material *  cosPhi;
+		output = output + incoming;
 		
-		
+		*/
 	}
 }
 
-Spectrum Core::PathTrace(Vector & origin, Vector & direction,int depth)
+Spectrum Core::PathTrace(Vector & origin, Vector & direction,Triangle * source,int depth)
 {
 	Spectrum energy;
 	float min_dist=100000.0f;
@@ -389,6 +400,10 @@ Spectrum Core::PathTrace(Vector & origin, Vector & direction,int depth)
 		for(q=node->triangles.begin();q!=node->triangles.end();q++)
 		{
 			Triangle * triangle = *q;
+			
+			if(triangle==source)
+				continue;
+				
 			if(triangle->RayCollision(origin,direction,collision))
 			{
 				oc=collision-origin;
@@ -409,11 +424,14 @@ Spectrum Core::PathTrace(Vector & origin, Vector & direction,int depth)
 	if(target_triangle!=nullptr)
 	{
 		/* global illumination */
+		//energy.data[16]=10.0f;
 	}
 	else
 	{
 		/* ambient illumination */
-		energy.data[1]=100.0f;
+		//energy.data[1]=30.0f;
+		//energy.data[2]=30.0f;
+		energy=fluorescent *0.05f;
 	}	
 	
 	return energy;

@@ -58,6 +58,8 @@ Spectrum::Spectrum()
 Spectrum::Spectrum(string filename)
 {
 
+	Clear();
+
 	map<float,float> spd;
 
 	regex comment("^#(.|\\s)*");

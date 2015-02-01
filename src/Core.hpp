@@ -43,7 +43,7 @@ namespace com
 				fipImage * image;
 				
 				/* random generator */
-				gsl_qrng * qr;
+				gsl_qrng * qr[8];
 				
 				/**
 				 * constructor
@@ -78,9 +78,9 @@ namespace com
 				/**
 				* Cast a visibility ray
 				*/
-				void RayCast(Vector & origin,Vector & direction,Spectrum & output); 
+				void RayCast(int id,Vector & origin,Vector & direction,Spectrum & output); 
 				
-				Spectrum PathTrace(Vector & origin, Vector & direction,int depth=1);
+				Spectrum PathTrace(Vector & origin, Vector & direction,Triangle * source,int depth=1);
 			};
 		}
 	}
