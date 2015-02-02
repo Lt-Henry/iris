@@ -63,7 +63,7 @@ Spectrum::Spectrum(string filename)
 	map<float,float> spd;
 
 	regex comment("^#(.|\\s)*");
-	regex entry("\\s*(\\d+\\.\\d+|\\d+)\\s+(-?\\d+\\.\\d+)");
+	regex entry("\\s*(\\d+\\.\\d+|\\d+)\\s+(-?\\d+\\.\\d+)\\s*");
 	
 	ifstream file(filename);
 	

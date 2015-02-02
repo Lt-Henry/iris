@@ -15,10 +15,12 @@
 using namespace std;
 using namespace com::toxiclabs::iris;
 
-Spectrum material;
+
 Spectrum fluorescent;
 
 Vector light(2.0,8.0,0.0,1.0);
+
+bool first=true;
 
 
 Core::Core(int argc,char * argv[])
@@ -38,8 +40,8 @@ Core::Core(int argc,char * argv[])
 	
 	/* default render settings */
 	
-	width=800;
-	height=600;
+	width=1024;
+	height=768;
 	num_threads=2;
 	samples=1;
 	
@@ -89,19 +91,10 @@ Core::Core(int argc,char * argv[])
 	
 	scene.ApplyCamera();
 	
-	Spectrum spd("macbeth-5.spd");
-	material=spd;
 	
 	fluorescent=Spectrum("fluorescent.spd");
 	
-	
-	//cout<<"Spectrum:"<<endl<<spd.ToString()<<endl;
-	
-	ColorXYZ tmp;
-	tmp=spd.ToXYZ();
-	
-	cout<<"xyz: "<<tmp.x<<","<<tmp.y<<","<<tmp.z<<endl;
-	
+	cout<<"SPD: "<<fluorescent.ToString()<<endl;
 	tree = new KdTree(scene.triangles);	
 		
 }
@@ -296,6 +289,7 @@ void Core::RayCast(int id,Vector & origin,Vector & direction,Spectrum & output)
 	Vector collision;
 	Vector oc;
 	float dist;
+	double r[4];
 	
 	Vector target_collision;
 	Triangle * target_triangle=nullptr;
@@ -345,19 +339,33 @@ void Core::RayCast(int id,Vector & origin,Vector & direction,Spectrum & output)
 		
 		//gsl_qrng_init(qr[id]);
 		
-		for(int n=0;n<32;n++)
+		
+		int samples=8;
+		
+		for(int n=0;n<samples;n++)
 		{
-			double r[2];
-			//gsl_qrng_get (qr[id], r);
-			r[0]=(rand()/(float)RAND_MAX);
-			r[1]=(rand()/(float)RAND_MAX);
-			perturbated_normal=target_triangle->PerturbateNormal(0.98f,r[0],r[1]);
-									
-			incoming = PathTrace(target_collision,perturbated_normal,target_triangle,1) + incoming; 
+			for(int m=0;m<samples;m++)
+			{
+				float r0=n/(float)samples;
+				float r1=(n+1)/(float)samples;
+
+				float r2=m/(float)samples;
+				float r3=(m+1)/(float)samples;
+				
+				float ra = RAND_MAX/(float)rand();
+				float rb = RAND_MAX/(float)rand();
+				
+				r0 = r0+ ((r1-r0)*ra);
+				r2 = r2+ ((r3-r2)*rb);
+				perturbated_normal=target_triangle->PerturbateNormal(0.78f,r0,r2);
+				incoming = PathTrace(target_collision,perturbated_normal,target_triangle,1) + incoming;
+			}
 		}
+		
+		
 	
-		output = incoming * (1.0f/32.0f);
-		 
+		output = incoming * (1.0f/(samples*samples));
+		 first=false;
 		
 		/*
 		Vector w = target_collision - light;
@@ -431,7 +439,7 @@ Spectrum Core::PathTrace(Vector & origin, Vector & direction,Triangle * source,i
 		/* ambient illumination */
 		//energy.data[1]=30.0f;
 		//energy.data[2]=30.0f;
-		energy=fluorescent *0.05f;
+		energy=fluorescent * 0.05f;
 	}	
 	
 	return energy;
