@@ -9,17 +9,17 @@
 #include <chrono>
 #include <cmath>
 
-
-
+bool first=true;
+bool first2=true;
 
 using namespace std;
 using namespace com::toxiclabs::iris;
 
 
-Spectrum sunlight("fluorescent.spd");
-Spectrum material("macbeth-5.spd");
+Spectrum sunlight("d65.spd");
+Spectrum material("macbeth-2.spd");
 
-Vector light(2.0,8.0,0.0,1.0);
+Vector sun(0.5,0.5,0.0,0.0);
 
 
 
@@ -35,7 +35,7 @@ Core::Core(int argc,char * argv[])
 		MeshLoader::Load(argv[1],scene.triangles,scene.materials);
 	}
 	
-	
+	sun.Normalize();
 	
 	
 	/* default render settings */
@@ -139,6 +139,8 @@ void Core::Run()
 	
 	auto elapsed =  std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 	
+	cout<<"Sunlight:"<<sunlight.ToString()<<endl;
+	
 	cout<<"Render time: "<<elapsed.count()<<"ms"<<endl;
 }
 
@@ -176,6 +178,7 @@ void Core::CommitChunk(RenderChunk * chunk)
 			ColorRGB rgb;
 			rgb = chunk->image[px+py*chunk->w].ToRGB();
 			
+						
 			pixel.rgbRed=255*rgb.r;
 			pixel.rgbGreen=255*rgb.g;
 			pixel.rgbBlue=255*rgb.b; 
@@ -332,7 +335,7 @@ void Core::RayCast(int id,Vector & origin,Vector & direction,Spectrum & output)
 		//gsl_qrng_init(qr[id]);
 		
 		
-		int samples=6;
+		int samples=8;
 		
 		for(int n=0;n<samples;n++)
 		{
@@ -354,7 +357,7 @@ void Core::RayCast(int id,Vector & origin,Vector & direction,Spectrum & output)
 				float cosPhi = perturbated_normal * target_triangle->normals[0];
 				
 				Spectrum I = PathTrace(target_collision,perturbated_normal,target_triangle,1);
-				I=I*cosPhi;
+				I=I*(cosPhi/3.1416f);
 				
 				
 				incoming = incoming + I;
@@ -439,7 +442,8 @@ Spectrum Core::PathTrace(Vector & origin, Vector & direction,Triangle * source,i
 		/* ambient illumination */
 		//energy.data[1]=30.0f;
 		//energy.data[2]=30.0f;
-		energy=sunlight * 0.1f;
+		float wsun=sun * direction;
+		energy=sunlight * (0.15*wsun);
 	}	
 	
 	return energy;

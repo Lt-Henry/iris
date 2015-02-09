@@ -8,11 +8,12 @@
 #include <sstream>
 
 #include "Spectrum.hpp"
+#include "Math.hpp"
 
 using namespace std;
 using namespace com::toxiclabs::iris;
 
-array<float,32> Spectrum::X = {
+float Spectrum::X [32]= {
 0.003769647f,0.02214302f,0.08953803f,0.2035729f,0.2918246f,
 0.3482554f,0.3224637f,0.2485254f,0.1806905f,0.08182895f,
 0.02083981f,0.002461588f,0.01556989f,0.07962917f,0.1818026f,
@@ -23,7 +24,7 @@ array<float,32> Spectrum::X = {
 }; //700
 
 
-array<float,32> Spectrum::Y = {
+float Spectrum::Y [32]= {
 0.0004146161f,0.002452194f,0.00907986f,0.02027369f,0.03319038f,
 0.05033657f,0.06472352f,0.08514816f,0.1298957f,0.1788048f,
 0.237916f,0.3483536f,0.5204972f,0.718089f,0.8575799f,
@@ -34,7 +35,7 @@ array<float,32> Spectrum::Y = {
 }; //700
 
 
-array<float,32> Spectrum::Z = {
+float Spectrum::Z [32]= {
 0.0184726f,0.109609f,0.4508369f,1.051821f,1.552826f,
 1.917479f,1.848545f,1.522157f,1.25061f,0.7552379f,
 0.4099313f,0.2376753f,0.1176796f,0.05650407f,0.02438164f,
@@ -87,54 +88,79 @@ Spectrum::Spectrum(string filename)
 	file.close();
 	
 	
-	cout<<"Parsed SPD:"<<endl;
-	
-	for(pair<float,float> q : spd)
-	{
-		cout<<q.first<<":"<<q.second<<endl;  
-	}
-	
-	
-	
-	/*
-	 there is room for improvment here
-	 as left and right sides not covered by input spd can be 0.0
-	 and may be should be interpolated from near points
-	*/
 	int wl = Spectrum::lambdaStart;
-	int N = 0;
 	
-	map<float,float>::iterator p1;
-	map<float,float>::iterator p2;
-	
-	p1 = spd.begin();
-	p2 = spd.begin();
-	p2++;
-	
-	while(p2!=spd.end())
+	for(int n=0;n<32;n++)
 	{
-		float wl1=p1->first;
-		float wl2=p2->first;
+		map<float,float>::iterator left=spd.end();
+		map<float,float>::iterator right=spd.end();
+	
+		map<float,float>::iterator it;
 		
-		if(wl1< wl && wl2>=wl)
+		for(it=spd.begin();it!=spd.end();it++)
 		{
-			float dist = wl2 - wl1;
-			float center = wl - wl1;
+			if(it->first>=wl)
+			{
+				if(right!=spd.end())
+				{
+					if(it->first<right->first)
+					{
+						right=it;
+					}
+				}
+				else
+				{
+					right=it;
+				}
+			}
 			
-			float f = center / dist;
-			
-			cout<<"["<<wl1<<","<<wl<<","<<wl2<<"]"<<endl;
-			
-			this->data[N]=p1->second + ((p2->second-p1->second)*f);
-			N++;
-			wl = wl + Spectrum::lambdaStep;
+			if(it->first<=wl)
+			{
+				if(left!=spd.end())
+				{
+					if(it->first>left->first)
+					{
+						left=it;
+					}
+				}
+				else
+				{
+					left=it;
+				}
+			}
+		}
+		
+		
+		
+		if(left==spd.end() || right==spd.end())
+		{
+			data[n]=0.0f;
 		}
 		else
 		{
-			p1++;
-			p2++;
+			float wl1,wl2;
+			
+			wl1=left->first;
+			wl2=right->first;
+			
+			float dist=wl2 - wl1;
+			float center=wl - wl1;
+			float f=center/dist;
+			float v1=left->second;
+			float v2=right->second;
+			
+			if(AproxToZero(dist))
+			{
+				data[n]=v1;
+			}
+			else
+			{
+				data[n]=v1+((v2-v1)*f);
+			}
 		}
-	}
+		
+		wl=wl+Spectrum::lambdaStep;
+	}	
 	
 	
 

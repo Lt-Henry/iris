@@ -5,7 +5,7 @@
 #include "Color.hpp"
 
 #include <string>
-#include <array>
+
 
 
 namespace com
@@ -20,9 +20,9 @@ namespace com
 				
 				/* CIE XYZ precomputed tables */
 				
-				static std::array<float,32> X;
-				static std::array<float,32> Y;
-				static std::array<float,32> Z;
+				static float X[32];
+				static float Y[32];
+				static float Z[32];
 				static float yint;
 				
 				/* sampled range [390 - 710[  */
@@ -31,7 +31,7 @@ namespace com
 				static const int lambdaStep = 10;
 				
 				/* using 32 samples, in order to take profit from sse operations*/
-				std::array<float,32> data;
+				float data[32];
 				
 				Spectrum();
 				Spectrum(std::string filename);
