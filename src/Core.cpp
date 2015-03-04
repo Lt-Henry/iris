@@ -101,8 +101,7 @@ Core::~Core()
 {
 	cout<<"[Core] closing..."<<endl;
 	
-	for(int n=0;n<num_threads;n++)
-		gsl_qrng_free(qr[n]);
+	
 	
 	delete tree;
 	delete image;
@@ -198,8 +197,7 @@ void Core::RenderThread(int id)
 
 	cout<<"[Core] Thread "<<id<<" entered rendering"<<endl;
 	
-	/* quasi-random generator */
-	qr[id]=gsl_qrng_alloc (gsl_qrng_sobol, 2);
+	
 
 	float fov=45.0f;
 	float beta=fov/2.0f;
@@ -332,7 +330,7 @@ void Core::RayCast(int id,Vector & origin,Vector & direction,Spectrum & output)
 		
 		incoming.Clear();
 		
-		//gsl_qrng_init(qr[id]);
+		
 		
 		
 		int samples=8;

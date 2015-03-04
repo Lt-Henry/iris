@@ -13,7 +13,6 @@
 #include <thread>
 #include <mutex>
 
-#include <gsl/gsl_qrng.h>
 #include <FreeImagePlus.h>
 
 
@@ -42,9 +41,7 @@ namespace com
 				/* render target */
 				fipImage * image;
 				
-				/* random generator */
-				gsl_qrng * qr[8];
-				
+								
 				/**
 				 * constructor
 				 */ 
