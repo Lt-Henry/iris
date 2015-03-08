@@ -4,9 +4,31 @@
 using namespace com::toxiclabs::iris;
 
 
-void Scene::ApplyCamera(int n)
+Scene::Scene()
 {
-	Camera * camera = cameras[n];
+	camera=nullptr;
+}
+
+void Scene::SetCamera(Camera * camera)
+{
+	if(this->camera!=nullptr)
+	{
+		delete this->camera;
+	}
+	
+	this->camera=camera;
+}
+
+void Scene::ApplyCamera()
+{
+
+	if(camera==nullptr)
+	{
+		Vector origin(2.0,8.0,-20.0);
+		Vector target(0.0,2.0,0.0);
+		camera = new Camera(origin,target);
+	}
+
 	
 	Matrix & mC = camera->matrix;
 	

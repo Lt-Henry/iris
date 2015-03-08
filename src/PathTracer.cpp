@@ -1,5 +1,5 @@
 
-#include "Core.hpp"
+#include "PathTracer.hpp"
 #include "MeshLoader.hpp"
 #include "Spectrum.hpp"
 #include "KdTree.hpp"
@@ -17,23 +17,15 @@ using namespace com::toxiclabs::iris;
 
 
 Spectrum sunlight("d65.spd");
-Spectrum material("macbeth-2.spd");
+Spectrum material("macbeth-5.spd");
 
-Vector sun(0.5,0.5,0.0,0.0);
+Vector sun(0.5,0.5,-0.5,0.0);
 
 
 
-Core::Core(int argc,char * argv[])
+PathTracer::PathTracer(Scene & scene)
 {
-	if(argc<2)
-	{
-		cout<<"Not enough parameters"<<endl;
-	}
-	else
-	{
-		cout<<"[Core] loading:"<<argv[1]<<endl;
-		MeshLoader::Load(argv[1],scene.triangles,scene.materials);
-	}
+	this->scene=scene;
 	
 	sun.Normalize();
 	
@@ -83,13 +75,7 @@ Core::Core(int argc,char * argv[])
 	
 	cout<<"Chunk size: "<<wchunk<<"x"<<hchunk<<endl;
 	
-	/* create a default camera */
-	Vector origin(2.0,8.0,-20.0);
-	Vector target(0.0,2.0,0.0);
-	Camera * camera = new Camera("camera-0",origin,target);
-	scene.cameras.push_back(camera);
 	
-	scene.ApplyCamera();
 	
 	
 	tree = new KdTree(scene.triangles);
@@ -97,9 +83,9 @@ Core::Core(int argc,char * argv[])
 			
 }
 
-Core::~Core()
+PathTracer::~PathTracer()
 {
-	cout<<"[Core] closing..."<<endl;
+	cout<<"[PathTracer] closing..."<<endl;
 	
 	
 	
@@ -107,20 +93,20 @@ Core::~Core()
 	delete image;
 }
 
-void Core::Run()
+void PathTracer::Run()
 {
 	
 	auto start = std::chrono::high_resolution_clock::now();
 		
-	cout<<"[Core] run"<<endl;
+	cout<<"[PathTracer] run"<<endl;
 	
-	cout<<"[Core] Spawning threads"<<endl;
+	cout<<"[PathTracer] Spawning threads"<<endl;
 	
 	vector<thread> threads;
 	
 	for(int n=0;n<num_threads;n++)
 	{
-		threads.push_back(thread(&Core::RenderThread,this,n));
+		threads.push_back(thread(&PathTracer::RenderThread,this,n));
 	}
 	
 	for(int n=0;n<threads.size();n++)
@@ -132,7 +118,7 @@ void Core::Run()
 		
 	image->save("out.png");
 	
-	cout<<"[Core] render finished"<<endl;
+	cout<<"[PathTracer] render finished"<<endl;
 	
 	auto end = std::chrono::high_resolution_clock::now();
 	
@@ -143,7 +129,7 @@ void Core::Run()
 	cout<<"Render time: "<<elapsed.count()<<"ms"<<endl;
 }
 
-RenderChunk * Core::GetChunk()
+RenderChunk * PathTracer::GetChunk()
 {
 	RenderChunk * chunk = nullptr;
 	
@@ -160,11 +146,11 @@ RenderChunk * Core::GetChunk()
 	return chunk;
 }
 
-void Core::CommitChunk(RenderChunk * chunk)
+void PathTracer::CommitChunk(RenderChunk * chunk)
 {
 	chunk_mutex.lock();
 	
-	cout<<"[Core] Chunk "<<chunk->x<<","<<chunk->y<<" commited"<<endl;
+	cout<<"[PathTracer] Chunk "<<chunk->x<<","<<chunk->y<<" commited"<<endl;
 	
 	for(int j=chunk->y;j<(chunk->y+chunk->h);j++)
 	{
@@ -192,10 +178,10 @@ void Core::CommitChunk(RenderChunk * chunk)
 	chunk_mutex.unlock();
 }
 
-void Core::RenderThread(int id)
+void PathTracer::RenderThread(int id)
 {
 
-	cout<<"[Core] Thread "<<id<<" entered rendering"<<endl;
+	cout<<"[PathTracer] Thread "<<id<<" entered rendering"<<endl;
 	
 	
 
@@ -273,10 +259,10 @@ void Core::RenderThread(int id)
 		chunk = GetChunk();
 	}
 
-	cout<<"[Core] Thread "<<id<<" exit rendering"<<endl;
+	cout<<"[PathTracer] Thread "<<id<<" exit rendering"<<endl;
 }
 
-void Core::RayCast(int id,Vector & origin,Vector & direction,Spectrum & output)
+void PathTracer::RayCast(int id,Vector & origin,Vector & direction,Spectrum & output)
 {
 	float min_dist=100000.0f;
 	Vector collision;
@@ -333,7 +319,7 @@ void Core::RayCast(int id,Vector & origin,Vector & direction,Spectrum & output)
 		
 		
 		
-		int samples=8;
+		int samples=4;
 		
 		for(int n=0;n<samples;n++)
 		{
@@ -348,9 +334,28 @@ void Core::RayCast(int id,Vector & origin,Vector & direction,Spectrum & output)
 				float ra = (float)rand()/RAND_MAX;
 				float rb = (float)rand()/RAND_MAX;
 				
+				if(first)
+				{
+					cout<<r0<<" "<<r1<<" "<<r2<<" "<<r3<<" "<<ra<<" "<<rb;
+				}
+				
 				r0 = r0+ ((r1-r0)*ra);
 				r2 = r2+ ((r3-r2)*rb);
+				
+				if(first)
+				{
+					cout<<" "<<r0<<" "<<r2<<endl;
+				}	
+					
 				perturbated_normal=target_triangle->PerturbateNormal(0.98f,r0,r2);
+				
+				if(first)
+				{
+					target_triangle->normals[0].Print();
+					perturbated_normal.Print();
+				}
+				
+				
 						
 				float cosPhi = perturbated_normal * target_triangle->normals[0];
 				
@@ -362,7 +367,10 @@ void Core::RayCast(int id,Vector & origin,Vector & direction,Spectrum & output)
 			}
 		}
 		
-		
+		if(first)
+		{
+			first=false;
+		}
 	
 		output = incoming * (1.0f/(samples*samples));
 		output = output * material;
@@ -382,7 +390,7 @@ void Core::RayCast(int id,Vector & origin,Vector & direction,Spectrum & output)
 	}
 }
 
-Spectrum Core::PathTrace(Vector & origin, Vector & direction,Triangle * source,int depth)
+Spectrum PathTracer::PathTrace(Vector & origin, Vector & direction,Triangle * source,int depth)
 {
 	Spectrum energy;
 	float min_dist=100000.0f;

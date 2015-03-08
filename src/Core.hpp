@@ -1,6 +1,8 @@
 
-#ifndef _IRIS_SCRIPT_
-#define _IRIS_SCRIPT_
+#ifndef _IRIS_CORE_
+#define _IRIS_CORE_
+
+#include "Scene.hpp"
 
 #include <string>
 
@@ -17,24 +19,29 @@ namespace com
 	{
 		namespace iris
 		{
-			class Script
+			class Core
 			{
 			
 				private:
 				
 				lua_State * L;
 				
-				static Script * instance;
+				static Core * instance;
 				
-				Script(std::string filename);
-				~Script();
+				Core(std::string dirname);
+				~Core();
 				
 				public:
 				
+				Scene scene;
+				std::string basedir;
 				
-				static Script * Get();
-				static void Init(std::string filename);
-				static void Run();
+				
+				void Run();
+				
+				static Core * Get();
+				static Core * Init(std::string dirname);
+				
 				static void Quit();
 			};
 		}

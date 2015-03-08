@@ -6,6 +6,8 @@
 #include <regex>
 #include <iostream>
 
+#include <libgen.h>
+
 using namespace com::toxiclabs::iris;
 using namespace std;
 
@@ -51,7 +53,9 @@ void MeshLoader::Load(string filename, vector<Triangle *> & triangles, vector<Ma
 		if(regex_match(line,results,mtllib))
 		{
 			cout<<"mtllib:"<<results[1]<<endl;
-			MeshLoader::LoadMaterialLib(results[1]);
+			string dir = dirname((char *)filename.c_str());
+			string mtl_file=dir+"/"+string(results[1]);
+			MeshLoader::LoadMaterialLib(mtl_file);
 		}
 		
 		

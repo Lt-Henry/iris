@@ -16,7 +16,7 @@ namespace com
 			{
 				public:
 				
-				std::string name;
+				
 				Vector position;
 				Vector target;
 				float angle;
@@ -27,7 +27,7 @@ namespace com
 				
 				Camera();
 				Camera
-				(std::string  name,Vector & position,
+				(Vector & position,
 				Vector & target,float angle=0.0f,float near=5.0f,float far=100.0f);
 				
 				

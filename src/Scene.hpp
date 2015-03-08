@@ -21,9 +21,12 @@ namespace com
 				std::vector<Triangle *> triangles;
 				std::vector<Material *> materials;
 				
-				std::vector<Camera *> cameras;
+				Camera * camera;
 				
-				void ApplyCamera(int n=0);		
+				Scene();
+				
+				void SetCamera(Camera * camera);
+				void ApplyCamera();		
 				
 			};
 		}

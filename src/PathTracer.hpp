@@ -1,7 +1,7 @@
 
 
-#ifndef _IRIS_CORE_
-#define _IRIS_CORE_
+#ifndef _IRIS_PATHTRACER_
+#define _IRIS_PATHTRACER_
 
 #include "Render.hpp"
 #include "Scene.hpp"
@@ -22,7 +22,7 @@ namespace com
 	{
 		namespace iris
 		{
-			class Core
+			class PathTracer
 			{
 				public:
 				
@@ -45,12 +45,12 @@ namespace com
 				/**
 				 * constructor
 				 */ 
-				Core(int argc,char * argv[]);
+				PathTracer(Scene & scene);
 				
 				/**
 				 * destructor
 				 */ 
-				~Core();
+				~PathTracer();
 				
 				/**
 				 * Starts the system

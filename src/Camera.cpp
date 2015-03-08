@@ -16,17 +16,15 @@ Camera::Camera()
 	angle=45.0f;
 	near=5.0f;
 	far=100.0f;
-	
-	name="default";
+		
 	
 	CreateMatrix();
 }
 
 Camera::Camera
-(string name,Vector & position,Vector & target,
+(Vector & position,Vector & target,
 float angle,float near,float far)
 {
-	this->name=name;
 	this->position=position;
 	this->target=target;
 	this->angle=angle;
