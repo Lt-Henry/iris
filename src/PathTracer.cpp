@@ -241,7 +241,8 @@ void PathTracer::RenderThread(int id)
 						direction = direction - origin;
 				
 						direction.Normalize();
-						RayCast(id,origin,direction,incoming);
+						//RayCast(id,origin,direction,incoming);
+						incoming=Ray(RayType::Visibility,origin,direction);
 												
 						incoming=incoming*(1.0f/(samples*samples));
 						outcoming=outcoming+incoming;
@@ -453,4 +454,112 @@ Spectrum PathTracer::PathTrace(Vector & origin, Vector & direction,Triangle * so
 	}	
 	
 	return energy;
+}
+
+
+Spectrum PathTracer::Ray(RayType type,Vector & origin,Vector & direction,
+Triangle * source,int depth)
+{
+
+	Spectrum energy;
+	Spectrum diffuse;
+	Spectrum specular;
+	Spectrum incoming;
+
+	float min_dist=100000.0f;
+	Vector collision;
+	Vector oc;
+	float dist;
+	
+	float r0,r1,r2,r3,ra,rb;
+	Vector perturbated_normal;
+	
+	int samples=4;//this should be parametrized elsewhere
+	
+	Vector target_collision;
+	Triangle * target_triangle=nullptr;
+	
+	
+	vector<KdNode *> nodes = tree->Traverse(origin,direction);
+	
+	for(KdNode * node : nodes)
+	{
+		vector<Triangle *>::iterator q;
+				
+		if(!node->RayCollision(origin,direction))
+			continue;
+		
+		for(q=node->triangles.begin();q!=node->triangles.end();q++)
+		{
+			Triangle * triangle = *q;
+			if(triangle->RayCollision(origin,direction,collision))
+			{
+				oc=collision-origin;
+				dist=oc.Module();
+			
+				if(dist<min_dist)
+				{
+					min_dist=dist;
+					target_collision=collision;
+					target_triangle=triangle;
+				
+				}
+			}
+		}
+	}
+	
+	
+	if(target_triangle!=nullptr)
+	{
+		switch(type)
+		{
+			case RayType::Visibility:
+			
+			//gathering diffuse light
+			diffuse.Clear();
+			
+			for(int n=0;n<samples;n++)
+			{
+				for(int m=0;m<samples;m++)
+				{
+					r0=n/(float)samples;
+					r1=(n+1)/(float)samples;
+
+					r2=m/(float)samples;
+					r3=(m+1)/(float)samples;
+				
+					ra = (float)rand()/RAND_MAX;
+					rb = (float)rand()/RAND_MAX;
+				
+				
+					r0 = r0+ ((r1-r0)*ra);
+					r2 = r2+ ((r3-r2)*rb);
+								
+					
+					perturbated_normal=target_triangle->PerturbateNormal(0.98f,r0,r2);
+					incoming=Ray(RayType::Diffuse,target_collision,perturbated_normal,target_triangle,depth + 1);
+					diffuse=diffuse+incoming;
+				}
+			}
+			
+			diffuse=diffuse*(1.0f/(samples*samples));
+			energy=diffuse*material;
+			break;
+			
+		}
+	}
+	else
+	{
+		/*
+		ToDo:
+		Get proper energy from sky/sunlight
+		*/
+		
+		energy=sunlight*0.015;
+		
+		
+	}
+	
+	return energy;
+	
 }
