@@ -34,7 +34,7 @@ PathTracer::PathTracer(Scene & scene)
 	
 	width=800;
 	height=600;
-	num_threads=4;
+	num_threads=2;
 	samples=1;
 	
 	/* creating render target */
@@ -289,7 +289,7 @@ Triangle * source,int depth)
 	Vector target_collision;
 	Triangle * target_triangle=nullptr;
 	
-	if(depth>2)//hardcoded!
+	if(depth>3)//hardcoded!
 	{
 		return energy;
 	}
@@ -361,12 +361,14 @@ Triangle * source,int depth)
 					
 					perturbated_normal=target_triangle->PerturbateNormal(0.98f,r0,r2);
 					incoming=Ray(RayType::Diffuse,target_collision,perturbated_normal,target_triangle,depth + 1);
+					incoming=incoming*INV_PI;
 					diffuse=diffuse+incoming;
 				}
 			}
 			
 			diffuse=diffuse*(1.0f/(samples*samples));
 			
+			/*
 			diffuse=diffuse*0.9f;
 			
 			
@@ -385,6 +387,9 @@ Triangle * source,int depth)
 			specular = incoming * 0.1f;
 			
 			energy=(diffuse*material) + specular;
+			*/
+			
+			energy=diffuse*material;
 			break;
 			
 			
@@ -397,7 +402,7 @@ Triangle * source,int depth)
 		Get proper energy from sky/sunlight
 		*/
 		
-		energy=sunlight*0.15;
+		energy=sunlight*0.05;
 		
 		
 	}

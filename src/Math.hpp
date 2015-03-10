@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #define EPSILON 0.000001
+#define INV_PI (1.0f/M_PI)
 
 namespace com
 {
