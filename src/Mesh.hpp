@@ -47,6 +47,8 @@ namespace com
 				BoundBox GetBoundBox();
 				
 				Vector PerturbateNormal(float angle,float r1,float r2);
+				Vector GetUVW(Vector & collision);
+				Vector GetAveragedNormal(Vector & collision);
 			};
 			
 			BoundBox operator+(BoundBox & a,BoundBox & b);

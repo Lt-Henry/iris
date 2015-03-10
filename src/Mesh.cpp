@@ -226,4 +226,64 @@ Vector Triangle::PerturbateNormal(float angle,float r1,float r2)
 }
 
 
+Vector Triangle::GetUVW(Vector & collision)
+{
 
+	Vector r;
+	
+	Vector f1;
+	Vector f2;
+	Vector f3;
+	
+	Vector p12;
+	Vector p13;
+	
+	Vector tmp;
+	
+	float a,a1,a2,a3;
+	
+	f1 = vertices[0] - collision;//AP
+	f2 = vertices[1] - collision;//BC
+	f3 = vertices[2] - collision;//CP
+	
+	p12 = vertices[0] - vertices[1];//AB
+	p13 = vertices[0] - vertices[2];//AC
+	
+	tmp = p12 ^ p13;
+	a=tmp.Module();
+	
+	tmp = f2 ^ f3;
+	a1=tmp.Module()/a;
+	
+	tmp = f3 ^ f1;
+	a2=tmp.Module()/a;
+	
+	tmp = f1 ^ f2;
+	a3=tmp.Module()/a;
+	
+	r.x=a1;
+	r.y=a2;
+	r.z=a3;
+	r.w=1.0f;
+		
+	return r;
+}
+
+
+Vector Triangle::GetAveragedNormal(Vector & collision)
+{
+	Vector uvw = GetUVW(collision);
+	
+	Vector normal;
+	Vector n1;
+	Vector n2;
+	Vector n3;
+	
+	n1 = normals[0] * uvw.data[0];
+	n2 = normals[1] * uvw.data[1];
+	n3 = normals[2] * uvw.data[2];
+	normal = n1 + n2 + n3;
+	normal.Normalize();	
+
+	return normal;	
+}
