@@ -35,7 +35,7 @@ PathTracer::PathTracer(Scene & scene)
 	width=800;
 	height=600;
 	num_threads=2;
-	samples=1;
+	samples=2;
 	
 	/* creating render target */
 	image = new fipImage(FIT_BITMAP,width,height,32);
@@ -492,6 +492,10 @@ Triangle * source,int depth)
 		for(q=node->triangles.begin();q!=node->triangles.end();q++)
 		{
 			Triangle * triangle = *q;
+			
+			if(triangle==source)
+				continue;
+			
 			if(triangle->RayCollision(origin,direction,collision))
 			{
 				oc=collision-origin;
@@ -555,7 +559,7 @@ Triangle * source,int depth)
 		Get proper energy from sky/sunlight
 		*/
 		
-		energy=sunlight*0.015;
+		energy=sunlight*0.15;
 		
 		
 	}
