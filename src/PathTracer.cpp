@@ -284,7 +284,7 @@ Triangle * source,int depth)
 	Vector di;
 	float f;
 	
-	int samples=4;//this should be parametrized elsewhere
+	int samples=6;//this should be parametrized elsewhere
 	
 	Vector target_collision;
 	Triangle * target_triangle=nullptr;
@@ -361,7 +361,7 @@ Triangle * source,int depth)
 					
 					perturbated_normal=target_triangle->PerturbateNormal(0.98f,r0,r2);
 					incoming=Ray(RayType::Diffuse,target_collision,perturbated_normal,target_triangle,depth + 1);
-					incoming=incoming*INV_PI;
+					//incoming=incoming*INV_PI;
 					diffuse=diffuse+incoming;
 				}
 			}
@@ -402,7 +402,7 @@ Triangle * source,int depth)
 		Get proper energy from sky/sunlight
 		*/
 		
-		energy=sunlight*0.05;
+		energy=sunlight*0.01;
 		
 		
 	}
