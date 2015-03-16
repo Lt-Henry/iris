@@ -17,7 +17,6 @@ using namespace com::toxiclabs::iris;
 
 
 Spectrum sunlight("d65.spd");
-Spectrum material("macbeth-5.spd");
 
 Vector sun(0.5,0.5,-0.5,0.0);
 
@@ -123,8 +122,7 @@ void PathTracer::Run()
 	auto end = std::chrono::high_resolution_clock::now();
 	
 	auto elapsed =  std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-	
-	cout<<"Sunlight:"<<sunlight.ToString()<<endl;
+		
 	
 	cout<<"Render time: "<<elapsed.count()<<"ms"<<endl;
 }
@@ -269,6 +267,7 @@ Spectrum PathTracer::Ray(RayType type,Vector & origin,Vector & direction,
 Triangle * source,int depth)
 {
 
+	Material * material;
 	Spectrum energy;
 	Spectrum diffuse;
 	Spectrum specular;
@@ -331,6 +330,7 @@ Triangle * source,int depth)
 	{
 	
 		Vector normal = target_triangle->GetAveragedNormal(target_collision);
+		material=scene.materials[target_triangle->material];
 		
 		switch(type)
 		{
@@ -389,7 +389,7 @@ Triangle * source,int depth)
 			energy=(diffuse*material) + specular;
 			*/
 			
-			energy=diffuse*material;
+			energy=diffuse*material->Kd;
 			break;
 			
 			

@@ -16,11 +16,15 @@ using namespace std;
 void MeshLoader::Load(string filename, vector<Triangle *> & triangles, vector<Material *> & materials)
 {
 
+
+	int mat_id;
+	
 	//storage
 	vector<float> vertices;
 	vector<float> normals;
 	vector<int> facesv;
 	vector<int> facesn;
+	vector<int> facesm;
 
 	//regex patterns
 	regex comment("^#(.|\\s)*");
@@ -48,8 +52,24 @@ void MeshLoader::Load(string filename, vector<Triangle *> & triangles, vector<Ma
 		if(regex_match(line,results,usemtl))
 		{
 			//cout<<"usemtl:"<<results[1]<<endl;
+			
+			mat_id=0;
+			
+			for(int n=0;n<materials.size();n++)
+			{
+				if(materials[n]->name==results[1])
+				{
+					mat_id=n;
+					
+					cout<<"Using material: "<<results[1]<<endl;
+					break;
+				}
+			}
+			
+			
+			
 		}
-		
+		/*
 		if(regex_match(line,results,mtllib))
 		{
 			cout<<"mtllib:"<<results[1]<<endl;
@@ -57,7 +77,7 @@ void MeshLoader::Load(string filename, vector<Triangle *> & triangles, vector<Ma
 			string mtl_file=dir+"/"+string(results[1]);
 			MeshLoader::LoadMaterialLib(mtl_file);
 		}
-		
+		*/
 		
 		if(regex_match(line,results,o))
 		{
@@ -73,6 +93,7 @@ void MeshLoader::Load(string filename, vector<Triangle *> & triangles, vector<Ma
 				facesv.push_back(std::stoi(results[n])-1);
 				facesn.push_back(std::stoi(results[n+2])-1);
 			}
+			facesm.push_back(mat_id);
 		}
 		
 		if(regex_match(line,results,v))
@@ -101,6 +122,7 @@ void MeshLoader::Load(string filename, vector<Triangle *> & triangles, vector<Ma
 	{
 		Triangle * triangle = new Triangle();
 		
+		triangle->material=facesm[n/3];
 				
 		triangle->vertices[0]=Vector(
 		vertices[(3*facesv[n])+0],

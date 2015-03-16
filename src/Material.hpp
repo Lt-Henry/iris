@@ -2,6 +2,8 @@
 #ifndef _IRIS_MATERIAL_
 #define _IRIS_MATERIAL_
 
+#include "Spectrum.hpp"
+
 #include <string>
 
 namespace com
@@ -15,7 +17,7 @@ namespace com
 				public:
 				
 				std::string name;
-				
+				Spectrum Kd;	
 				
 			};
 		}

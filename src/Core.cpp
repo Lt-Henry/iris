@@ -100,6 +100,28 @@ int SetCamera(lua_State * L)
 	return 0;
 }
 
+int AddMaterial(lua_State * L)
+{
+	if(lua_gettop(L)>1)
+	{
+		const char * name = lua_tostring(L,1);
+		const char * filename = lua_tostring(L,2);
+		
+		Core * core = Core::Get();
+		
+		Material * mat = new Material();
+		
+		mat->name=name;
+		mat->Kd=Spectrum(filename);
+		
+		core->scene.materials.push_back(mat);
+		
+		cout<<"Added material: "<<name<<endl;
+		cout<<"\t"<<"Kd:"<<filename<<endl;
+	}
+	
+	return 0;
+}
 
 Core::Core(string dirname)
 {
@@ -114,7 +136,7 @@ Core::Core(string dirname)
 	lua_register(L,"SetScreen",SetScreen);
 	lua_register(L,"LoadMesh",LoadMesh);
 	lua_register(L,"SetCamera",SetCamera);
-	
+	lua_register(L,"AddMaterial",AddMaterial);
 	
 }
 
