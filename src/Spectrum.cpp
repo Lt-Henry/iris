@@ -166,6 +166,22 @@ Spectrum::Spectrum(string filename)
 
 }
 
+Spectrum::Spectrum(vector<float> & values)
+{
+
+	int n=0;
+	
+	for(float value : values)
+	{
+		if(n==32)
+			break;
+		
+		data[n]=value;
+		n++;
+	}
+	
+}
+
 void Spectrum::Clear()
 {
 	for(int n=0;n<32;n++)

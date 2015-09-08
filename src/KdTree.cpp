@@ -79,8 +79,10 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 	
 	if(triangles.size()<small)
 	{
-	
+#ifdef DEBUG
 		cout<<"* Child node with "<<triangles.size()<<" triangles"<<endl;
+#endif
+	
 		node->type=KdNodeType::Child;
 		node->triangles=triangles;
 		node->left=nullptr;
@@ -94,11 +96,12 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 			BoundBox b = triangle->GetBoundBox();
 			node->aabb=node->aabb + b;
 		}
-		
+
+#ifdef DEBUG
 		cout<<"Bound box: "<<endl;
 		node->aabb.min.Print();
 		node->aabb.max.Print();
-
+#endif
 		return;
 	}
 	
@@ -122,16 +125,19 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 		if(c.y<min.y)min.y=c.y;
 		if(c.z<min.z)min.z=c.z;
 	}
-	
+
+#ifdef DEBUG	
 	cout<<"Centroid bound box"<<endl;
 	min.Print();
 	max.Print();
-	
+#endif
 	dx = std::abs(min.x-max.x);
 	dy = std::abs(min.y-max.y);
 	dz = std::abs(min.z-max.z);
-	
+
+#ifdef DEBUG	
 	cout<<"Distances: "<<dx<<","<<dy<<","<<dz<<endl;
+#endif
 	
 	int s;
 	
@@ -140,13 +146,17 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 	{
 		if(dx>dz)
 		{
+#ifdef DEBUG
 			cout<<"x split"<<endl;
+#endif
 			node->type=KdNodeType::SplitX;
 			s=0;
 		}
 		else
 		{
+#ifdef DEBUG
 			cout<<"z split"<<endl;
+#endif
 			node->type=KdNodeType::SplitZ;
 			s=2;
 		}
@@ -155,13 +165,17 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 	{
 		if(dy>dz)
 		{
+#ifdef DEBUG
 			cout<<"y split"<<endl;
+#endif
 			node->type=KdNodeType::SplitY;
 			s=1;
 		}
 		else
 		{
+#ifdef DEBUG
 			cout<<"z split"<<endl;
+#endif
 			node->type=KdNodeType::SplitZ;
 			s=2;
 		}
@@ -215,8 +229,9 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 	
 	if(left.size()==triangles.size() || right.size()==triangles.size())
 		score=0.0f;
-	
+#ifdef DEBUG
 	cout<<"- score: "<<score<<" n="<<n<<" left:"<<l<<" right:"<<r<<endl;
+#endif
 	
 	if(score>best_score)
 	{
@@ -241,20 +256,22 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 	
 	
 	
-	
+#ifdef DEBUG	
 	cout<<"score: "<<best_score<<" n="<<best<<endl;
 	cout<<"total: "<<triangles.size()<<endl;
 	cout<<"left: "<<left.size()<<endl;
 	cout<<"right: "<<right.size()<<endl;
 	cout<<"shared:"<<((left.size()+right.size())-triangles.size())<<endl;
-	
+#endif	
 	
 	
 	
 	if(AproxToZero(best_score))
 	{
+#ifdef DEBUG
 		cout<<"Couldn't split anymore"<<endl;
 		cout<<"* Child node with "<<triangles.size()<<" triangles"<<endl;
+#endif
 		node->type=KdNodeType::Child;
 		node->triangles=triangles;
 		node->left=nullptr;
@@ -268,11 +285,11 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 			BoundBox b = triangle->GetBoundBox();
 			node->aabb=node->aabb + b;
 		}
-		
+#ifdef DEBUG
 		cout<<"Bound box: "<<endl;
 		node->aabb.min.Print();
 		node->aabb.max.Print();
-		
+#endif
 		
 		return;
 		
@@ -345,7 +362,7 @@ void KdTree::Traverse(Vector & origin,Vector & direction,KdNode * node,vector<Kd
 			Traverse(origin,direction,node->right,nodes);
 			
 			
-			/* intersecting both sides */		
+			/* intersecting both sides */
 			if(v<0.0f)
 			{
 				Traverse(origin,direction,node->left,nodes);

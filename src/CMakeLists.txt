@@ -6,7 +6,12 @@ add_executable(iris main.cpp Core.cpp PathTracer.cpp MeshLoader.cpp Mesh.cpp Mat
 find_package(PkgConfig REQUIRED)
 
 #required pkg-config libs
-pkg_check_modules(LUA REQUIRED lua)
+pkg_check_modules(LUA lua)
+
+if(NOT LUA_FOUND MATCHES 1)
+	message("Using lua 5.2")
+	pkg_check_modules(LUA lua5.2)
+endif()
 
 #add include dirs
 include_directories(${LUA_INCLUDE_DIRS})
@@ -21,11 +26,11 @@ add_definitions(${LUA_CFLAGS_OTHER} -D_IRIS_SSE_ -D_IRIS_SSE4_)
 target_link_libraries(iris ${LUA_LIBRARIES} freeimageplus pthread c++abi)
 
 #set compiler
-#set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
+set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
 
 #compiler extra options
-#set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++ -march=native -O3")
-set(CMAKE_CXX_FLAGS "-std=c++11 -march=native -O3")
+set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++ -march=native -O3")
+#set(CMAKE_CXX_FLAGS "-std=c++11 -march=native -O3")
 
 
 

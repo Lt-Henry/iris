@@ -28,21 +28,20 @@ namespace com
 				
 				static Core * instance;
 				
-				Core(std::string dirname);
-				~Core();
+				Core();
+				virtual ~Core();
 				
 				public:
 				
 				Scene scene;
-				std::string basedir;
 				
 				
+				static Core * Create();
+				
+				
+				void Compile(std::string path);
 				void Run();
 				
-				static Core * Get();
-				static Core * Init(std::string dirname);
-				
-				static void Quit();
 			};
 		}
 	}

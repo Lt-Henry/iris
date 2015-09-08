@@ -79,7 +79,10 @@ PathTracer::PathTracer(Scene & scene)
 	
 	tree = new KdTree(scene.triangles);
 	
-			
+	Material * white = new Material();
+	vector<float> Kd = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+	white->Kd=Kd;
+	scene.materials.push_back(white);
 }
 
 PathTracer::~PathTracer()
@@ -330,7 +333,9 @@ Triangle * source,int depth)
 	{
 	
 		Vector normal = target_triangle->GetAveragedNormal(target_collision);
-		material=scene.materials[target_triangle->material];
+		//material=scene.materials[target_triangle->material];
+		
+		
 		
 		switch(type)
 		{

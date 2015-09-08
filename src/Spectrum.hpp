@@ -5,7 +5,7 @@
 #include "Color.hpp"
 
 #include <string>
-
+#include <vector>
 
 
 namespace com
@@ -35,6 +35,7 @@ namespace com
 				
 				Spectrum();
 				Spectrum(std::string filename);
+				Spectrum(std::vector<float> & values);
 
 				void Clear();
 				std::string ToString();
