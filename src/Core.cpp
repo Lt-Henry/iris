@@ -21,28 +21,71 @@ Core * Core::instance = nullptr;
 	int samples per pixel [optional]
 	string output bitmap filename [optional]
 */
-int SetScreen(lua_State * L)
+int SetImage(lua_State * L)
 {
+
+	Core * core = Core::Get();
+	
+	
 	if(lua_gettop(L)>1)
 	{
 		int width = lua_tointeger(L,1);
 		int height = lua_tointeger(L,2);
-		int samples=1;
-		string out_filename="out.png";
+
+		core->scene.params["image.width"]=width;
+		core->scene.params["image.height"]=height;
+		
+		int samples;
+		string out_filename;
 		
 		if(lua_gettop(L)>2)
 		{
 			samples=lua_tointeger(L,3);
 			
+			core->scene.params["image.subsamples"]=samples;
+			
 			if(lua_gettop(L)>3)
 			{
 				out_filename = lua_tostring(L,4);
+				core->scene.params["image.output_name"]=out_filename;
 			}
 		}
 	}
 	
+
+	
+	
+	
 	return 0;
 }
+
+int SetCPU(lua_State * L)
+{
+
+	Core * core = Core::Get();
+	
+	if(lua_gettop(L)>0)
+	{
+		int nthreads = lua_tointeger(L,1);
+		core->scene.params["system.threads"]=nthreads;
+		
+	}
+	return 0;
+}
+
+int SetPathTracer(lua_State * L)
+{
+	Core * core = Core::Get();
+	
+	if(lua_gettop(L)>0)
+	{
+		int psamples = lua_tointeger(L,1);
+		core->scene.params["pathtracer.samples"]=psamples;
+		
+	}
+	return 0;
+}
+
 
 /*!
 	Loads a wavefront (obj) mesh
@@ -123,17 +166,20 @@ int AddMaterial(lua_State * L)
 	return 0;
 }
 
-Core::Core(string dirname)
+Core::Core()
 {
 
-	basedir=dirname;
 	
 	L = luaL_newstate();
 	luaL_openlibs(L);
 	
 	
 	//register functions
-	lua_register(L,"SetScreen",SetScreen);
+	
+	lua_register(L,"SetScreen",SetImage);//deprecated
+	lua_register(L,"SetImage",SetImage);
+	lua_register(L,"SetCPU",SetCPU);
+	lua_register(L,"SetPathTracer",SetPathTracer);
 	lua_register(L,"LoadMesh",LoadMesh);
 	lua_register(L,"SetCamera",SetCamera);
 	lua_register(L,"AddMaterial",AddMaterial);
@@ -143,49 +189,43 @@ Core::Core(string dirname)
 
 Core::~Core()
 {
+	Core::instance=nullptr;
 }
 
 
 Core * Core::Get()
 {
+	if(Core::instance==nullptr)
+		Core::instance=new Core();
+	
 	return Core::instance;
 }
 
 
-Core * Core::Init(string dirname)
+void Core::Compile(string path)
 {
-	Core::instance = new Core(dirname);
+	basedir=path;
+	string filename = basedir +"/setup.lua";
+	int status = luaL_loadfile(L, filename.c_str());
 	
-	return Core::instance;
+	if(status!=0)
+		throw runtime_error("Failed to read:"+filename);
+		
+
+	lua_pcall(L,0,LUA_MULTRET,0);
+	
+	scene.ApplyCamera();
 }
 
 void Core::Run()
 {
 
-	//script execution
-	string filename = basedir +"/setup.lua";
-	int status = luaL_loadfile(L, filename.c_str());
-	
-	if(status!=0)
-		throw runtime_error("Failed to read Core");
-		
-
-	lua_pcall(L,0,LUA_MULTRET,0);
-	
-	
-	//checking scene settings before rendering
-	
-	scene.ApplyCamera();
 	
 	//raytracing
 	PathTracer tracer(scene);
 	
 	tracer.Run();
 	
-	
 }
 
-void Core::Quit()
-{
-	delete Core::instance;
-}
+

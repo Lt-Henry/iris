@@ -7,6 +7,17 @@ using namespace com::toxiclabs::iris;
 Scene::Scene()
 {
 	camera=nullptr;
+	
+	//default settings
+	
+	params["image.width"]=800;
+	params["image.height"]=600;
+	params["image.subsamples"]=2;
+	params["image.output_name"]="out.png";
+	
+	params["system.threads"]=2;
+	
+	params["pathtracer.samples"]=16;
 }
 
 void Scene::SetCamera(Camera * camera)

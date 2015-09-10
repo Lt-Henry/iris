@@ -31,10 +31,14 @@ PathTracer::PathTracer(Scene & scene)
 	
 	/* default render settings */
 	
-	width=800;
-	height=600;
-	num_threads=2;
-	samples=1;
+	width=scene.params["image.width"].GetInt();
+	height=scene.params["image.height"].GetInt();
+
+	samples=scene.params["image.subsamples"].GetInt();
+	
+	num_threads=scene.params["system.threads"].GetInt();
+	
+	psamples=(int)std::sqrt(scene.params["pathtracer.samples"].GetInt());
 	
 	/* creating render target */
 	image = new fipImage(FIT_BITMAP,width,height,32);
@@ -118,7 +122,7 @@ void PathTracer::Run()
 	
 	
 		
-	image->save("out.png");
+	image->save(scene.params["image.output_name"].GetString().c_str());
 	
 	cout<<"[PathTracer] render finished"<<endl;
 	
@@ -285,8 +289,7 @@ Triangle * source,int depth)
 	Vector perturbated_normal;
 	Vector di;
 	float f;
-	
-	int samples=6;//this should be parametrized elsewhere
+		
 	
 	Vector target_collision;
 	Triangle * target_triangle=nullptr;
@@ -346,15 +349,15 @@ Triangle * source,int depth)
 			//gathering diffuse light
 			diffuse.Clear();
 			
-			for(int n=0;n<samples;n++)
+			for(int n=0;n<psamples;n++)
 			{
-				for(int m=0;m<samples;m++)
+				for(int m=0;m<psamples;m++)
 				{
-					r0=n/(float)samples;
-					r1=(n+1)/(float)samples;
+					r0=n/(float)psamples;
+					r1=(n+1)/(float)psamples;
 
-					r2=m/(float)samples;
-					r3=(m+1)/(float)samples;
+					r2=m/(float)psamples;
+					r3=(m+1)/(float)psamples;
 				
 					ra = (float)rand()/RAND_MAX;
 					rb = (float)rand()/RAND_MAX;
@@ -371,7 +374,7 @@ Triangle * source,int depth)
 				}
 			}
 			
-			diffuse=diffuse*(1.0f/(samples*samples));
+			diffuse=diffuse*(1.0f/(psamples*psamples));
 			
 			/*
 			diffuse=diffuse*0.9f;

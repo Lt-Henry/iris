@@ -37,16 +37,21 @@ namespace com
 				std::vector<RenderChunk *> chunks;
 				std::mutex chunk_mutex;
 				
-				/* render settings */
+				/* image settings */
 				int width;
 				int height;
-				int num_threads;
 				int samples;
+				
+				/* cpu settings */
+				int num_threads;
+				
+				/* pathtracer settings */
+				int psamples;
 				
 				/* render target */
 				fipImage * image;
 				
-								
+				
 				/**
 				 * constructor
 				 */ 

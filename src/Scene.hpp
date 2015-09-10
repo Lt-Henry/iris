@@ -5,8 +5,11 @@
 #include "Material.hpp"
 #include "Mesh.hpp"
 #include "Camera.hpp"
+#include "DataSet.hpp"
 
 #include <vector>
+#include <map>
+#include <string>
 
 namespace com
 {
@@ -20,13 +23,14 @@ namespace com
 				
 				std::vector<Triangle *> triangles;
 				std::vector<Material *> materials;
+				std::map<std::string,DataSet> params;
 				
 				Camera * camera;
 				
 				Scene();
 				
 				void SetCamera(Camera * camera);
-				void ApplyCamera();		
+				void ApplyCamera();
 				
 			};
 		}

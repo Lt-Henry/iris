@@ -21,13 +21,12 @@ int main(int argc,char * argv[])
 
 
 	Core * core;
+	core = Core::Get();
 	
-	core = Core::Init(string(argv[1]));
-	
+	core->Compile(string(argv[1]));
 	core->Run();
 	
-	Core::Quit();
-
+	delete core;
 	
 	return 0;
 }

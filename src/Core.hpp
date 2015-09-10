@@ -25,18 +25,19 @@ namespace com
 				private:
 				
 				lua_State * L;
-				
 				static Core * instance;
 				
 				Core();
-				virtual ~Core();
+				
 				
 				public:
 				
+				std::string basedir;
 				Scene scene;
 				
+				virtual ~Core();
 				
-				static Core * Create();
+				static Core * Get();
 				
 				
 				void Compile(std::string path);
