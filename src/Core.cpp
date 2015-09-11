@@ -6,9 +6,11 @@
 #include "PathTracer.hpp"
 
 #include <iostream>
+#include <iomanip>
 #include <stdexcept>
 
 using namespace std;
+using namespace std::placeholders;
 using namespace com::toxiclabs::iris;
 
 Core * Core::instance = nullptr;
@@ -201,6 +203,28 @@ Core * Core::Get()
 	return Core::instance;
 }
 
+void Core::OnProgress(float p)
+{
+	//cout<<p<<"%"<<endl;
+	
+	cout<<'\r';
+	cout<<"Rendering:[";
+	
+	int t = p*40;
+	
+	
+	for(int n=0;n<t;n++)
+	{
+		cout<<"*";
+	}
+	for(int n=t;n<40;n++)
+	{
+		cout<<" ";
+	}
+	
+	cout<<"] "<<fixed<<setprecision(2)<<p<<"%"<<flush;
+	
+}
 
 void Core::Compile(string path)
 {
@@ -220,11 +244,18 @@ void Core::Compile(string path)
 void Core::Run()
 {
 
+	auto start = std::chrono::high_resolution_clock::now();
 	
 	//raytracing
 	PathTracer tracer(scene);
 	
-	tracer.Run();
+	tracer.Run(std::bind(&Core::OnProgress,this,_1));
+	
+	auto end = std::chrono::high_resolution_clock::now();
+	auto elapsed =  std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+	cout<<endl;
+	cout<<"Render time: "<<elapsed.count()<<"ms"<<endl;
 	
 }
 

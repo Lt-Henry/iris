@@ -12,6 +12,7 @@
 #include <vector>
 #include <thread>
 #include <mutex>
+#include <functional>
 
 #include <FreeImagePlus.h>
 
@@ -29,6 +30,13 @@ namespace com
 		
 			class PathTracer
 			{
+			
+				private:
+				
+				std::function<void(float)> progress;
+				
+				int total_chunks;
+			
 				public:
 				
 				Scene scene;
@@ -65,7 +73,7 @@ namespace com
 				/**
 				 * Starts the system
 				 */ 
-				void Run();
+				void Run(std::function<void(float)> progress);
 				
 				/**
 				* Request a new chunk to render. Thread safe	

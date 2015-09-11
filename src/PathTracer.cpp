@@ -29,7 +29,7 @@ PathTracer::PathTracer(Scene & scene)
 	sun.Normalize();
 	
 	
-	/* default render settings */
+	
 	
 	width=scene.params["image.width"].GetInt();
 	height=scene.params["image.height"].GetInt();
@@ -59,9 +59,14 @@ PathTracer::PathTracer(Scene & scene)
 		hchunk++;
 	}
 	
-	for(int i=0;i<(width/wchunk);i++)
+	int nwchunks=width/wchunk;
+	int nhchunks=height/hchunk;
+	
+	total_chunks=nwchunks*nhchunks;
+	
+	for(int i=0;i<nwchunks;i++)
 	{
-		for(int j=0;j<(height/hchunk);j++)
+		for(int j=0;j<nhchunks;j++)
 		{
 			
 			RenderChunk * chunk = new RenderChunk();
@@ -91,7 +96,6 @@ PathTracer::PathTracer(Scene & scene)
 
 PathTracer::~PathTracer()
 {
-	cout<<"[PathTracer] closing..."<<endl;
 	
 	
 	
@@ -99,14 +103,12 @@ PathTracer::~PathTracer()
 	delete image;
 }
 
-void PathTracer::Run()
+void PathTracer::Run(function<void(float)> progress)
 {
+	this->progress=progress;
 	
-	auto start = std::chrono::high_resolution_clock::now();
+	
 		
-	cout<<"[PathTracer] run"<<endl;
-	
-	cout<<"[PathTracer] Spawning threads"<<endl;
 	
 	vector<thread> threads;
 	
@@ -121,17 +123,9 @@ void PathTracer::Run()
 	}
 	
 	
-		
+	//maybe this is not the right place
 	image->save(scene.params["image.output_name"].GetString().c_str());
 	
-	cout<<"[PathTracer] render finished"<<endl;
-	
-	auto end = std::chrono::high_resolution_clock::now();
-	
-	auto elapsed =  std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-		
-	
-	cout<<"Render time: "<<elapsed.count()<<"ms"<<endl;
 }
 
 RenderChunk * PathTracer::GetChunk()
@@ -155,7 +149,7 @@ void PathTracer::CommitChunk(RenderChunk * chunk)
 {
 	chunk_mutex.lock();
 	
-	cout<<"[PathTracer] Chunk "<<chunk->x<<","<<chunk->y<<" commited"<<endl;
+	//cout<<"[PathTracer] Chunk "<<chunk->x<<","<<chunk->y<<" commited"<<endl;
 	
 	for(int j=chunk->y;j<(chunk->y+chunk->h);j++)
 	{
@@ -180,13 +174,16 @@ void PathTracer::CommitChunk(RenderChunk * chunk)
 	
 	delete [] chunk->image;
 	
+	float p=1.0f - (chunks.size()/(float)total_chunks);
+	progress(p);
+	
 	chunk_mutex.unlock();
 }
 
 void PathTracer::RenderThread(int id)
 {
 
-	cout<<"[PathTracer] Thread "<<id<<" entered rendering"<<endl;
+	//cout<<"[PathTracer] Thread "<<id<<" entered rendering"<<endl;
 	
 	
 
@@ -265,7 +262,7 @@ void PathTracer::RenderThread(int id)
 		chunk = GetChunk();
 	}
 
-	cout<<"[PathTracer] Thread "<<id<<" exit rendering"<<endl;
+	//cout<<"[PathTracer] Thread "<<id<<" exit rendering"<<endl;
 }
 
 

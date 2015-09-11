@@ -39,7 +39,7 @@ namespace com
 				
 				static Core * Get();
 				
-				
+				void OnProgress(float p);
 				void Compile(std::string path);
 				void Run();
 				
