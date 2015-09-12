@@ -16,7 +16,7 @@ using namespace std;
 using namespace com::toxiclabs::iris;
 
 
-Spectrum sunlight("d65.spd");
+Spectrum sunlight("sunlight.spd");
 
 Vector sun(0.5,0.5,-0.5,0.0);
 
@@ -86,12 +86,14 @@ PathTracer::PathTracer(Scene & scene)
 	
 	
 	
+	//cout<<"sunlight: "<<sunlight.ToString()<<endl;
+	
 	tree = new KdTree(scene.triangles);
 	
 	Material * white = new Material();
 	vector<float> Kd = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
 	white->Kd=Kd;
-	scene.materials.push_back(white);
+	this->scene.materials.push_back(white);
 }
 
 PathTracer::~PathTracer()
@@ -334,7 +336,7 @@ Triangle * source,int depth)
 	
 		Vector normal = target_triangle->GetAveragedNormal(target_collision);
 		//material=scene.materials[target_triangle->material];
-		
+		material=scene.materials[0];
 		
 		
 		switch(type)
@@ -407,7 +409,7 @@ Triangle * source,int depth)
 		Get proper energy from sky/sunlight
 		*/
 		
-		energy=sunlight*0.01;
+		energy=sunlight*1.0;
 		
 		
 	}

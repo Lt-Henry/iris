@@ -75,6 +75,9 @@ int SetCPU(lua_State * L)
 	return 0;
 }
 
+/*!
+	Number of samples used in integration
+*/
 int SetPathTracer(lua_State * L)
 {
 	Core * core = Core::Get();
