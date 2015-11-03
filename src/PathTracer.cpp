@@ -16,9 +16,6 @@ using namespace std;
 using namespace com::toxiclabs::iris;
 
 
-Spectrum sunlight("sunlight.spd");
-
-Vector sun(0.5,0.5,-0.5,0.0);
 
 
 
@@ -26,7 +23,6 @@ PathTracer::PathTracer(Scene & scene)
 {
 	this->scene=scene;
 	
-	sun.Normalize();
 	
 	
 	
@@ -91,9 +87,25 @@ PathTracer::PathTracer(Scene & scene)
 	tree = new KdTree(scene.triangles);
 	
 	Material * white = new Material();
-	vector<float> Kd = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+	vector<float> Kd(32,0.3f);
 	white->Kd=Kd;
 	this->scene.materials.push_back(white);
+	
+	
+	//hack ambient data
+	sun_pos=Vector(0.5,0.5,-0.5,0.0);
+	sun_pos.Normalize();
+	
+	/* 
+	 Sun spectrum from:
+	 http://www.pveducation.org/pvcdrom/appendices/standard-solar-spectra
+	 
+	 AM1.5 Global ASTMG173
+	*/
+	vector<float> e={0.79699,1.1141,1.0485,1.1232 ,0.87462,1.3499,1.5595,1.5291,
+	 1.5077,1.6181,1.6224,1.5451 ,1.5481,1.5236,1.5446,1.4825 ,1.5399,1.474,1.4816,1.502 ,
+	1.3709,1.4753,1.4686,1.4739 ,1.3924,1.434,1.3594,1.3992 ,1.4196,1.3969,1.1821,1.2823};
+	sun_energy=Spectrum(e);
 }
 
 PathTracer::~PathTracer()
@@ -409,7 +421,7 @@ Triangle * source,int depth)
 		Get proper energy from sky/sunlight
 		*/
 		
-		energy=sunlight*1.0;
+		energy=sun_energy;
 		
 		
 	}

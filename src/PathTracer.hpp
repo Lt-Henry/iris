@@ -39,6 +39,9 @@ namespace com
 			
 				public:
 				
+				Vector sun_pos;
+				Spectrum sun_energy;
+				
 				Scene scene;
 				KdTree * tree;
 				

@@ -17,6 +17,7 @@ namespace com
 	{
 		namespace iris
 		{
+		
 			class Scene
 			{
 				public:

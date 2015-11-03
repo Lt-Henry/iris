@@ -112,15 +112,11 @@ bool Triangle::RayCollision(Vector & origin,Vector & direction,Vector & collisio
 		{
 			beta = u0/u2;
 			alpha = (v0-beta*v2)/v1;
-			
-			
 		}
 		else
 		{
 			beta = (v0*u1 - u0*v1)/(v2*u1 - u2*v1);
 			alpha = (u0 - beta*u2)/u1;
-			
-			
 		}
 		
 		ret = (beta>=0.0f && beta<=1.0f) && (alpha>=0.0f && (alpha+beta)<=1.0f);
