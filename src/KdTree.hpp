@@ -5,6 +5,7 @@
 #include "Mesh.hpp"
 
 #include <vector>
+#include <list>
 
 namespace com
 {
@@ -42,6 +43,11 @@ namespace com
 						
 			class KdTree
 			{
+			
+				private:
+				
+				void AddRange(std::list<std::pair<float,float>> & ranges,std::pair<float,float> range);
+			
 				public:
 				
 				KdNode * root;

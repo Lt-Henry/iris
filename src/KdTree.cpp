@@ -74,6 +74,125 @@ KdTree::~KdTree()
 	Free();
 }
 
+void KdTree::AddRange(list<pair<float,float>> & ranges,pair<float,float> range)
+{
+
+	/* empty */
+	if(ranges.size()==0)
+	{
+		ranges.push_back(range);
+		return;
+	}
+
+	
+	/* middle */
+	list<pair<float,float>> tmp;
+	
+	bool looking=false;
+	float left,right;
+	
+	bool added=false;
+	
+	for(pair<float,float> p : ranges)
+	{
+		if(added)
+		{
+			tmp.push_back(p);
+			continue;
+		}
+	
+		/* R--R--P--P */
+		if(range.second < p.first)
+		{
+			tmp.push_back(range);
+			tmp.push_back(p);
+			added=true;
+			continue;
+		}
+		
+		/* P--P--R--R */
+		if(range.first > p.second)
+		{
+			tmp.push_back(p);
+			continue;
+		}
+		
+		
+		/* P--R--R--P */
+		if(range.first> p.first && range.second<p.second)
+		{
+			tmp.push_back(p);
+			added=true;
+			continue;
+		}
+
+		if(looking==false)
+		{
+			looking=true;
+			
+			if(range.first < p.first)
+			{
+				left=range.first;
+			}
+			else
+			{
+				left=p.first;
+			}
+		}
+		else
+		{
+			/* ----R--P--P-- */
+			if(range.second < p.first )
+			{
+				looking=false;
+				added=true;
+				right=range.second;
+				tmp.push_back(make_pair(left,right));
+			}
+		}
+	
+	}
+}
+
+
+void KdTree::Build(KdNode * node,vector<Triangle *> & triangles)
+{
+	if(triangles.size()<small)
+	{
+		return;
+	}
+	
+	/* Compute full set bound box using centroids */
+	
+	Vector min;
+	Vector max;
+	
+	/* using delta as key, so it is automatically sorted */
+	map<float,int> axis;
+		
+	min = triangles[0]->GetCentroid();
+	max=min;
+	
+	for(Triangle * triangle : triangles)
+	{
+		Vector c = triangle->GetCentroid();
+		
+		if(c.x>max.x)max.x=c.x;
+		if(c.y>max.y)max.y=c.y;
+		if(c.z>max.z)max.z=c.z;
+		
+		if(c.x<min.x)min.x=c.x;
+		if(c.y<min.y)min.y=c.y;
+		if(c.z<min.z)min.z=c.z;
+	}
+	
+	axis[std::abs(min.x-max.x)]=0;
+	axis[std::abs(min.y-max.y)]=1;
+	axis[std::abs(min.z-max.z)]=2;
+
+}
+
+
 void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 {
 	
