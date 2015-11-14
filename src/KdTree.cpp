@@ -3,10 +3,16 @@
 
 #include <iostream>
 #include <cmath>
+#include <algorithm>
 
 using namespace std;
 using namespace com::toxiclabs::iris;
 
+
+bool PairSort(pair<int,float> & i,pair<int,float> & j)
+{
+	return j.second>i.second;
+}
 
 /*
 Credits to:
@@ -148,10 +154,37 @@ void KdTree::AddRange(list<pair<float,float>> & ranges,pair<float,float> range)
 				added=true;
 				right=range.second;
 				tmp.push_back(make_pair(left,right));
+				tmp.push_back(p);
+			}
+			else
+			{
+				/* --P--R--P--*/
+				if(range.second < p.second)
+				{
+					looking=false;
+					added=true;
+					right=p.second;
+					tmp.push_back(make_pair(left,right));
+				}
 			}
 		}
 	
+	}//for
+	
+	if(added==false)
+	{
+		if(looking==true)
+		{
+			right=range.second;
+			tmp.push_back(make_pair(left,right));
+		}
+		else
+		{
+			tmp.push_back(range);
+		}
 	}
+	
+	ranges = tmp;
 }
 
 
@@ -159,8 +192,28 @@ void KdTree::Build(KdNode * node,vector<Triangle *> & triangles)
 {
 	if(triangles.size()<small)
 	{
+		node->type=KdNodeType::Child;
+		node->triangles=triangles;
+		node->left=nullptr;
+		node->right=nullptr;
+		
+		//compute aabb
+		node->aabb=triangles[0]->GetBoundBox();
+		
+		for(Triangle * triangle : triangles)
+		{
+			BoundBox b = triangle->GetBoundBox();
+			node->aabb=node->aabb + b;
+		}
+		
 		return;
 	}
+	
+	float best_score=-1;
+	float best_partition;
+	int best_axis;
+	vector<Triangle *> best_left;
+	vector<Triangle *> best_right;
 	
 	/* Compute full set bound box using centroids */
 	
@@ -168,7 +221,7 @@ void KdTree::Build(KdNode * node,vector<Triangle *> & triangles)
 	Vector max;
 	
 	/* using delta as key, so it is automatically sorted */
-	map<float,int> axis;
+	vector<pair<int,float> > axis;
 		
 	min = triangles[0]->GetCentroid();
 	max=min;
@@ -186,22 +239,131 @@ void KdTree::Build(KdNode * node,vector<Triangle *> & triangles)
 		if(c.z<min.z)min.z=c.z;
 	}
 	
-	axis[std::abs(min.x-max.x)]=0;
-	axis[std::abs(min.y-max.y)]=1;
-	axis[std::abs(min.z-max.z)]=2;
-
-}
-
-
-void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
-{
 	
-	if(triangles.size()<small)
+	axis.push_back(make_pair(0,std::abs(min.x-max.x)));
+	axis.push_back(make_pair(1,std::abs(min.y-max.y)));
+	axis.push_back(make_pair(2,std::abs(min.z-max.z)));
+	
+	std::sort(axis.begin(),axis.end(),PairSort);
+	
+	for(pair<int,float> p : axis)
 	{
-#ifdef DEBUG
-		cout<<"* Child node with "<<triangles.size()<<" triangles"<<endl;
-#endif
+		int current_axis=p.first;
+		
+		/* building axis projection */
+		
+		list<pair<float,float> > ranges;
+		
+		for(Triangle * triangle : triangles)
+		{
+			BoundBox bbox  = triangle->GetBoundBox();
+			float left = bbox.min.data[current_axis];
+			float right = bbox.max.data[current_axis];
+			
+			AddRange(ranges,make_pair(left,right));
+		
+		}//for
+		
+		
+		/* computing splitting planes */
+		
+		vector<float> splits;
+		
+		/* there are no free split point */
+		if(ranges.size()<2)
+		{
+			/* creating a fake split which obviusly, it will split at least one triangle*/
+			float left=ranges.front().first;
+			float right=ranges.back().second;
+			float len=right-left;
+			float step=len/10.0f;
+			float s = left;
+			for(int n=0;n<10;n++)
+			{
+				splits.push_back(s);
+				s=s+step;
+			}
+		}
+		else
+		{
+		
+			list<pair<float,float> >::iterator q;
+			list<pair<float,float> >::iterator qq;
+			
+			q=ranges.begin();
+			qq=ranges.begin();
+			qq++;
+			
+			while(qq!=ranges.end())
+			{
+				float midpoint = ((*q).second + (*qq).first)/2.0f;
+				splits.push_back(midpoint);
+				q++;
+				qq++;
+			}
+			
+		}
+		
+		
+		/* computing spliting value */
+		for(float split : splits)
+		{
+			vector<Triangle *> left;
+			vector<Triangle *> right;
+			
+			for(Triangle * triangle : triangles)
+			{
+				BoundBox bbox  = triangle->GetBoundBox();
+		
+				if(bbox.min.data[current_axis]>split)
+				{
+					right.push_back(triangle);
+				}
+		
+				if(bbox.max.data[current_axis]<split)
+				{
+					left.push_back(triangle);
+				}
+				
+				if(bbox.min.data[current_axis]<split && bbox.max.data[current_axis]>split)
+				{
+					left.push_back(triangle);
+					right.push_back(triangle);
+				}
+
+			}//for
+			
+			float t,l,r;
+			float score;
+			
+			t=triangles.size();
+			l=left.size();
+			r=right.size();
 	
+			score = (t/(l+r))-(std::abs(r-l)/t);
+	
+			if(left.size()==triangles.size() || right.size()==triangles.size())
+			{
+				score=0.0f;
+			}
+			
+			if(score>best_score)
+			{
+				best_axis=current_axis;
+				best_partition=split;
+				best_score=score;
+				best_left=left;
+				best_right=right;
+			}
+			
+		}//for
+		
+	}//for
+	
+	
+	/* No valid split found */
+	if(AproxToZero(best_score))
+	{
 		node->type=KdNodeType::Child;
 		node->triangles=triangles;
 		node->left=nullptr;
@@ -214,214 +376,41 @@ void KdTree::Build(KdNode * node,std::vector<Triangle *> & triangles)
 		{
 			BoundBox b = triangle->GetBoundBox();
 			node->aabb=node->aabb + b;
-		}
-
-#ifdef DEBUG
-		cout<<"Bound box: "<<endl;
-		node->aabb.min.Print();
-		node->aabb.max.Print();
-#endif
-		return;
-	}
-	
-	Vector min;
-	Vector max;
-	
-	float dx,dy,dz;
-		
-	min = triangles[0]->GetCentroid();
-	max=min;
-	
-	for(Triangle * triangle : triangles)
-	{
-		Vector c = triangle->GetCentroid();
-		
-		if(c.x>max.x)max.x=c.x;
-		if(c.y>max.y)max.y=c.y;
-		if(c.z>max.z)max.z=c.z;
-		
-		if(c.x<min.x)min.x=c.x;
-		if(c.y<min.y)min.y=c.y;
-		if(c.z<min.z)min.z=c.z;
-	}
-
-#ifdef DEBUG	
-	cout<<"Centroid bound box"<<endl;
-	min.Print();
-	max.Print();
-#endif
-	dx = std::abs(min.x-max.x);
-	dy = std::abs(min.y-max.y);
-	dz = std::abs(min.z-max.z);
-
-#ifdef DEBUG	
-	cout<<"Distances: "<<dx<<","<<dy<<","<<dz<<endl;
-#endif
-	
-	int s;
-	
-	
-	if(dx>dy)
-	{
-		if(dx>dz)
-		{
-#ifdef DEBUG
-			cout<<"x split"<<endl;
-#endif
-			node->type=KdNodeType::SplitX;
-			s=0;
-		}
-		else
-		{
-#ifdef DEBUG
-			cout<<"z split"<<endl;
-#endif
-			node->type=KdNodeType::SplitZ;
-			s=2;
 		}
 	}
 	else
 	{
-		if(dy>dz)
+		node->partition=best_partition;
+		
+		switch(best_axis)
 		{
-#ifdef DEBUG
-			cout<<"y split"<<endl;
-#endif
-			node->type=KdNodeType::SplitY;
-			s=1;
+			case 0:
+				node->type=KdNodeType::SplitX;
+			break;
+			
+			case 1:
+				node->type=KdNodeType::SplitY;
+			break;
+			
+			case 2:
+				node->type=KdNodeType::SplitZ;
+			break;
+
 		}
-		else
-		{
-#ifdef DEBUG
-			cout<<"z split"<<endl;
-#endif
-			node->type=KdNodeType::SplitZ;
-			s=2;
-		}
+		
+	
+	
+		node->left=new KdNode();
+		node->right=new KdNode();
+	
+		Build(node->left,best_left);
+		Build(node->right,best_right);
 	}
-	
-	//averaged mid point
-	float partition=0.0f;
-	int n=1;
-	float score;
-	int best=1;
-	float best_score=0.0f;
-	bool found=false;
-	
-	
-	recompute:	
-	
-	partition=min.data[s]+((max.data[s]-min.data[s])/40.0f)*n;
-	
-	vector<Triangle *> left;
-	vector<Triangle *> right;
-	
-	for(Triangle * triangle : triangles)
-	{
-		BoundBox bbox  = triangle->GetBoundBox();
-		
-		if(bbox.min.data[s]>partition)
-		{
-			right.push_back(triangle);
-		}
-		
-		if(bbox.max.data[s]<partition)
-		{
-			left.push_back(triangle);
-		}
-		
-		if(bbox.min.data[s]<partition && bbox.max.data[s]>partition)
-		{
-			left.push_back(triangle);
-			right.push_back(triangle);
-		}
-		
-	}
-	
-	float t,l,r;
-	
-	t=triangles.size();
-	l=left.size();
-	r=right.size();
-	
-	score = (t/(l+r))-(std::abs(r-l)/t);
-	
-	if(left.size()==triangles.size() || right.size()==triangles.size())
-		score=0.0f;
-#ifdef DEBUG
-	cout<<"- score: "<<score<<" n="<<n<<" left:"<<l<<" right:"<<r<<endl;
-#endif
-	
-	if(score>best_score)
-	{
-		best_score=score;
-		best=n;
-	}
-	
-	n++;
-	
-	if(!found)
-	{
-		if(n<40)goto recompute;
-		
-		if(best_score>0.0f)
-		{
-			n=best;
-			found=true;
-			goto recompute;
-		}
-	}
-	
-	
-	
-	
-#ifdef DEBUG	
-	cout<<"score: "<<best_score<<" n="<<best<<endl;
-	cout<<"total: "<<triangles.size()<<endl;
-	cout<<"left: "<<left.size()<<endl;
-	cout<<"right: "<<right.size()<<endl;
-	cout<<"shared:"<<((left.size()+right.size())-triangles.size())<<endl;
-#endif	
-	
-	
-	
-	if(AproxToZero(best_score))
-	{
-#ifdef DEBUG
-		cout<<"Couldn't split anymore"<<endl;
-		cout<<"* Child node with "<<triangles.size()<<" triangles"<<endl;
-#endif
-		node->type=KdNodeType::Child;
-		node->triangles=triangles;
-		node->left=nullptr;
-		node->right=nullptr;
-		
-		//compute aabb
-		node->aabb=triangles[0]->GetBoundBox();
-		
-		for(Triangle * triangle : triangles)
-		{
-			BoundBox b = triangle->GetBoundBox();
-			node->aabb=node->aabb + b;
-		}
-#ifdef DEBUG
-		cout<<"Bound box: "<<endl;
-		node->aabb.min.Print();
-		node->aabb.max.Print();
-#endif
-		
-		return;
-		
-	}
-	
-	node->partition=partition;
-	
-	node->left=new KdNode();
-	node->right=new KdNode();
-	
-	Build(node->left,left);
-	Build(node->right,right);
+
 }
+
+
+
 
 
 void KdTree::Free()
