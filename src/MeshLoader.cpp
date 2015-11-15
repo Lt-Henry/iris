@@ -166,6 +166,9 @@ void MeshLoader::Load(string filename, vector<Triangle *> & triangles, vector<Ma
 		triangle->pnormal = ac ^ ab;
 		triangle->pnormal.Normalize();
 		triangle->pnormal.w=0.0f;
+		
+		triangle->D = triangle->vertices[0] * triangle->pnormal;
+		
 		//triangle->pnormal.Negate();
 		
 		triangles.push_back(triangle);

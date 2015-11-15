@@ -58,5 +58,7 @@ void Scene::ApplyCamera()
 		triangle->normals[2]=triangle->normals[2] * mC;
 		
 		triangle->pnormal=triangle->pnormal * mC;
+		
+		triangle->D=triangle->vertices[0] * triangle->pnormal;
 	}
 }

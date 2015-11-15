@@ -17,7 +17,7 @@ bool Triangle::RayCollision(Vector & origin,Vector & direction,Vector & collisio
 	
 	
 	float cosAlpha;
-	float D;
+	//float D;
 	float deltaD;
 	float t;
 	
@@ -35,13 +35,13 @@ bool Triangle::RayCollision(Vector & origin,Vector & direction,Vector & collisio
 	
 	
 	//D=A*normal
-	D = vertices[0] * Nv;
+	//D = vertices[0] * Nv;
 	
 	//incident angle
 	cosAlpha = direction * Nv;
 		
 	// deltaD = D - origin*normal;
-	deltaD = D - (origin * Nv);
+	deltaD = this->D - (origin * Nv);
 	
 	//t=(deltaD/cosAlpha);
 	t=deltaD/cosAlpha;
@@ -108,7 +108,7 @@ bool Triangle::RayCollision(Vector & origin,Vector & direction,Vector & collisio
 		v1=vertices[1][i2] - vertices[0][i2];
 		v2=vertices[2][i2] - vertices[0][i2];
 		
-		if(AproxToZero(u1))
+		if(ISZERO(u1))
 		{
 			beta = u0/u2;
 			alpha = (v0-beta*v2)/v1;

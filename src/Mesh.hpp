@@ -39,6 +39,9 @@ namespace com
 				
 				int material;
 				
+				/* precomputed D */
+				float D; 
+				
 				bool RayCollision(Vector & origin,Vector & direction,Vector & collision);
 				
 				void Print();

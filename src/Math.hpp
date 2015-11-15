@@ -7,6 +7,8 @@
 #define EPSILON 0.000001
 #define INV_PI (1.0f/M_PI)
 
+#define ISZERO(v) (std::abs(v)<EPSILON)
+
 namespace com
 {
 	namespace toxiclabs
