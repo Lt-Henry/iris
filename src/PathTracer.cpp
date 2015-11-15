@@ -222,6 +222,7 @@ void PathTracer::RenderThread(int id)
 	
 	Vector origin;
 	Vector direction;
+	Vector intersection;
 
 	Spectrum incoming;
 	Spectrum outcoming;
@@ -249,16 +250,16 @@ void PathTracer::RenderThread(int id)
 				{
 					for(int sx=0;sx<samples;sx++)
 					{
-						direction.Set
+						intersection.Set
 						((i*pw)+((pdw*sx)+pw*0.25f)-(width*pw*0.5f),
 						((pdh*sy)+ph*0.25f)+(height*ph*0.5f)-(j*ph),5.0f,
 						0.0f);
 	
-						direction = direction - origin;
+						direction = intersection - origin;
 				
 						direction.Normalize();
 						//RayCast(id,origin,direction,incoming);
-						incoming=Ray(RayType::Visibility,origin,direction);
+						incoming=Ray(RayType::Visibility,intersection,direction);
 												
 						incoming=incoming*(1.0f/(samples*samples));
 						outcoming=outcoming+incoming;

@@ -192,6 +192,7 @@ void KdTree::Build(KdNode * node,vector<Triangle *> & triangles)
 {
 	if(triangles.size()<small)
 	{
+		cout<<"* node is small enought: "<<triangles.size()<<endl;
 		node->type=KdNodeType::Child;
 		node->triangles=triangles;
 		node->left=nullptr;
@@ -286,7 +287,7 @@ void KdTree::Build(KdNode * node,vector<Triangle *> & triangles)
 		}
 		else
 		{
-		
+			cout<<"* found natural splits: "<<ranges.size()<<endl;
 			list<pair<float,float> >::iterator q;
 			list<pair<float,float> >::iterator qq;
 			
@@ -315,7 +316,7 @@ void KdTree::Build(KdNode * node,vector<Triangle *> & triangles)
 			{
 				BoundBox bbox  = triangle->GetBoundBox();
 		
-				if(bbox.min.data[current_axis]>split)
+				if(bbox.min.data[current_axis]>=split)
 				{
 					right.push_back(triangle);
 				}
@@ -364,6 +365,7 @@ void KdTree::Build(KdNode * node,vector<Triangle *> & triangles)
 	/* No valid split found */
 	if(AproxToZero(best_score))
 	{
+		cout<<"* cannot split anymore: "<<triangles.size()<<endl;
 		node->type=KdNodeType::Child;
 		node->triangles=triangles;
 		node->left=nullptr;
@@ -399,6 +401,7 @@ void KdTree::Build(KdNode * node,vector<Triangle *> & triangles)
 		}
 		
 	
+		cout<<"Split: ["<<triangles.size()<<"]"<<best_left.size()<<","<<best_right.size()<<endl;
 	
 		node->left=new KdNode();
 		node->right=new KdNode();
