@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 #include <sstream>
+#include <cmath>
 
 #include "Spectrum.hpp"
 #include "Math.hpp"
@@ -179,6 +180,71 @@ Spectrum::Spectrum(vector<float> & values)
 		data[n]=value;
 		n++;
 	}
+	
+}
+
+
+Spectrum::Spectrum(int K)
+{
+	
+	/* Plank constant */
+	const float h=6.626E-34;
+	
+	/* Blotzman constant */
+	const float k=1.38E-23;
+	
+	/* Light speed */
+	const float c=3E8;
+	
+	float maxE=0.0f;
+	float values[32];
+	
+	int wl = Spectrum::lambdaStart;
+	
+	for(int n=0;n<32;n++)
+	{
+		/*
+						 A    C
+			E(lambda,T)=--- x---
+						 B    D
+		*/
+		float E;
+		float lambda,T;
+		float A,B,C,D;
+		float ex;
+		
+		lambda=wl;
+		T=K;
+		
+		
+		A=2.0f*h*std::pow(c,2);
+		B=std::pow(lambda,5);
+		C=1.0f;
+		
+		ex = (h*c) / (lambda*k*T);
+		D=std::exp(ex) -1.0f;
+		
+		E=(A/B)*(C/D);
+		
+		cout<<A<<","<<B<<","<<C<<","<<D<<endl;
+		cout<<"lambda: "<<lambda<<" E="<<E<<endl;
+		
+		if(E>maxE)
+		{
+			maxE=E;
+		}
+		
+		values[n]=E;
+		
+		wl+=Spectrum::lambdaStep;
+	}
+	
+	/* normalization step */
+	for(int n=0;n<32;n++)
+	{
+		data[n]=values[n]/maxE;
+	}
+	
 	
 }
 

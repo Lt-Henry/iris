@@ -36,6 +36,14 @@ namespace com
 				Spectrum();
 				Spectrum(std::string filename);
 				Spectrum(std::vector<float> & values);
+				
+				/*!
+					Create a spectrum given a temperature K
+					using Planck Radiation law
+					
+					url:http://csep10.phys.utk.edu/astr162/lect/light/radiation.html
+				*/
+				Spectrum(int K);
 
 				void Clear();
 				std::string ToString();
