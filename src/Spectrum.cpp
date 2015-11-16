@@ -188,16 +188,16 @@ Spectrum::Spectrum(int K)
 {
 	
 	/* Plank constant */
-	const float h=6.626E-34;
+	const double h=6.62606957e-34;
 	
 	/* Blotzman constant */
-	const float k=1.38E-23;
+	const double k=1.3806488e-23;
 	
 	/* Light speed */
-	const float c=3E8;
+	const double c=299792458.0;
 	
-	float maxE=0.0f;
-	float values[32];
+	double maxE=0.0;
+	double values[32];
 	
 	int wl = Spectrum::lambdaStart;
 	
@@ -208,12 +208,12 @@ Spectrum::Spectrum(int K)
 			E(lambda,T)=--- x---
 						 B    D
 		*/
-		float E;
-		float lambda,T;
-		float A,B,C,D;
-		float ex;
+		double E;
+		double lambda,T;
+		double A,B,C,D;
+		double ex;
 		
-		lambda=wl;
+		lambda=wl*10e-10;
 		T=K;
 		
 		
@@ -225,10 +225,13 @@ Spectrum::Spectrum(int K)
 		D=std::exp(ex) -1.0f;
 		
 		E=(A/B)*(C/D);
-		
+		/*
+		cout<<"h*c="<<h*c<<" lambda*k*t="<<(lambda*k*T)<<endl;
+		cout<<"ex="<<ex<<endl;
+		cout<<"e^ex="<<std::exp(ex)<<endl;
 		cout<<A<<","<<B<<","<<C<<","<<D<<endl;
-		cout<<"lambda: "<<lambda<<" E="<<E<<endl;
-		
+		cout<<"lambda="<<lambda<<" E="<<E<<endl;
+		*/
 		if(E>maxE)
 		{
 			maxE=E;
