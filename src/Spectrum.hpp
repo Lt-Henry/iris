@@ -18,23 +18,40 @@ namespace com
 			{
 				public:
 				
-				/* CIE XYZ precomputed tables */
+				/*!
+				 *  CIE XYZ precomputed tables 
+				 **/
 				
 				static float X[32];
 				static float Y[32];
 				static float Z[32];
 				static float yint;
 				
-				/* sampled range [390 - 710[  */
+				/*!
+				 *  sampled range [390 - 710[  
+				 **/
 				static const int lambdaStart = 390; 
 				static const int lambdaEnd = 710; 
 				static const int lambdaStep = 10;
 				
-				/* using 32 samples, in order to take profit from sse operations*/
+				/*!
+				 *  using 32 samples, in order to take profit from sse operations (some day)
+				 * */
 				float data[32];
 				
+				/*!
+				 * Simple constructor
+				 */ 
 				Spectrum();
+				
+				/*!
+				 * Creates spectrum from a spd file
+				 */ 
 				Spectrum(std::string filename);
+				
+				/*!
+				 * Creates a spectrum from a vector of 32 floats
+				 */ 
 				Spectrum(std::vector<float> & values);
 				
 				/*!
@@ -44,13 +61,27 @@ namespace com
 					url:http://csep10.phys.utk.edu/astr162/lect/light/radiation.html
 				*/
 				Spectrum(int K);
-
+				
+				/*!
+				 * Set all values to zero
+				 */ 
 				void Clear();
+				
+				/*!
+				 * Converts to string
+				 */ 
 				std::string ToString();
 				
+				
+				/*!
+				 * Converts spectrum to a XYZ color representation
+				 */ 
 				ColorXYZ ToXYZ();
 				
-				
+				/*!
+				 * Normalize spectrum
+				 */ 
+				 void Normalize();
 				
 			};
 			

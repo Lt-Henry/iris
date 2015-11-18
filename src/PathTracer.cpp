@@ -106,14 +106,14 @@ PathTracer::PathTracer(Scene & scene)
 	 1.5077,1.6181,1.6224,1.5451 ,1.5481,1.5236,1.5446,1.4825 ,1.5399,1.474,1.4816,1.502 ,
 	1.3709,1.4753,1.4686,1.4739 ,1.3924,1.434,1.3594,1.3992 ,1.4196,1.3969,1.1821,1.2823};
 	//sun_energy=Spectrum(e);
-	sun_energy=Spectrum(6500);
-	cout<<"sun:"<<endl<<sun_energy.ToString()<<endl;
+	
+	sun_energy=Spectrum(9000);
+	sun_energy.Normalize();
+	
 }
 
 PathTracer::~PathTracer()
 {
-	
-	
 	
 	delete tree;
 	delete image;

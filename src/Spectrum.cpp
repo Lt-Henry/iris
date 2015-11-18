@@ -196,8 +196,6 @@ Spectrum::Spectrum(int K)
 	/* Light speed */
 	const double c=299792458.0;
 	
-	double maxE=0.0;
-	double values[32];
 	
 	int wl = Spectrum::lambdaStart;
 	
@@ -225,28 +223,13 @@ Spectrum::Spectrum(int K)
 		D=std::exp(ex) -1.0f;
 		
 		E=(A/B)*(C/D);
-		/*
-		cout<<"h*c="<<h*c<<" lambda*k*t="<<(lambda*k*T)<<endl;
-		cout<<"ex="<<ex<<endl;
-		cout<<"e^ex="<<std::exp(ex)<<endl;
-		cout<<A<<","<<B<<","<<C<<","<<D<<endl;
-		cout<<"lambda="<<lambda<<" E="<<E<<endl;
-		*/
-		if(E>maxE)
-		{
-			maxE=E;
-		}
 		
-		values[n]=E;
+		data[n]=E;
 		
 		wl+=Spectrum::lambdaStep;
 	}
 	
-	/* normalization step */
-	for(int n=0;n<32;n++)
-	{
-		data[n]=values[n]/maxE;
-	}
+	
 	
 	
 }
@@ -297,6 +280,25 @@ ColorXYZ Spectrum::ToXYZ()
 	return color;
 }
 
+void Spectrum::Normalize()
+{
+	float max=-1; //negative colors has no sense
+	
+	for(int n=0;n<32;n++)
+	{
+		if(data[n]>max)
+		{
+			max=data[n];
+		}
+	}
+	
+	max=1.0f/max;
+	
+	for(int n=0;n<32;n++)
+	{
+		data[n]=data[n]*max;
+	}
+}
 
 
 Spectrum com::toxiclabs::iris::operator+(Spectrum a,Spectrum & b)
