@@ -3,11 +3,22 @@
 #define _IRIS_MATH_
 
 #include <stdint.h>
+#include <cmath>
+
+#ifdef _IRIS_SSE_
+#warning "Using SSE Instrinsics"
+#include <xmmintrin.h>
+#include <pmmintrin.h>
+#endif
+
+#ifdef _IRIS_SSE4_
+#warning "Using SSE4 Instrinsics"
+#include <smmintrin.h>
+#endif
 
 #define EPSILON 0.000001
 #define INV_PI (1.0f/M_PI)
 
-#define ISZERO(v) (std::abs(v)<EPSILON)
 
 namespace com
 {
@@ -19,8 +30,53 @@ namespace com
 			float DegToRad(float degree);
 			float RadToDeg(float rad);
 				
-			bool AproxToZero(float v);
-			float Maxf(float a,float b);
+			inline bool IsZero(float v)
+			{
+			#ifdef _IRIS_SSE_
+				#warning "Using fast IsZero"
+			
+				static const __m128 E=_mm_set1_ps(EPSILON);
+			/*
+			abs code credits:
+			http://fastcpp.blogspot.com.es/2011/03/changing-sign-of-float-values-using-sse.html
+			*/
+				static const __m128 SIGNMASK =
+					_mm_castsi128_ps(_mm_set1_epi32(0x80000000));
+				__m128 V; 
+				__m128 absval;
+				__m128 R;
+				int ret;
+				 
+				V=_mm_set1_ps(v);
+				absval= _mm_andnot_ps(SIGNMASK, V); // absval = abs(val)
+				R=_mm_cmplt_ss(absval,E);
+				
+				ret=_mm_extract_epi32(_mm_castps_si128(R),0);
+				
+				return (bool)ret;
+			#else
+				return (std::abs(v)<EPSILON);
+			#endif
+			}
+			
+			
+			inline float Maxf(float a,float b)
+			{
+			#ifdef _IRIS_SSE_
+				__m128 A;
+				__m128 B;
+				__m128 R;
+				float ret;
+				A=_mm_set1_ps(a);
+				B=_mm_set1_ps(b);
+				R=_mm_max_ss(A,B);
+				//_mm_store_ss(&ret,R);
+				ret=_mm_cvtss_f32(R);
+				return ret;
+			#else
+				return (a>b) ? a : b;
+			#endif
+			}
 							
 			/*!
 				Simple homogeneus matrix class

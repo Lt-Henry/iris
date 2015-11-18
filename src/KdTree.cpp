@@ -363,7 +363,7 @@ void KdTree::Build(KdNode * node,vector<Triangle *> & triangles)
 	
 	
 	/* No valid split found */
-	if(AproxToZero(best_score))
+	if(IsZero(best_score))
 	{
 		cout<<"* cannot split anymore: "<<triangles.size()<<endl;
 		node->type=KdNodeType::Child;
@@ -464,7 +464,7 @@ void KdTree::Traverse(Vector & origin,Vector & direction,KdNode * node,vector<Kd
 	float v = normals[span_axis] * direction;
 	
 	/* ray is not parallel */
-	if(!AproxToZero(v))
+	if(!IsZero(v))
 	{
 		/* right side */ 
 		if(origin[span_axis]>node->partition)

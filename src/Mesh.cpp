@@ -108,7 +108,7 @@ bool Triangle::RayCollision(Vector & origin,Vector & direction,Vector & collisio
 		v1=vertices[1][i2] - vertices[0][i2];
 		v2=vertices[2][i2] - vertices[0][i2];
 		
-		if(ISZERO(u1))
+		if(IsZero(u1))
 		{
 			beta = u0/u2;
 			alpha = (v0-beta*v2)/v1;

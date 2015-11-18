@@ -150,7 +150,7 @@ Spectrum::Spectrum(string filename)
 			float v1=left->second;
 			float v2=right->second;
 			
-			if(AproxToZero(dist))
+			if(IsZero(dist))
 			{
 				data[n]=v1;
 			}
