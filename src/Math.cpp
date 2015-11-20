@@ -16,21 +16,6 @@ namespace com
 		namespace iris
 		{
 			
-			float DegToRad(float degree)
-			{
-				/*
-					PI/180=0.01745329251
-				*/
-				return degree*0.01745329251f;
-			}
-
-			float RadToDeg(float rad)
-			{
-				return (rad*180.0f)/M_PI;
-			}
-			
-			
-			
 			Matrix Matrix::CreateIdentity()
 			{
 				Matrix m;
@@ -71,252 +56,161 @@ namespace com
 			
 			void Vector::Set(float x,float y,float z,float w=0.0f)
 			{
-				this->x=x;
-				this->y=y;
-				this->z=z;
-				this->w=w;
+				data[0]=x;
+				data[1]=y;
+				data[2]=z;
+				data[3]=w;
 			}
 			
 			float Vector::Module()
 			{
-			#ifdef _IRIS_SSE_
-				#warning "Using SSE Module"
+		
 				
 				float dist;
 				__m128 R;
-				__m128 V;
 				
-				V=_mm_loadu_ps(data);
-				R=_mm_dp_ps(V, V, 0x71);
+				
+				R=_mm_dp_ps(data, data, 0x71);
 				R=_mm_sqrt_ss(R);
 				dist=_mm_cvtss_f32(R);
-				//_mm_storeu_ps(dist,R);
 									
 				return dist;
-			#else
-			
-				float dist = std::sqrt((data[0]*data[0])+(data[1]*data[1])+(data[2]*data[2])+(data[3]*data[3]));
-				
-				return dist;
-			#endif
+		
 			}
 			
 			void Vector::Negate()
 			{
-				x=-x;
-				y=-y;
-				z=-z;
-				w=-w;
+				data[0]=-data[0];
+				data[1]=-data[1];
+				data[2]=-data[2];
+				data[3]=-data[3];
 			}
 			
 			void Vector::Normalize()
 			{
-			#ifdef _IRIS_SSE_
 				static const __m128 ONE=_mm_set1_ps(1.0f);
-				__m128 V;
+				
 				__m128 R;
 				__m128 S;
 				float s;
 								
-				V=_mm_loadu_ps(data);
-				S=_mm_dp_ps(V, V, 0x71);
+				S=_mm_dp_ps(data, data, 0x71);
 				S=_mm_sqrt_ss(S);
 				S=_mm_div_ss(ONE,S);
 				//_mm_store_ss(&s,S);
 				s=_mm_cvtss_f32(S);
 				
 				S=_mm_set1_ps(s);//broadcast content to four elements
-				R=_mm_mul_ps(V,S);
-				_mm_storeu_ps(data,R);
-			#else
-				float tmp = (x*x)+(y*y)+(z*z)+(w*w);
-				float scale = 1.0f/std::sqrt(tmp);
-				
-				x=x*scale;
-				y=y*scale;
-				z=z*scale;
-				w=w*scale;
-			#endif
-								
+				data=_mm_mul_ps(data,S);
+			
 			}
 			
 			void Vector::Homogeneus()
 			{
-				float f=1.0f/w;
+				float f=1.0f/data[3];
 				
-				x=x*f;
-				y=y*f;
-				z=z*f;
-				w=w*f;
+				data[0]=data[0]*f;
+				data[1]=data[1]*f;
+				data[2]=data[2]*f;
+				data[3]=data[3]*f;
 			}
 			
 			void Vector::Abs()
 			{
-			#ifdef _IRIS_SSE_
 				static const __m128 SIGNMASK =
 					_mm_castsi128_ps(_mm_set1_epi32(0x80000000));
 				__m128 V; 
 				__m128 absval;
 				 
-				V=_mm_loadu_ps(data);
-				absval= _mm_andnot_ps(SIGNMASK, V); // absval = abs(val)
+				 
+				//V=_mm_loadu_ps(data);
+				//absval= _mm_andnot_ps(SIGNMASK, V); // absval = abs(val)
+				data=_mm_andnot_ps(SIGNMASK,data);
+				//_mm_storeu_ps(data,absval);
 				
-				_mm_storeu_ps(data,absval);
-				
-			#else
-				x=fabs(x);
-				y=fabs(y);
-				z=fabs(z);
-				w=fabs(w);
-			#endif
 			}
 			
 			void Vector::Print()
 			{
-				std::cout<<"vector:"<<x<<","<<y<<","<<z<<","<<w<<std::endl;
+				std::cout<<"vector:"<<data[0]<<","<<data[1]<<","<<data[2]<<","<<data[3]<<std::endl;
 			}
 						
 			
 			Vector operator+(Vector  a,Vector &b)
 			{
-			#ifdef _IRIS_SSE_
-				Vector v;
-			
-				__m128 A;
-				__m128 B;
-				__m128 R;
-				A=_mm_loadu_ps(a.data);
-				B=_mm_loadu_ps(b.data);
-				R=_mm_add_ps(A,B);
-				_mm_storeu_ps(v.data,R);
-			
-				return v;
-			#else
-				Vector v(a.data[0]+b.data[0],a.data[1]+b.data[1],a.data[2]+b.data[2],a.data[3]+b.data[3]);
-			
-				return v;
-			#endif
 				
+				Vector v;
+				v.data=_mm_add_ps(a.data,b.data);
+				return v;
 			}
 			
 			Vector operator-(Vector  a,Vector &b)
 			{
-			#ifdef _IRIS_SSE_
 				Vector v;
-			
-				__m128 A;
-				__m128 B;
-				__m128 R;
-				A=_mm_loadu_ps(a.data);
-				B=_mm_loadu_ps(b.data);
-				R=_mm_sub_ps(A,B);
-				_mm_storeu_ps(v.data,R);
-			
+				v.data=_mm_sub_ps(a.data,b.data);
 				return v;
-			
-			#else
-				Vector v(a.data[0]-b.data[0],a.data[1]-b.data[1],a.data[2]-b.data[2],a.data[3]-b.data[3]);
-			
-				return v;
-			#endif
-				
-				
 			}
 			
 			float operator*(Vector &a,Vector &b)
 			{
-			#ifdef _IRIS_SSE_
-				#ifdef _IRIS_SSE4_
-					#warning "Using SSE4.1 dot product"
-					float ret;
-									
-					__m128 A;
-					__m128 B;
-					__m128 R;
-					A=_mm_loadu_ps(a.data);
-					B=_mm_loadu_ps(b.data);
-					/* mask: 0111 0001 */
-					R=_mm_dp_ps(A,B,0x71);
-					_mm_store_ss(&ret,R);
-					return ret;
-			
-				#else
-					#warning "Using SSE3 dot product"
-					float ret;
-					__m128 A;
-					__m128 B;
-					__m128 R1;
-					__m128 R2;
-					__m128 R3;
-					A=_mm_set_ps(a.data[0],a.data[1],a.data[2],0.0f);
-					B=_mm_set_ps(b.data[0],b.data[1],b.data[2],0.0f);
-					R1 = _mm_mul_ps(A, B);
-					R2 = _mm_hadd_ps(R1, R1);
-					R3 = _mm_hadd_ps(R2, R2);
-					_mm_store_ss(&ret, R3);
-					
-					return ret;
-				#endif
-			
-			#else
-			
-			
-				float tmp[4];
+#ifdef _IRIS_SSE4_
 				float ret;
-				
-				tmp[0]=a.x*b.x;
-				tmp[1]=a.y*b.y;
-				tmp[2]=a.z*b.z;
-				tmp[3]=a.w*b.w;
-				
-				ret = tmp[0]+tmp[1]+tmp[2]+tmp[3];
+						
+				__m128 R;
+				/* mask: 0111 0001 */
+				R=_mm_dp_ps(a.data,b.data,0x71);
+				_mm_store_ss(&ret,R);
 				return ret;
-			#endif
+			
+#else
+				float ret;
+				__m128 A;
+				__m128 B;
+				__m128 R1;
+				__m128 R2;
+				__m128 R3;
+				A=_mm_set_ps(a.data[0],a.data[1],a.data[2],0.0f);
+				B=_mm_set_ps(b.data[0],b.data[1],b.data[2],0.0f);
+				R1 = _mm_mul_ps(A, B);
+				R2 = _mm_hadd_ps(R1, R1);
+				R3 = _mm_hadd_ps(R2, R2);
+				_mm_store_ss(&ret, R3);
+				
+				return ret;
+#endif
 			}
 			
 			Vector operator^(Vector &a,Vector &b)
 			{
 				Vector r;
 				
-				r.x = a.y*b.z - a.z*b.y;
-				r.y = a.z*b.x - a.x*b.z;
-				r.z = a.x*b.y - a.y*b.x;
-				r.w=0.0f;
+				r.data[0] = a.data[1]*b.data[2] - a.data[2]*b.data[1];
+				r.data[1] = a.data[2]*b.data[0] - a.data[0]*b.data[2];
+				r.data[2] = a.data[0]*b.data[1] - a.data[1]*b.data[0];
+				r.data[3]=0.0f;
 				
 				return r;
-						
 			}
 			
 			Vector operator*(Vector &a,float s)
 			{
-			#ifdef _IRIS_SSE_
 				Vector r;
 			
-				__m128 V;
 				__m128 F;
-				__m128 R;
-				V=_mm_loadu_ps(a.data);
 				F=_mm_set1_ps(s);
-				R=_mm_mul_ps(V,F);
-				_mm_storeu_ps(r.data,R);
-			
+				r.data=_mm_mul_ps(a.data,F);
+				
 				return r;
-			#else
-			
-				Vector r(a.x*s,a.y*s,a.z*s,a.w*s);
-			
-				return r;
-			#endif
 			}
 			
 			Vector operator*(Vector &v,Matrix &m)
 			{
 				Vector r;
 				
-				r.x=v.x*m.data[0] + v.y*m.data[4] + v.z*m.data[8] + v.w*m.data[12];
-				r.y=v.x*m.data[1] + v.y*m.data[5] + v.z*m.data[9] + v.w*m.data[13];
-				r.z=v.x*m.data[2] + v.y*m.data[6] + v.z*m.data[10] + v.w*m.data[14];
-				r.w=v.x*m.data[3] + v.y*m.data[7] + v.z*m.data[11] + v.w*m.data[15];
+				r.data[0]=v.data[0]*m.data[0] + v.data[1]*m.data[4] + v.data[2]*m.data[8] + v.data[3]*m.data[12];
+				r.data[1]=v.data[0]*m.data[1] + v.data[1]*m.data[5] + v.data[2]*m.data[9] + v.data[3]*m.data[13];
+				r.data[2]=v.data[0]*m.data[2] + v.data[1]*m.data[6] + v.data[2]*m.data[10] + v.data[3]*m.data[14];
+				r.data[3]=v.data[0]*m.data[3] + v.data[1]*m.data[7] + v.data[2]*m.data[11] + v.data[3]*m.data[15];
 						 
 				return r;
 			}
@@ -353,10 +247,10 @@ namespace com
 			{
 				Vector r;
 				
-				r.x=a.x + factor*(b.x-a.x);
-				r.y=a.y + factor*(b.y-a.y);
-				r.x=a.z + factor*(b.z-a.z);
-				r.x=a.w + factor*(b.w-a.w);
+				r.data[0]=a.data[0] + factor*(b.data[0]-a.data[0]);
+				r.data[1]=a.data[1] + factor*(b.data[1]-a.data[1]);
+				r.data[2]=a.data[2] + factor*(b.data[2]-a.data[2]);
+				r.data[3]=a.data[3] + factor*(b.data[3]-a.data[3]);
 									
 				return r;
 			}

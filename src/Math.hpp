@@ -5,14 +5,11 @@
 #include <stdint.h>
 #include <cmath>
 
-#ifdef _IRIS_SSE_
-#warning "Using SSE Instrinsics"
+
 #include <xmmintrin.h>
 #include <pmmintrin.h>
-#endif
 
 #ifdef _IRIS_SSE4_
-#warning "Using SSE4 Instrinsics"
 #include <smmintrin.h>
 #endif
 
@@ -27,13 +24,18 @@ namespace com
 		namespace iris
 		{
 			
-			float DegToRad(float degree);
-			float RadToDeg(float rad);
+			inline float DegToRad(float degree)
+			{
+				return degree*0.01745329251f; //Pi/180.0
+			}
+			
+			inline float RadToDeg(float rad)
+			{
+				return (rad*180.0f)/M_PI;
+			}
 				
 			inline bool IsZero(float v)
 			{
-			#ifdef _IRIS_SSE_
-				#warning "Using fast IsZero"
 			
 				static const __m128 E=_mm_set1_ps(EPSILON);
 			/*
@@ -54,15 +56,11 @@ namespace com
 				ret=_mm_extract_epi32(_mm_castps_si128(R),0);
 				
 				return (bool)ret;
-			#else
-				return (std::abs(v)<EPSILON);
-			#endif
 			}
 			
 			
 			inline float Maxf(float a,float b)
 			{
-			#ifdef _IRIS_SSE_
 				__m128 A;
 				__m128 B;
 				__m128 R;
@@ -73,9 +71,6 @@ namespace com
 				//_mm_store_ss(&ret,R);
 				ret=_mm_cvtss_f32(R);
 				return ret;
-			#else
-				return (a>b) ? a : b;
-			#endif
 			}
 							
 			/*!
@@ -111,9 +106,8 @@ namespace com
 							float z;
 							float w;
 						};
-						float data[4];
+						__m128 data;
 					};
-					
 					/*!
 						Empty constructor
 					*/
@@ -166,7 +160,7 @@ namespace com
 					*/
 					inline float& operator[] (int n)
 					{
-						return data[n];
+						return ((float*)&data)[n];
 					}
 				
 			};
