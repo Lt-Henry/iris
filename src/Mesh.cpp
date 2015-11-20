@@ -2,11 +2,118 @@
 #include "Mesh.hpp"
 
 #include <iostream>
+#include <sstream>
 #include <cmath>
 
 using namespace std;
 using namespace com::toxiclabs::iris;
 
+
+BoundBox::BoundBox()
+{
+	infinite=true;
+}
+
+BoundBox::BoundBox(Vector & min,Vector & max)
+{
+	infinite=false;
+	this->min=min;
+	this->max=max;
+}
+
+Plane::Plane(float height)
+{
+	base.Set(0,height,0,1);
+	normal.Set(0,1,0,0);
+	coplanar.Set(1,0,0,0);
+}
+
+bool Plane::RayCollision(Vector & origin,Vector & direction,Vector & collision)
+{
+	float D;
+	float cosAlpha;
+	float deltaD;
+	float t;
+	
+	D=base * normal;
+	cosAlpha=direction*normal;
+	
+	deltaD = D - (origin*normal);
+	
+	t=deltaD/cosAlpha;
+	
+	if(t>0.0f)
+	{
+		collision=(direction*t)+origin;
+		return true;
+	}
+	
+	return false;
+}
+
+Vector Plane::GetCentroid()
+{
+	return base; //easy, hu?
+}
+
+BoundBox Plane::GetBoundBox()
+{
+	return BoundBox();//return a infinite bound box
+}
+
+//maybe this code should be factorized
+Vector Plane::PerturbateNormal(float angle,float r1,float r2)
+{
+	Vector trNormal;
+	Vector R1;
+	Vector R2;
+	Vector pN;
+
+
+	float factor1 = M_PI * 2.0f * r1;
+	float factor2 =  angle*std::sqrt(r2);
+
+	trNormal=normal;
+	
+	
+	float x = std::cos( factor1 ) * factor2;
+	float y = std::sin( factor1 ) * factor2;
+	float z = std::sqrt( 1.0f - (factor2 * factor2) );
+	
+	R1 = coplanar;
+	R2 = R1 ^ trNormal;
+	
+	R1.Normalize();
+	R2.Normalize();	
+	
+	R1 = R1 * x;
+	R2 = R2 * y;
+	trNormal = trNormal * z;
+	
+	pN = R1 + R2 + trNormal;
+	pN.Normalize();
+	
+	return pN;
+}
+
+void Plane::Mult(Matrix * m)
+{
+	base=base * m;
+	
+	base.Homogeneus();
+	
+	normal=normal * m;
+	
+}
+
+string Plane::ToString()
+{
+	stringstream ss;
+	
+	ss<<"plane: height="<<height;
+	
+	return ss.str();
+}
 
 bool Triangle::RayCollision(Vector & origin,Vector & direction,Vector & collision)
 {
@@ -148,23 +255,24 @@ Vector Triangle::GetCentroid()
 BoundBox Triangle::GetBoundBox()
 {
 
-	BoundBox ret;
+	Vector min;
+	Vector max;
 	
-	ret.min=vertices[0];
-	ret.max=vertices[0];
+	min=vertices[0];
+	max=vertices[0];
 
 	for(int n=0;n<3;n++)
 	{
-		if(vertices[n].x>ret.max.x)ret.max.x=vertices[n].x;
-		if(vertices[n].y>ret.max.y)ret.max.y=vertices[n].y;
-		if(vertices[n].z>ret.max.z)ret.max.z=vertices[n].z;
+		if(vertices[n].x>max.x)max.x=vertices[n].x;
+		if(vertices[n].y>max.y)max.y=vertices[n].y;
+		if(vertices[n].z>max.z)max.z=vertices[n].z;
 		
-		if(vertices[n].x<ret.min.x)ret.min.x=vertices[n].x;
-		if(vertices[n].y<ret.min.y)ret.min.y=vertices[n].y;
-		if(vertices[n].z<ret.min.z)ret.min.z=vertices[n].z;
+		if(vertices[n].x<min.x)min.x=vertices[n].x;
+		if(vertices[n].y<min.y)min.y=vertices[n].y;
+		if(vertices[n].z<min.z)min.z=vertices[n].z;
 	}
 	
-	return ret;
+	return BoundBox(min,max);
 }
 
 BoundBox com::toxiclabs::iris::operator+(BoundBox & a,BoundBox & b)
@@ -282,4 +390,12 @@ Vector Triangle::GetAveragedNormal(Vector & collision)
 	normal.Normalize();	
 
 	return normal;	
+}
+
+void Triangle::Mult(Matrix * m)
+{
+}
+
+string Triangle::ToString()
+{
 }

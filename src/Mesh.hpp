@@ -18,19 +18,62 @@ namespace com
 			{
 				public:
 				
+				bool infinite;
+				
 				Vector min;
 				Vector max;
+				
+				BoundBox();
+				BoundBox(Vector & min,Vector & max);
 				
 				
 			};
 			
-			class Triangle
+			class Geometry
 			{
 				public:
-				/*
-				std::array<Vector,3> vertices;
-				std::array<Vector,3> normals;
-				*/
+				
+				virtual bool RayCollision(Vector & origin,Vector & direction,Vector & collision)=0;
+				virtual Vector GetCentroid()=0;
+				virtual BoundBox GetBoundBox()=0;
+				
+				virtual Vector PerturbateNormal(float angle,float r1,float r2)=0;
+				virtual Vector GetUVW(Vector & collision)=0;
+				virtual Vector GetAveragedNormal(Vector & collision)=0;
+				
+				virtual void Mult(Matrix * m)=0;
+				
+				virtual std::string ToString()=0;
+			};
+			
+			
+			class Plane: public Geometry
+			{
+				public:
+				
+				Vector base;
+				Vector coplanar;
+				Vector normal;
+				
+				Plane(float height);
+				
+				bool RayCollision(Vector & origin,Vector & direction,Vector & collision);
+				Vector GetCentroid();
+				BoundBox GetBoundBox();
+				
+				Vector PerturbateNormal(float angle,float r1,float r2);
+				Vector GetUVW(Vector & collision);
+				Vector GetAveragedNormal(Vector & collision);
+				
+				void Mult(Matrix * m);
+				
+				std::string ToString();
+			};
+			
+			class Triangle : public Geometry
+			{
+				public:
+				
 				Vector vertices[3];
 				Vector normals[3];
 				
@@ -52,6 +95,10 @@ namespace com
 				Vector PerturbateNormal(float angle,float r1,float r2);
 				Vector GetUVW(Vector & collision);
 				Vector GetAveragedNormal(Vector & collision);
+				
+				void Mult(Matrix * m);
+				
+				std::string ToString();
 			};
 			
 			BoundBox operator+(BoundBox & a,BoundBox & b);

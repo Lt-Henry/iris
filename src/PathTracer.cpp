@@ -339,17 +339,18 @@ Triangle * source,int depth)
 					min_dist=dist;
 					target_collision=collision;
 					target_triangle=triangle;
-				
 				}
 			}
 		}
 	}
 	
 	
+	
 	if(target_triangle!=nullptr)
 	{
-	
-		Vector normal = target_triangle->GetAveragedNormal(target_collision);
+		
+		//Vector normal = target_triangle->GetAveragedNormal(target_collision);
+		
 		//material=scene.materials[target_triangle->material];
 		material=scene.materials[0];
 		
@@ -383,6 +384,8 @@ Triangle * source,int depth)
 					
 					perturbated_normal=target_triangle->PerturbateNormal(0.98f,r0,r2);
 					incoming=Ray(RayType::Diffuse,target_collision,perturbated_normal,target_triangle,depth + 1);
+					
+					
 					//incoming=incoming*INV_PI;
 					diffuse=diffuse+incoming;
 				}

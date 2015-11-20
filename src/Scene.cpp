@@ -18,6 +18,7 @@ Scene::Scene()
 	params["system.threads"]=2;
 	
 	params["pathtracer.samples"]=16;
+	
 }
 
 void Scene::SetCamera(Camera * camera)
@@ -61,4 +62,5 @@ void Scene::ApplyCamera()
 		
 		triangle->D=triangle->vertices[0] * triangle->pnormal;
 	}
+	
 }

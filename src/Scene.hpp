@@ -28,6 +28,7 @@ namespace com
 				
 				Camera * camera;
 				
+				
 				Scene();
 				
 				void SetCamera(Camera * camera);
