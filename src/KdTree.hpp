@@ -2,6 +2,7 @@
 #ifndef _IRIS_KDTREE_
 #define _IRIS_KDTREE_
 
+#include "SceneGraph.hpp"
 #include "Mesh.hpp"
 
 #include <vector>
@@ -30,7 +31,7 @@ namespace com
 				
 				float partition;
 				
-				std::vector<Triangle *> triangles;
+				std::vector<Geometry *> geometry;
 				
 				KdNode * left;
 				KdNode * right;
@@ -40,31 +41,32 @@ namespace com
 				bool RayCollision(Vector & origin,Vector & direction);
 			};
 			
-						
-			class KdTree
+			
+			class KdTree : public SceneGraph
 			{
 			
 				private:
 				
-				void AddRange(std::list<std::pair<float,float>> & ranges,std::pair<float,float> range);
-			
-				public:
-				
 				KdNode * root;
 				int small;
-								
 				
-				KdTree(std::vector<Triangle *> & triangles);
-				~KdTree();
-				
-				void Build(KdNode * node,std::vector<Triangle *> & triangles);
+				void AddRange(std::list<std::pair<float,float>> & ranges,std::pair<float,float> range);
+				void Build(KdNode * node,std::vector<Geometry *> & geometries);
 				
 				void Free();
 				void Free(KdNode * node);
 				
-				std::vector<KdNode *> Traverse(Vector & origin,Vector & direction);
 				void Traverse(Vector & origin,Vector & direction,
 					KdNode * node,std::vector<KdNode *> & nodes);
+				
+				public:
+				
+				KdTree(std::vector<Geometry *> & geometries);
+				~KdTree();
+				
+				std::set<Geometry *> Traverse(Vector & origin,Vector & direction);
+				
+				
 			};
 		}
 	}

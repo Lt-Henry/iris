@@ -63,16 +63,16 @@ bool KdNode::RayCollision(Vector & origin,Vector & direction)
 
 
 
-KdTree::KdTree(vector<Triangle *> & triangles)
+KdTree::KdTree(vector<Geometry *> & geometries)
 {
 
 	cout<<"Computing KdTree"<<endl;
 	
-	small=triangles.size()/5;
+	small=geometries.size()/5;
 		
 	root = new KdNode();
 	
-	Build(root,triangles);
+	Build(root,geometries);
 }
 
 KdTree::~KdTree()
@@ -188,22 +188,22 @@ void KdTree::AddRange(list<pair<float,float>> & ranges,pair<float,float> range)
 }
 
 
-void KdTree::Build(KdNode * node,vector<Triangle *> & triangles)
+void KdTree::Build(KdNode * node,vector<Geometry *> & geometries)
 {
-	if(triangles.size()<small)
+	if(geometry.size()<small)
 	{
-		cout<<"* node is small enought: "<<triangles.size()<<endl;
+		cout<<"* node is small enought: "<<geometries.size()<<endl;
 		node->type=KdNodeType::Child;
-		node->triangles=triangles;
+		node->geometries=geometries;
 		node->left=nullptr;
 		node->right=nullptr;
 		
 		//compute aabb
-		node->aabb=triangles[0]->GetBoundBox();
+		node->aabb=geometries[0]->GetBoundBox();
 		
-		for(Triangle * triangle : triangles)
+		for(Geometry * geometry : geometries)
 		{
-			BoundBox b = triangle->GetBoundBox();
+			BoundBox b = geometry->GetBoundBox();
 			node->aabb=node->aabb + b;
 		}
 		
