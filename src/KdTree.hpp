@@ -23,7 +23,7 @@ namespace com
 				Child=3	
 			};
 			
-			class KdNode
+			class KdNode : public SceneNode
 			{
 				public:
 				
@@ -31,7 +31,6 @@ namespace com
 				
 				float partition;
 				
-				std::vector<Geometry *> geometries;
 				
 				KdNode * left;
 				KdNode * right;
@@ -57,14 +56,15 @@ namespace com
 				void Free(KdNode * node);
 				
 				void Traverse(Vector & origin,Vector & direction,
-					KdNode * node,std::set<KdNode *> & nodes);
+					KdNode * node,std::vector<SceneNode *> & nodes);
 				
 				public:
 				
 				KdTree(std::vector<Geometry *> & geometries);
 				~KdTree();
 				
-				void Traverse(Vector & origin,Vector & direction,std::vector<Geometry *> & geometries);
+				/*! overloaded method */
+				void Traverse(Vector & origin,Vector & direction,std::vector<SceneNode *> & nodes);
 				
 				
 			};

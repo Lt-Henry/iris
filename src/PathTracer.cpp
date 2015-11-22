@@ -313,31 +313,33 @@ Geometry * source,int depth)
 		return energy;
 	}
 	
-	vector<Geometry *> geometries;
-	tree->Traverse(origin,direction,geometries);
+	vector<SceneNode *> nodes;
+	tree->Traverse(origin,direction,nodes);
 	
-	for(Geometry * geometry : geometries)
+	for(SceneNode * node : nodes)
 	{
-		/* ignore ourself */
-		if(geometry==source)
+		for(Geometry * geometry : node->geometries)
 		{
-			continue;
-		}
-		
-		if(geometry->RayCollision(origin,direction,collision))
-		{
-			oc=collision-origin;
-			dist=oc.Module();
-		
-			if(dist<min_dist)
+			/* ignore ourself */
+			if(geometry==source)
 			{
-				min_dist=dist;
-				target_collision=collision;
-				target_geometry=geometry;
+				continue;
+			}
+		
+			if(geometry->RayCollision(origin,direction,collision))
+			{
+				oc=collision-origin;
+				dist=oc.Module();
+		
+				if(dist<min_dist)
+				{
+					min_dist=dist;
+					target_collision=collision;
+					target_geometry=geometry;
+				}
 			}
 		}
 	}
-	
 	
 	if(target_geometry!=nullptr)
 	{

@@ -436,37 +436,22 @@ void KdTree::Free(KdNode * node)
 }
 
 
-void KdTree::Traverse(Vector & origin,Vector & direction,std::vector<Geometry *> & geometries)
+void KdTree::Traverse(Vector & origin,Vector & direction,std::vector<SceneNode *> & nodes)
 {
-	set<KdNode *> nodes;
-	
+	nodes.reserve(32);
 	Traverse(origin,direction,root,nodes);
-	
-	for(KdNode * node : nodes)
-	{
-		/* perform a ray-aabb collision test */
-		if(!node->RayCollision(origin,direction))
-			continue;
-			
-		for(Geometry * geometry : node->geometries)
-		{
-			//geometries.insert(geometry);
-			geometries.push_back(geometry);
-		}
-	}
 	
 }
 
-void KdTree::Traverse(Vector & origin,Vector & direction,KdNode * node,set<KdNode *> & nodes)
+void KdTree::Traverse(Vector & origin,Vector & direction,KdNode * node,vector<SceneNode *> & nodes)
 {
 	if(node->type==KdNodeType::Child)
 	{
-		//nodes.push_back(node);
-		if(nodes.find(node)!=nodes.end())
+		/* perform an early ray-aabb test */
+		if(node->RayCollision(origin,direction))
 		{
-			cout<<"duplicated node!"<<endl;
+			nodes.push_back(node);
 		}
-		nodes.insert(node);
 		return;
 	}
 	
