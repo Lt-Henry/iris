@@ -79,9 +79,9 @@ namespace com
 				void Run(std::function<void(float)> progress);
 				
 				/**
-				* Request a new chunk to render. Thread safe	
+				* Request a new chunk to render. Thread safe
 				*/
-				RenderChunk * GetChunk();		
+				RenderChunk * GetChunk();
 				
 				/**
 				* Commits an already rendered chunk. Thread safe
@@ -98,10 +98,10 @@ namespace com
 				*/
 				void RayCast(int id,Vector & origin,Vector & direction,Spectrum & output); 
 				
-				Spectrum PathTrace(Vector & origin, Vector & direction,Triangle * source,int depth=1);
+				//Spectrum PathTrace(Vector & origin, Vector & direction,Geometry * source,int depth=1);
 				
 				Spectrum Ray(RayType type,Vector & origin,Vector & direction,
-				Triangle * source=nullptr,int depth=1);
+				Geometry * source=nullptr,int depth=1);
 				
 			};
 		}

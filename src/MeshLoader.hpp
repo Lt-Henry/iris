@@ -3,6 +3,7 @@
 #ifndef _IRIS_MESHLOADER_
 #define _IRIS_MESHLOADER_
 
+#include "Mesh.hpp"
 #include "Scene.hpp"
 
 #include <string>
@@ -18,7 +19,7 @@ namespace com
 			{
 				public:
 				
-				static void Load(std::string filename,std::vector<Triangle*> & triangles, std::vector<Material *> & materials);
+				static void Load(std::string filename,std::vector<Geometry*> & geometries, std::vector<Material *> & materials);
 				
 				private:
 				

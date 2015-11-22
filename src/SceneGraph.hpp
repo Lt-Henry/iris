@@ -15,9 +15,9 @@ namespace com
 			{
 				public:
 				
-				virtual ~SceneGraph()=0;
+				virtual ~SceneGraph() { };
 				
-				virtual std::set<Geometry *> Traverse(Vector & origin, Vector & direction)=0;
+				virtual void Traverse(Vector & origin, Vector & direction,std::vector<Geometry *> & geometries)=0;
 			};
 		}
 	}

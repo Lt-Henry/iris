@@ -13,7 +13,7 @@ using namespace std;
 
 
 
-void MeshLoader::Load(string filename, vector<Triangle *> & triangles, vector<Material *> & materials)
+void MeshLoader::Load(string filename, vector<Geometry *> & geometries, vector<Material *> & materials)
 {
 
 
@@ -171,11 +171,11 @@ void MeshLoader::Load(string filename, vector<Triangle *> & triangles, vector<Ma
 		
 		//triangle->pnormal.Negate();
 		
-		triangles.push_back(triangle);
+		geometries.push_back(triangle);
 		//triangle->Print();
 	}
 	
-	cout<<"Triangles: "<<triangles.size()<<endl;
+	cout<<"Triangles: "<<geometries.size()<<endl;
 	
 }
 

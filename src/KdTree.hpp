@@ -31,7 +31,7 @@ namespace com
 				
 				float partition;
 				
-				std::vector<Geometry *> geometry;
+				std::vector<Geometry *> geometries;
 				
 				KdNode * left;
 				KdNode * right;
@@ -57,14 +57,14 @@ namespace com
 				void Free(KdNode * node);
 				
 				void Traverse(Vector & origin,Vector & direction,
-					KdNode * node,std::vector<KdNode *> & nodes);
+					KdNode * node,std::set<KdNode *> & nodes);
 				
 				public:
 				
 				KdTree(std::vector<Geometry *> & geometries);
 				~KdTree();
 				
-				std::set<Geometry *> Traverse(Vector & origin,Vector & direction);
+				void Traverse(Vector & origin,Vector & direction,std::vector<Geometry *> & geometries);
 				
 				
 			};

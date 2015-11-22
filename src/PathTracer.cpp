@@ -84,7 +84,7 @@ PathTracer::PathTracer(Scene & scene)
 	
 	//cout<<"sunlight: "<<sunlight.ToString()<<endl;
 	
-	tree = new KdTree(scene.triangles);
+	tree = new KdTree(scene.geometries);
 	
 	Material * white = new Material();
 	vector<float> Kd(32,0.3f);
@@ -285,7 +285,7 @@ void PathTracer::RenderThread(int id)
 
 
 Spectrum PathTracer::Ray(RayType type,Vector & origin,Vector & direction,
-Triangle * source,int depth)
+Geometry * source,int depth)
 {
 
 	Material * material;
@@ -306,47 +306,40 @@ Triangle * source,int depth)
 		
 	
 	Vector target_collision;
-	Triangle * target_triangle=nullptr;
+	Geometry * target_geometry=nullptr;
 	
 	if(depth>3)//hardcoded!
 	{
 		return energy;
 	}
 	
-	vector<KdNode *> nodes = tree->Traverse(origin,direction);
+	vector<Geometry *> geometries;
+	tree->Traverse(origin,direction,geometries);
 	
-	for(KdNode * node : nodes)
+	for(Geometry * geometry : geometries)
 	{
-		vector<Triangle *>::iterator q;
-				
-		if(!node->RayCollision(origin,direction))
-			continue;
-		
-		for(q=node->triangles.begin();q!=node->triangles.end();q++)
+		/* ignore ourself */
+		if(geometry==source)
 		{
-			Triangle * triangle = *q;
-			
-			if(triangle==source)
-				continue;
-			
-			if(triangle->RayCollision(origin,direction,collision))
+			continue;
+		}
+		
+		if(geometry->RayCollision(origin,direction,collision))
+		{
+			oc=collision-origin;
+			dist=oc.Module();
+		
+			if(dist<min_dist)
 			{
-				oc=collision-origin;
-				dist=oc.Module();
-			
-				if(dist<min_dist)
-				{
-					min_dist=dist;
-					target_collision=collision;
-					target_triangle=triangle;
-				}
+				min_dist=dist;
+				target_collision=collision;
+				target_geometry=geometry;
 			}
 		}
 	}
 	
 	
-	
-	if(target_triangle!=nullptr)
+	if(target_geometry!=nullptr)
 	{
 		
 		//Vector normal = target_triangle->GetAveragedNormal(target_collision);
@@ -382,8 +375,8 @@ Triangle * source,int depth)
 					r2 = r2+ ((r3-r2)*rb);
 								
 					
-					perturbated_normal=target_triangle->PerturbateNormal(0.98f,r0,r2);
-					incoming=Ray(RayType::Diffuse,target_collision,perturbated_normal,target_triangle,depth + 1);
+					perturbated_normal=target_geometry->PerturbateNormal(0.98f,r0,r2);
+					incoming=Ray(RayType::Diffuse,target_collision,perturbated_normal,target_geometry,depth + 1);
 					
 					
 					//incoming=incoming*INV_PI;

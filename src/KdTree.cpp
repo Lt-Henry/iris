@@ -190,9 +190,9 @@ void KdTree::AddRange(list<pair<float,float>> & ranges,pair<float,float> range)
 
 void KdTree::Build(KdNode * node,vector<Geometry *> & geometries)
 {
-	if(geometry.size()<small)
+	if(geometries.size()<small)
 	{
-		cout<<"* node is small enought: "<<geometries.size()<<endl;
+		//cout<<"* node is small enought: "<<geometries.size()<<endl;
 		node->type=KdNodeType::Child;
 		node->geometries=geometries;
 		node->left=nullptr;
@@ -213,8 +213,8 @@ void KdTree::Build(KdNode * node,vector<Geometry *> & geometries)
 	float best_score=-1;
 	float best_partition;
 	int best_axis;
-	vector<Triangle *> best_left;
-	vector<Triangle *> best_right;
+	vector<Geometry *> best_left;
+	vector<Geometry *> best_right;
 	
 	/* Compute full set bound box using centroids */
 	
@@ -224,12 +224,12 @@ void KdTree::Build(KdNode * node,vector<Geometry *> & geometries)
 	/* using delta as key, so it is automatically sorted */
 	vector<pair<int,float> > axis;
 		
-	min = triangles[0]->GetCentroid();
+	min = geometries[0]->GetCentroid();
 	max=min;
 	
-	for(Triangle * triangle : triangles)
+	for(Geometry * geometry : geometries)
 	{
-		Vector c = triangle->GetCentroid();
+		Vector c = geometry->GetCentroid();
 		
 		if(c.x>max.x)max.x=c.x;
 		if(c.y>max.y)max.y=c.y;
@@ -255,9 +255,9 @@ void KdTree::Build(KdNode * node,vector<Geometry *> & geometries)
 		
 		list<pair<float,float> > ranges;
 		
-		for(Triangle * triangle : triangles)
+		for(Geometry * geometry : geometries)
 		{
-			BoundBox bbox  = triangle->GetBoundBox();
+			BoundBox bbox  = geometry->GetBoundBox();
 			float left = bbox.min.data[current_axis];
 			float right = bbox.max.data[current_axis];
 			
@@ -309,27 +309,27 @@ void KdTree::Build(KdNode * node,vector<Geometry *> & geometries)
 		/* computing spliting value */
 		for(float split : splits)
 		{
-			vector<Triangle *> left;
-			vector<Triangle *> right;
+			vector<Geometry *> left;
+			vector<Geometry *> right;
 			
-			for(Triangle * triangle : triangles)
+			for(Geometry * geometry : geometries)
 			{
-				BoundBox bbox  = triangle->GetBoundBox();
+				BoundBox bbox  = geometry->GetBoundBox();
 		
 				if(bbox.min.data[current_axis]>=split)
 				{
-					right.push_back(triangle);
+					right.push_back(geometry);
 				}
 		
 				if(bbox.max.data[current_axis]<split)
 				{
-					left.push_back(triangle);
+					left.push_back(geometry);
 				}
 				
 				if(bbox.min.data[current_axis]<split && bbox.max.data[current_axis]>split)
 				{
-					left.push_back(triangle);
-					right.push_back(triangle);
+					left.push_back(geometry);
+					right.push_back(geometry);
 				}
 
 			}//for
@@ -337,13 +337,13 @@ void KdTree::Build(KdNode * node,vector<Geometry *> & geometries)
 			float t,l,r;
 			float score;
 			
-			t=triangles.size();
+			t=geometries.size();
 			l=left.size();
 			r=right.size();
 	
 			score = (t/(l+r))-(std::abs(r-l)/t);
 	
-			if(left.size()==triangles.size() || right.size()==triangles.size())
+			if(left.size()==geometries.size() || right.size()==geometries.size())
 			{
 				score=0.0f;
 			}
@@ -365,18 +365,18 @@ void KdTree::Build(KdNode * node,vector<Geometry *> & geometries)
 	/* No valid split found */
 	if(IsZero(best_score))
 	{
-		cout<<"* cannot split anymore: "<<triangles.size()<<endl;
+		cout<<"* cannot split anymore: "<<geometries.size()<<endl;
 		node->type=KdNodeType::Child;
-		node->triangles=triangles;
+		node->geometries=geometries;
 		node->left=nullptr;
 		node->right=nullptr;
 		
 		//compute aabb
-		node->aabb=triangles[0]->GetBoundBox();
+		node->aabb=geometries[0]->GetBoundBox();
 		
-		for(Triangle * triangle : triangles)
+		for(Geometry * geometry : geometries)
 		{
-			BoundBox b = triangle->GetBoundBox();
+			BoundBox b = geometry->GetBoundBox();
 			node->aabb=node->aabb + b;
 		}
 	}
@@ -401,7 +401,7 @@ void KdTree::Build(KdNode * node,vector<Geometry *> & geometries)
 		}
 		
 	
-		cout<<"Split: ["<<triangles.size()<<"]"<<best_left.size()<<","<<best_right.size()<<endl;
+		//cout<<"Split: ["<<triangles.size()<<"]"<<best_left.size()<<","<<best_right.size()<<endl;
 	
 		node->left=new KdNode();
 		node->right=new KdNode();
@@ -430,26 +430,43 @@ void KdTree::Free(KdNode * node)
 	if(node->right!=nullptr)
 		Free(node->right);
 		
-	node->triangles.clear();
+	node->geometries.clear();
 	
 	delete node;
 }
 
 
-vector<KdNode *> KdTree::Traverse(Vector & origin,Vector & direction)
+void KdTree::Traverse(Vector & origin,Vector & direction,std::vector<Geometry *> & geometries)
 {
-	vector<KdNode *> nodes;
+	set<KdNode *> nodes;
 	
 	Traverse(origin,direction,root,nodes);
 	
-	return nodes;
+	for(KdNode * node : nodes)
+	{
+		/* perform a ray-aabb collision test */
+		if(!node->RayCollision(origin,direction))
+			continue;
+			
+		for(Geometry * geometry : node->geometries)
+		{
+			//geometries.insert(geometry);
+			geometries.push_back(geometry);
+		}
+	}
+	
 }
 
-void KdTree::Traverse(Vector & origin,Vector & direction,KdNode * node,vector<KdNode *> & nodes)
+void KdTree::Traverse(Vector & origin,Vector & direction,KdNode * node,set<KdNode *> & nodes)
 {
 	if(node->type==KdNodeType::Child)
 	{
-		nodes.push_back(node);
+		//nodes.push_back(node);
+		if(nodes.find(node)!=nodes.end())
+		{
+			cout<<"duplicated node!"<<endl;
+		}
+		nodes.insert(node);
 		return;
 	}
 	

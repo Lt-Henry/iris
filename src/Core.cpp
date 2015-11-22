@@ -106,7 +106,7 @@ int LoadMesh(lua_State * L)
 		const char * filename = lua_tostring(L,1);
 		
 		Core * core = Core::Get();
-		MeshLoader::Load(core->basedir+"/"+filename,core->scene.triangles,core->scene.materials);
+		MeshLoader::Load(core->basedir+"/"+filename,core->scene.geometries,core->scene.materials);
 	}
 	
 	return 0;

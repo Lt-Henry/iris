@@ -41,7 +41,7 @@ namespace com
 				virtual Vector GetUVW(Vector & collision)=0;
 				virtual Vector GetAveragedNormal(Vector & collision)=0;
 				
-				virtual void Mult(Matrix * m)=0;
+				virtual void Mult(Matrix & m)=0;
 				
 				virtual std::string ToString()=0;
 			};
@@ -54,6 +54,7 @@ namespace com
 				Vector base;
 				Vector coplanar;
 				Vector normal;
+				float height;
 				
 				Plane(float height);
 				
@@ -65,7 +66,7 @@ namespace com
 				Vector GetUVW(Vector & collision);
 				Vector GetAveragedNormal(Vector & collision);
 				
-				void Mult(Matrix * m);
+				void Mult(Matrix & m);
 				
 				std::string ToString();
 			};
@@ -96,7 +97,7 @@ namespace com
 				Vector GetUVW(Vector & collision);
 				Vector GetAveragedNormal(Vector & collision);
 				
-				void Mult(Matrix * m);
+				void Mult(Matrix & m);
 				
 				std::string ToString();
 			};

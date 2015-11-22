@@ -22,7 +22,7 @@ namespace com
 			{
 				public:
 				
-				std::vector<Triangle *> triangles;
+				std::vector<Geometry *> geometries;
 				std::vector<Material *> materials;
 				std::map<std::string,DataSet> params;
 				

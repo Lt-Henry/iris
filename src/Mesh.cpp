@@ -23,6 +23,7 @@ BoundBox::BoundBox(Vector & min,Vector & max)
 
 Plane::Plane(float height)
 {
+	this->height=height;
 	base.Set(0,height,0,1);
 	normal.Set(0,1,0,0);
 	coplanar.Set(1,0,0,0);
@@ -96,7 +97,17 @@ Vector Plane::PerturbateNormal(float angle,float r1,float r2)
 	return pN;
 }
 
-void Plane::Mult(Matrix * m)
+Vector Plane::GetUVW(Vector & collision)
+{
+	return Vector();
+}
+
+Vector Plane::GetAveragedNormal(Vector & collision)
+{
+	return Vector();
+}
+
+void Plane::Mult(Matrix & m)
 {
 	base=base * m;
 	
@@ -392,10 +403,25 @@ Vector Triangle::GetAveragedNormal(Vector & collision)
 	return normal;	
 }
 
-void Triangle::Mult(Matrix * m)
+void Triangle::Mult(Matrix & m)
 {
+	vertices[0]=vertices[0] * m;
+	vertices[1]=vertices[1] * m;
+	vertices[2]=vertices[2] * m;
+	
+	vertices[0].Homogeneus();
+	vertices[1].Homogeneus();
+	vertices[2].Homogeneus();
+	
+	normals[0]=normals[0] * m;
+	normals[1]=normals[1] * m;
+	normals[2]=normals[2] * m;
+	
+	pnormal = pnormal * m;
+	D=vertices[0] * pnormal;
 }
 
 string Triangle::ToString()
 {
+	return "";
 }
