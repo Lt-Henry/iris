@@ -68,8 +68,8 @@ KdTree::KdTree(vector<Geometry *> & geometries)
 
 	cout<<"Computing KdTree"<<endl;
 	
-	small=geometries.size()/5;
-		
+	//small=geometries.size()/5;
+	small=64;
 	root = new KdNode();
 	
 	Build(root,geometries);
@@ -287,7 +287,7 @@ void KdTree::Build(KdNode * node,vector<Geometry *> & geometries)
 		}
 		else
 		{
-			cout<<"* found natural splits: "<<ranges.size()<<endl;
+			//cout<<"* found natural splits: "<<ranges.size()<<endl;
 			list<pair<float,float> >::iterator q;
 			list<pair<float,float> >::iterator qq;
 			
@@ -365,7 +365,7 @@ void KdTree::Build(KdNode * node,vector<Geometry *> & geometries)
 	/* No valid split found */
 	if(IsZero(best_score))
 	{
-		cout<<"* cannot split anymore: "<<geometries.size()<<endl;
+		//cout<<"* cannot split anymore: "<<geometries.size()<<endl;
 		node->type=KdNodeType::Child;
 		node->geometries=geometries;
 		node->left=nullptr;
