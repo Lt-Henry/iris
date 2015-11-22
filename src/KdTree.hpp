@@ -47,6 +47,8 @@ namespace com
 				private:
 				
 				KdNode * root;
+				KdNode * special_node;
+				
 				int small;
 				
 				void AddRange(std::list<std::pair<float,float>> & ranges,std::pair<float,float> range);

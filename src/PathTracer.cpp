@@ -83,6 +83,7 @@ PathTracer::PathTracer(Scene & scene)
 	
 	
 	//cout<<"sunlight: "<<sunlight.ToString()<<endl;
+	scene.geometries.push_back(new Plane(-2.5f));
 	
 	tree = new KdTree(scene.geometries);
 	

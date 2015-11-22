@@ -65,14 +65,30 @@ bool KdNode::RayCollision(Vector & origin,Vector & direction)
 
 KdTree::KdTree(vector<Geometry *> & geometries)
 {
-
+	vector<Geometry *> bounded_geometries; //that is, triangles
+	
 	cout<<"Computing KdTree"<<endl;
 	
 	//small=geometries.size()/5;
 	small=64;
 	root = new KdNode();
+	special_node=new KdNode();
 	
-	Build(root,geometries);
+	for(Geometry * geometry : geometries)
+	{
+		BoundBox bbox  = geometry->GetBoundBox();
+		
+		if(bbox.infinite)
+		{
+			special_node->geometries.push_back(geometry);
+		}
+		else
+		{
+			bounded_geometries.push_back(geometry);
+		}
+	}
+	
+	Build(root,bounded_geometries);
 }
 
 KdTree::~KdTree()
@@ -419,6 +435,7 @@ void KdTree::Build(KdNode * node,vector<Geometry *> & geometries)
 void KdTree::Free()
 {
 	Free(root);
+	Free(special_node);
 }
 
 void KdTree::Free(KdNode * node)
@@ -440,7 +457,7 @@ void KdTree::Traverse(Vector & origin,Vector & direction,std::vector<SceneNode *
 {
 	nodes.reserve(32);
 	Traverse(origin,direction,root,nodes);
-	
+	nodes.push_back(special_node);
 }
 
 void KdTree::Traverse(Vector & origin,Vector & direction,KdNode * node,vector<SceneNode *> & nodes)
