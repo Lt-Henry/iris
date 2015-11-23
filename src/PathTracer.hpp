@@ -8,6 +8,7 @@
 #include "Spectrum.hpp"
 #include "Math.hpp"
 #include "KdTree.hpp"
+#include "Atmosphere.hpp"
 
 #include <vector>
 #include <thread>
@@ -39,8 +40,7 @@ namespace com
 			
 				public:
 				
-				Vector sun_pos;
-				Spectrum sun_energy;
+				Atmosphere atmosphere;
 				
 				Scene scene;
 				KdTree * tree;
