@@ -83,12 +83,12 @@ PathTracer::PathTracer(Scene & scene)
 	
 	
 	//cout<<"sunlight: "<<sunlight.ToString()<<endl;
-	scene.geometries.push_back(new Plane(-2.5f));
+	
 	
 	tree = new KdTree(scene.geometries);
 	
 	Material * white = new Material();
-	vector<float> Kd(32,0.3f);
+	vector<float> Kd(32,0.9f);
 	white->Kd=Kd;
 	this->scene.materials.push_back(white);
 	
@@ -108,7 +108,7 @@ PathTracer::PathTracer(Scene & scene)
 	1.3709,1.4753,1.4686,1.4739 ,1.3924,1.434,1.3594,1.3992 ,1.4196,1.3969,1.1821,1.2823};
 	//sun_energy=Spectrum(e);
 	
-	sun_energy=Spectrum(9000);
+	sun_energy=Spectrum(6500);
 	sun_energy.Normalize();
 	
 }

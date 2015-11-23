@@ -114,6 +114,7 @@ void Plane::Mult(Matrix & m)
 	base.Homogeneus();
 	
 	normal=normal * m;
+	coplanar=coplanar * m;
 	
 }
 

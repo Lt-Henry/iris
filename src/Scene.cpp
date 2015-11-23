@@ -19,6 +19,9 @@ Scene::Scene()
 	
 	params["pathtracer.samples"]=16;
 	
+	//hardcoded plane
+	geometries.push_back(new Plane(0.0f));
+	
 }
 
 void Scene::SetCamera(Camera * camera)
