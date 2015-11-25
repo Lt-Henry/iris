@@ -22,6 +22,15 @@ Scene::Scene()
 	//hardcoded plane
 	geometries.push_back(new Plane(0.0f));
 	
+	//hardcoded atmosphere
+	atmosphere = new Atmosphere();
+	
+}
+
+Scene::~Scene()
+{
+	delete atmosphere;
+	delete camera;
 }
 
 void Scene::SetCamera(Camera * camera)
@@ -52,5 +61,5 @@ void Scene::ApplyCamera()
 		geometry->Mult(mC);
 	}
 	
-	
+	atmosphere->Mult(mC);
 }

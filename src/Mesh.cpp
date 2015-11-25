@@ -104,7 +104,7 @@ Vector Plane::GetUVW(Vector & collision)
 
 Vector Plane::GetAveragedNormal(Vector & collision)
 {
-	return Vector();
+	return normal;
 }
 
 void Plane::Mult(Matrix & m)

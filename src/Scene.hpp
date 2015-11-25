@@ -3,6 +3,7 @@
 #define _IRIS_SCENE_
 
 #include "Material.hpp"
+#include "Atmosphere.hpp"
 #include "Mesh.hpp"
 #include "Camera.hpp"
 #include "DataSet.hpp"
@@ -27,9 +28,10 @@ namespace com
 				std::map<std::string,DataSet> params;
 				
 				Camera * camera;
-				
+				Atmosphere * atmosphere;
 				
 				Scene();
+				~Scene();
 				
 				void SetCamera(Camera * camera);
 				void ApplyCamera();

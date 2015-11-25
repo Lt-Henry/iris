@@ -40,7 +40,7 @@ namespace com
 			
 				public:
 				
-				Atmosphere atmosphere;
+				
 				
 				Scene scene;
 				KdTree * tree;

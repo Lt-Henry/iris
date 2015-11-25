@@ -22,6 +22,8 @@ namespace com
 				Atmosphere();
 				
 				Spectrum Energy(Vector & direction);
+				
+				void Mult(Matrix & m);
 			};
 		}
 	}

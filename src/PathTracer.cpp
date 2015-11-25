@@ -340,7 +340,7 @@ Geometry * source,int depth)
 	if(target_geometry!=nullptr)
 	{
 		
-		//Vector normal = target_triangle->GetAveragedNormal(target_collision);
+		Vector normal = target_geometry->GetAveragedNormal(target_collision);
 		
 		//material=scene.materials[target_triangle->material];
 		material=scene.materials[0];
@@ -384,12 +384,12 @@ Geometry * source,int depth)
 			
 			diffuse=diffuse*(1.0f/(psamples*psamples));
 			
-			/*
-			diffuse=diffuse*0.9f;
+			
+			//diffuse=diffuse*0.9f;
 			
 			
 			//gathering specular light
-						
+			
 			di=direction;
 			di.Negate();
 			
@@ -398,14 +398,14 @@ Geometry * source,int depth)
 			perturbated_normal = perturbated_normal * f;
 			perturbated_normal.Normalize();
 			
-			incoming=Ray(RayType::Specular,target_collision,perturbated_normal,target_triangle,depth + 1);
+			incoming=Ray(RayType::Specular,target_collision,perturbated_normal,target_geometry,depth + 1);
 			
-			specular = incoming * 0.1f;
+			specular = incoming * 0.25f;
 			
-			energy=(diffuse*material) + specular;
-			*/
+			energy=(diffuse*material->Kd) + specular;
 			
-			energy=diffuse*material->Kd;
+			
+			//energy=diffuse*material->Kd;
 			break;
 			
 			
@@ -418,7 +418,7 @@ Geometry * source,int depth)
 		Get proper energy from sky/sunlight
 		*/
 		
-		energy=atmosphere.Energy(direction);
+		energy=scene.atmosphere->Energy(direction);
 		
 		
 	}
