@@ -1,11 +1,11 @@
 
-#include "Core.hpp"
+#include "Window.hpp"
+
+#include <gtkmm/application.h>
 
 #include <iostream>
 #include <string>
 #include <stdexcept>
-
-
 
 
 using namespace std;
@@ -16,18 +16,10 @@ int main(int argc,char * argv[])
 {
 	cout<<"Iris path-tracer"<<endl;
 
-	if(argc<2)
-		throw runtime_error("Missing parameter <dir>");
+	auto app = Gtk::Application::create(argc,argv,"com.toxiclabs.iris");
 
-
-	Core * core;
-	core = Core::Get();
+	Window mainWindow;
 	
-	core->Compile(string(argv[1]));
-	core->Run();
-	
-	//delete core;
-	
-	return 0;
+	return app->run(mainWindow);
 }
 
