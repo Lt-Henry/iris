@@ -26,7 +26,7 @@ int main(int argc,char * argv[])
 	core->Compile(string(argv[1]));
 	core->Run();
 	
-	delete core;
+	//delete core;
 	
 	return 0;
 }

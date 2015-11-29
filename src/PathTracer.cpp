@@ -390,20 +390,22 @@ Geometry * source,int depth)
 			
 			//gathering specular light
 			
-			di=direction;
-			di.Negate();
+			di=origin-target_collision;
+			//di=target_collision-origin;
+			//di.Negate();
+			di.Normalize();
 			
 			f=2.0f * (normal*di);
-			perturbated_normal=normal - di;
-			perturbated_normal = perturbated_normal * f;
+			perturbated_normal=normal * f;
+			perturbated_normal=perturbated_normal - di;
 			perturbated_normal.Normalize();
 			
 			incoming=Ray(RayType::Specular,target_collision,perturbated_normal,target_geometry,depth + 1);
 			
-			specular = incoming * 0.25f;
+			specular = incoming * 0.1f;
 			
 			energy=(diffuse*material->Kd) + specular;
-			
+			//energy=incoming;
 			
 			//energy=diffuse*material->Kd;
 			break;
