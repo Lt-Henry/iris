@@ -2,7 +2,7 @@
 #create an executable as target
 add_library(iris SHARED DataSet.cpp Core.cpp PathTracer.cpp MeshLoader.cpp Mesh.cpp Math.cpp Spectrum.cpp Color.cpp Camera.cpp Scene.cpp KdTree.cpp Atmosphere.cpp)
 
-add_executable(iris main.cpp)
+add_executable(iris-gui Window.cpp main.cpp)
 
 #require pkg-config support
 find_package(PkgConfig REQUIRED)
@@ -18,7 +18,7 @@ if(NOT LUA_FOUND MATCHES 1)
 endif()
 
 #add include dirs
-include_directories(${LUA_INCLUDE_DIRS})
+include_directories(${LUA_INCLUDE_DIRS} ${GTKMM_INCLUDE_DIRS})
 
 #add library paths
 link_directories(${LUA_LIBRARY_DIRS})
@@ -29,7 +29,7 @@ add_definitions(${LUA_CFLAGS_OTHER} -D_IRIS_SSE_ -D_IRIS_SSE4_)
 #set link libraries
 target_link_libraries(iris ${LUA_LIBRARIES} freeimageplus pthread c++abi)
 
-target_link_libraries()
+target_link_libraries(iris-gui iris ${GTKMM_LIBRARIES} pthread c++abi)
 
 #set compiler
 set(CMAKE_CXX_COMPILER "/usr/bin/clang++")

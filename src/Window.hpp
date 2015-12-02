@@ -10,9 +10,16 @@ namespace com
 	{
 		namespace iris
 		{
-			class Window : Gtk::Window
+			class Window : public Gtk::Window
 			{
 				public:
+				
+				Gtk::Box box;
+				Gtk::Stack stack;
+				Gtk::StackSwitcher switcher;
+				Gtk::DrawingArea drawingArea;
+				Gtk::Label lblTest;
+				Gtk::Button btnRender;
 				
 				Window();
 				virtual ~Window();
