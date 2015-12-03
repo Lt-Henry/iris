@@ -12,6 +12,7 @@ Window::Window()
 {
 	set_title("Iris");
 	set_border_width(12);
+	set_position(Gtk::WIN_POS_CENTER); 
 	
 	box=Gtk::Box(Gtk::ORIENTATION_VERTICAL);
 	
@@ -22,17 +23,22 @@ Window::Window()
 	switcher = Gtk::StackSwitcher();
 	switcher.set_stack(stack);
 	
-	drawingArea = Gtk::DrawingArea();
-	lblTest = Gtk::Label("Not implemented yet");
 	
-	stack.add(drawingArea,"Render","Render");
-	stack.add(lblTest,"Source","Source");
-	
-	box.pack_start(switcher,true,true,0);
+	box.pack_start(switcher,false,false,0);
 	box.pack_start(stack,true,true,0);
 	
+	renderBox=Gtk::Box(Gtk::ORIENTATION_VERTICAL);
+	stack.add(renderBox,"Render","Render");
 	btnRender = Gtk::Button("Render");
-	box.pack_start(btnRender,true,true,0);
+	renderBox.pack_start(btnRender,false,false,0);
+	drawingArea = Gtk::DrawingArea();
+	renderBox.pack_start(drawingArea,true,true,0);
+	
+	
+	sourceBox=Gtk::Box(Gtk::ORIENTATION_VERTICAL);
+	stack.add(sourceBox,"Source","Source");
+	sourceView=Gsv::View();
+	sourceBox.pack_start(sourceView,true,true,0);
 	
 	add(box);
 	

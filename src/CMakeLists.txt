@@ -9,6 +9,8 @@ find_package(PkgConfig REQUIRED)
 
 #required pkg-config libs
 pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
+pkg_check_modules(GTKSOURCEVIEWMM REQUIRED gtksourceviewmm-3.0)
+
 
 pkg_check_modules(LUA lua)
 
@@ -18,7 +20,7 @@ if(NOT LUA_FOUND MATCHES 1)
 endif()
 
 #add include dirs
-include_directories(${LUA_INCLUDE_DIRS} ${GTKMM_INCLUDE_DIRS})
+include_directories(${LUA_INCLUDE_DIRS} ${GTKMM_INCLUDE_DIRS} ${GTKSOURCEVIEWMM_INCLUDE_DIRS})
 
 #add library paths
 link_directories(${LUA_LIBRARY_DIRS})
@@ -29,7 +31,7 @@ add_definitions(${LUA_CFLAGS_OTHER} -D_IRIS_SSE_ -D_IRIS_SSE4_)
 #set link libraries
 target_link_libraries(iris ${LUA_LIBRARIES} freeimageplus pthread c++abi)
 
-target_link_libraries(iris-gui iris ${GTKMM_LIBRARIES} pthread c++abi)
+target_link_libraries(iris-gui iris ${GTKMM_LIBRARIES} ${GTKSOURCEVIEWMM_LIBRARIES} pthread c++abi)
 
 #set compiler
 set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
