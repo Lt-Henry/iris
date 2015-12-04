@@ -29,6 +29,10 @@ namespace com
 				Gtk::Box sourceBox;
 				Gsv::View sourceView;
 				
+				
+				void OnBtnRenderClicked();
+				bool OnDraw(const Cairo::RefPtr<Cairo::Context> & cr);
+				
 				Window();
 				virtual ~Window();
 			};
