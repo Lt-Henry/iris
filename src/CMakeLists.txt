@@ -1,6 +1,6 @@
 
 #create an executable as target
-add_library(iris SHARED DataSet.cpp Core.cpp PathTracer.cpp MeshLoader.cpp Mesh.cpp Math.cpp Spectrum.cpp Color.cpp Camera.cpp Scene.cpp KdTree.cpp Atmosphere.cpp)
+add_library(iris SHARED DataSet.cpp Core.cpp Parser.cpp PathTracer.cpp MeshLoader.cpp Mesh.cpp Math.cpp Spectrum.cpp Color.cpp Camera.cpp Scene.cpp KdTree.cpp Atmosphere.cpp)
 
 add_executable(iris-gui Window.cpp main.cpp)
 
