@@ -19,6 +19,8 @@ namespace com
 			{
 				public:
 				
+				static void LoadOBJ(std::string filename);
+				
 				static void Load(std::string filename,std::vector<Geometry*> & geometries, std::vector<Material *> & materials);
 				
 				private:

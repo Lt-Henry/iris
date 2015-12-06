@@ -1,4 +1,5 @@
 
+#include "Parser.hpp"
 #include "MeshLoader.hpp"
 
 #include <string>
@@ -11,6 +12,33 @@
 using namespace com::toxiclabs::iris;
 using namespace std;
 
+
+void MeshLoader::LoadOBJ(string filename)
+{
+	parser::Grammar grammar;
+	
+	grammar.AddToken("MTLLIB","mtllib");
+	
+	
+	grammar.AddRule("mtllib","MTLLIB ID",[](string l)
+		{
+			cout<<"material"<<endl;
+		}
+	);
+	
+	
+	ifstream file;
+	
+	file.open(filename);
+	
+	while(!file.eof())
+	{
+		string line;
+		getline(file,line);
+	}
+	
+	file.close();
+}
 
 
 void MeshLoader::Load(string filename, vector<Geometry *> & geometries, vector<Material *> & materials)

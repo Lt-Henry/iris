@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <map>
+#include <functional>
 #include <string>
 
 namespace com
@@ -19,9 +20,9 @@ namespace com
 				{
 					public:
 					
-					std::vector<std::string> options;
+					std::map<std::string,std::function<void(std::string l)> > options;
 					
-					Rule(std::vector<std::string> & options);
+					
 				};
 				
 				
@@ -36,8 +37,8 @@ namespace com
 					
 					
 					void AddToken(std::string name,std::string token);
-					void AddRule(std::string name,Rule rule);
-					
+					void AddRule(std::string name,std::string rule,std::function<void(std::string l)> hook);
+					void Push(std::string line);
 				};
 			}
 		}
