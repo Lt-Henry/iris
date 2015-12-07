@@ -33,11 +33,18 @@ namespace com
 					std::map<std::string,std::string> tokens;
 					std::map<std::string,Rule> rules;
 					
+					
+					bool IsRule(std::string name);
+					bool IsToken(std::string name);
+					
+					void FindFirsts(std::string rule);
+					
 					public:
 					
 					
 					void AddToken(std::string name,std::string token);
 					void AddRule(std::string name,std::string rule,std::function<void(std::string l)> hook);
+					void Build();
 					void Push(std::string line);
 				};
 			}

@@ -18,7 +18,16 @@ void MeshLoader::LoadOBJ(string filename)
 	parser::Grammar grammar;
 	
 	grammar.AddToken("MTLLIB","mtllib");
+	grammar.AddToken("SHARP","#");
+	grammar.AddToken("ID","w+");
 	
+	grammar.AddRule("obj","lines",nullptr);
+	
+	grammar.AddRule("lines","comment lines",nullptr);
+	grammar.AddRule("lines","mtllib lines",nullptr);
+	grammar.AddRule("lines","",nullptr);
+	
+	grammar.AddRule("comment","SHARP ID",nullptr);
 	
 	grammar.AddRule("mtllib","MTLLIB ID",[](string l)
 		{
@@ -26,7 +35,8 @@ void MeshLoader::LoadOBJ(string filename)
 		}
 	);
 	
-	
+	grammar.Build();
+	/*
 	ifstream file;
 	
 	file.open(filename);
@@ -38,6 +48,7 @@ void MeshLoader::LoadOBJ(string filename)
 	}
 	
 	file.close();
+	*/
 }
 
 
