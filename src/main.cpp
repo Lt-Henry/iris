@@ -17,7 +17,7 @@ using namespace com::toxiclabs::iris;
 int main(int argc,char * argv[])
 {
 	cout<<"Iris path-tracer"<<endl;
-	MeshLoader::LoadOBJ("crap");
+	MeshLoader::LoadOBJ("test-02/test-02.obj");
 
 	auto app = Gtk::Application::create(argc,argv,"com.toxiclabs.iris");
 

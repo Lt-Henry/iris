@@ -1,6 +1,7 @@
 
 #include "Parser.hpp"
 #include "MeshLoader.hpp"
+#include "Math.hpp"
 
 #include <string>
 #include <fstream>
@@ -15,28 +16,11 @@ using namespace std;
 
 void MeshLoader::LoadOBJ(string filename)
 {
-	parser::Grammar grammar;
+	vector<Vector> vertices;
+	vector<Vector> normals;
 	
-	grammar.AddToken("MTLLIB","mtllib");
-	grammar.AddToken("SHARP","#");
-	grammar.AddToken("ID","w+");
+	vector<string> tokens;
 	
-	grammar.AddRule("obj","lines",nullptr);
-	
-	grammar.AddRule("lines","comment lines",nullptr);
-	grammar.AddRule("lines","mtllib lines",nullptr);
-	grammar.AddRule("lines","",nullptr);
-	
-	grammar.AddRule("comment","SHARP ID",nullptr);
-	
-	grammar.AddRule("mtllib","MTLLIB ID",[](string l)
-		{
-			cout<<"material"<<endl;
-		}
-	);
-	
-	grammar.Build();
-	/*
 	ifstream file;
 	
 	file.open(filename);
@@ -45,12 +29,78 @@ void MeshLoader::LoadOBJ(string filename)
 	{
 		string line;
 		getline(file,line);
+		
+		tokens=parser::GetTokens(line);
+		
+		if(tokens.size()==0)
+		{
+			continue;
+		}
+		
+		if(tokens[0]=="o")
+		{
+			cout<<"Object:"<<tokens[1]<<endl;
+		}
+		
+		if(tokens[0]=="v")
+		{
+			float x=stof(tokens[1]);
+			float y=stof(tokens[2]);
+			float z=stof(tokens[3]);
+			
+			vertices.push_back(Vector(x,y,z));
+		}
+		
+		if(tokens[0]=="vn")
+		{
+			float x=stof(tokens[1]);
+			float y=stof(tokens[2]);
+			float z=stof(tokens[3]);
+			
+			normals.push_back(Vector(x,y,z));
+		}
+		
+		if(tokens[0]=="f")
+		{
+			//handling only triangles
+			if(tokens.size()==4)
+			{
+				vector<string> indices;
+			
+				indices=parser::Split(tokens[1],'/');
+				cout<<"face type:"<<indices.size()<<endl;
+			}
+		}
 	}
 	
 	file.close();
-	*/
+	
 }
 
+void MeshLoader::LoadSTL(string filename)
+{
+	vector<string> tokens;
+	
+	ifstream file;
+	
+	file.open(filename);
+	
+	while(!file.eof())
+	{
+		string line;
+		getline(file,line);
+		
+		tokens=parser::GetTokens(line);
+		
+		if(tokens.size()==0)
+		{
+			continue;
+		}
+		
+	}
+	
+	file.close();
+}
 
 void MeshLoader::Load(string filename, vector<Geometry *> & geometries, vector<Material *> & materials)
 {

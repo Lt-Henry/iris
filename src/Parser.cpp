@@ -22,11 +22,10 @@ vector<string> com::toxiclabs::iris::parser::Split(string str,char separator)
 		}
 		else
 		{
-			if(tmp!="")
-			{
-				ret.push_back(tmp);
-				tmp="";
-			}
+			
+			ret.push_back(tmp);
+			tmp="";
+		
 		}
 	}
 	
@@ -38,109 +37,54 @@ vector<string> com::toxiclabs::iris::parser::Split(string str,char separator)
 	return ret;
 }
 
-bool Grammar::IsRule(string name)
+vector<string> com::toxiclabs::iris::parser::GetTokens(string str)
 {
-	bool ret=true;
+	vector<string> tokens;
+	string tmp="";
+	bool block=false;
 	
-	for(char c: name)
+	for(char c:str)
 	{
-		if(isupper(c))
+		if(c=='#')
 		{
-			ret=false;
 			break;
 		}
-	}
-	
-	return ret;
-}
-
-bool Grammar::IsToken(std::string name)
-{
-	bool ret=true;
-	
-	for(char c: name)
-	{
-		if(islower(c))
-		{
-			ret=false;
-			break;
-		}
-	}
-	
-	return ret;
-}
-
-
-void Grammar::FindFirsts(string rule)
-{
-	vector<string> tmp;
-	
-	//epsilon
-	if(rule=="")
-	{
-		return;
-	}
-	
-	tmp=Split(rule);
-	
-	if(IsToken(tmp[0]))
-	{
-		cout<<"first: "<<tmp[0]<<endl;
-	}
-	else
-	{
-		Rule r = rules[tmp[0]];
 		
-		for(pair<string,function<void(string l)> > alpha : r.options)
+		if(block==false)
 		{
-			FindFirsts(alpha.first);
+			if(c!=' ' && c!='\t' && c!='\n')
+			{
+				tmp=tmp+c;
+				if(c=='"')
+				{
+					block=true;
+				}
+			}
+			else
+			{
+				if(tmp!="")
+				{
+					tokens.push_back(tmp);
+					tmp="";
+				}
+			}
+		}
+		else
+		{
+			tmp=tmp+c;
+			if(c=='"')
+			{
+				block=false;
+				tokens.push_back(tmp);
+				tmp="";
+			}
 		}
 	}
-}
-
-void Grammar::AddToken(string name,string token)
-{
-	tokens[name]=token;
-}
-
-void Grammar::AddRule(string name,string rule,function<void(string)> hook)
-{
-	map<string,Rule>::iterator it;
 	
-	it=rules.find(name);
-	
-	if(it==rules.end())
+	if(tmp!="")
 	{
-		Rule r;
-		r.options[rule]=hook;
-		rules[name]=r;
-	}
-	else
-	{
-		it->second.options[rule]=hook;
+		tokens.push_back(tmp);
 	}
 	
+	return tokens;
 }
-
-void Grammar::Build()
-{
-	for(pair<string,Rule> rule : rules)
-	{
-		cout<<"rule: "<<rule.first<<endl;
-		for(pair<string,function<void(string l)> > alpha : rule.second.options)
-		{
-			//cout<<"alpha: "<<alpha.first<<endl;
-			FindFirsts(alpha.first);
-		}
-	}
-}
-
-void Grammar::Push(string text)
-{
-	vector<string> lex;
-	
-	lex = parser::Split(text);
-	
-	
-}
-
