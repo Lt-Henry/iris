@@ -65,10 +65,44 @@ void MeshLoader::LoadOBJ(string filename)
 			//handling only triangles
 			if(tokens.size()==4)
 			{
-				vector<string> indices;
+				bool compute_normals=false;
+				
+				Triangle* triangle=new Triangle();
+				
+				for(int n=0;n<3;n++)
+				{
+					vector<string> indices;
+					int v,vt,vn;
+					
 			
-				indices=parser::Split(tokens[1],'/');
-				cout<<"face type:"<<indices.size()<<endl;
+					indices=parser::Split(tokens[n+1],'/');
+				
+				
+					switch(indices.size())
+					{
+						// v
+						case 1:
+							v=stoi(indices[0]);
+							triangle->vertices[n]=vertices[v];
+							compute_normals=true;
+						break;
+					
+						// v/t
+						case 2:
+							v=stoi(indices[0]);
+							triangle->vertices[n]=vertices[v];
+							compute_normals=true;
+						break;
+					
+						// v/t/n
+						case 3:
+							v=stoi(indices[0]);
+							triangle->vertices[n]=vertices[v];
+							vn=stoi(indices[2]);
+							triangle->normals[n]=normals[vn];
+						break;
+					}
+				}
 			}
 		}
 	}
