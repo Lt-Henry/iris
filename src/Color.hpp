@@ -15,7 +15,8 @@ namespace com
 			{
 				None,
 				RGB,
-				XYZ
+				XYZ,
+				HSV
 			};
 			
 			class Color
@@ -90,7 +91,31 @@ namespace com
 				ColorRGB ToRGB();
 			};
 			
-			
+			class ColorHSV : public Color
+			{
+				public:
+				
+				union
+				{
+					struct
+					{
+						float h;
+						float s;
+						float v;
+					};
+					
+					float data[4];
+					
+					ColorHSV();
+					ColorHSV(float h,float s,float v);
+					
+					void Black();
+					void White();
+					void Clamp();
+					
+					ColorRGB ToRGB();
+				};
+			};
 		}
 	}
 }

@@ -122,3 +122,65 @@ ColorRGB ColorXYZ::ToRGB()
 	return ret;
 }
 
+ColorHSV::ColorHSV()
+{
+	type=ColorType::HSV;
+}
+
+ColorHSV::ColorHSV(float h,float s,float v):ColorHSV()
+{
+	this->h=h;
+	this->s=s;
+	this->v=v;
+}
+
+void ColorHSV::White()
+{
+	h=0.0f;
+	s=0.0f;
+	v=1.0f;
+}
+
+void ColorHSV::Black()
+{
+	h=0.0f;
+	s=1.0f;
+	v=0.0f;
+}
+
+void ColorHSV::Clamp()
+{
+	if(h<0.0f)
+	{
+		h=0.0f;
+	}
+	
+	if(s<0.0f)
+	{
+		s=0.0f;
+	}
+	
+	if(v<0.0f)
+	{
+		v=0.0f;
+	}
+	
+	if(h>360.0f)
+	{
+		h=360.0f;
+	}
+	
+	if(s>1.0f)
+	{
+		s=1.0f;
+	}
+	
+	if(v>1.0f)
+	{
+		v=1.0f;
+	}
+}
+
+ColorRGB ColorHSV::ToRGB()
+{
+}
