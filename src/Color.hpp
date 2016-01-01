@@ -105,16 +105,17 @@ namespace com
 					};
 					
 					float data[4];
-					
-					ColorHSV();
-					ColorHSV(float h,float s,float v);
-					
-					void Black();
-					void White();
-					void Clamp();
-					
-					ColorRGB ToRGB();
 				};
+
+				ColorHSV();
+				ColorHSV(float h,float s,float v);
+
+				void Black();
+				void White();
+				void Clamp();
+
+				ColorRGB ToRGB();
+
 			};
 		}
 	}

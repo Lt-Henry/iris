@@ -1,5 +1,6 @@
 
 #include "Color.hpp"
+#include "Math.hpp"
 
 #include <iostream>
 
@@ -183,4 +184,72 @@ void ColorHSV::Clamp()
 
 ColorRGB ColorHSV::ToRGB()
 {
+	ColorRGB color;
+
+	int hi;
+	float hp;
+
+	float f;
+	float pv,qv,tv;
+
+	if(IsZero(s))
+	{
+		color.r=v;
+		color.g=v;
+		color.b=v;
+	}
+	else
+	{
+		hp=h/60.0f;
+		hi=std::floor(hp);
+
+		f=hp-hi;
+
+		pv = v * ( 1 - s );
+		qv = v * ( 1 - s * f );
+		tv = v * ( 1 - s * ( 1 - f ) );
+
+		switch(hi)
+		{
+			case 0:
+				color.r=v;
+				color.g=tv;
+				color.b=pv;
+			break;
+
+			case 1:
+				color.r=qv;
+				color.g=v;
+				color.b=pv;
+			break;
+
+			case 2:
+				color.r=pv;
+				color.g=v;
+				color.b=tv;
+			break;
+
+			case 3:
+				color.r=pv;
+				color.g=qv;
+				color.b=v;
+			break;
+
+			case 4:
+				color.r=tv;
+				color.g=pv;
+				color.b=v;
+			break;
+
+			case 5:
+				color.r=v;
+				color.g=pv;
+				color.b=qv;
+			break;
+		}
+
+	}
+
+
+	return color;
 }
