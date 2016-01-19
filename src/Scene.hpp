@@ -29,11 +29,16 @@ namespace com
 				
 				Camera * camera;
 				Atmosphere * atmosphere;
+				SceneGraph * scenegraph;
 				
 				Scene();
 				~Scene();
 				
 				void SetCamera(Camera * camera);
+				void SetAtmosphere(Atmosphere * atmosphere);
+
+
+
 				void ApplyCamera();
 				
 			};

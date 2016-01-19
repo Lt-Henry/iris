@@ -35,13 +35,14 @@ Scene::~Scene()
 
 void Scene::SetCamera(Camera * camera)
 {
-	if(this->camera!=nullptr)
-	{
-		delete this->camera;
-	}
-	
 	this->camera=camera;
 }
+
+void Scene::SetAtmosphere(Atmosphere * atmosphere)
+{
+	this->atmosphere=atmosphere;
+}
+
 
 void Scene::ApplyCamera()
 {
