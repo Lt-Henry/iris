@@ -1,15 +1,10 @@
 
 #create an executable as target
-add_library(iris SHARED DataSet.cpp Core.cpp Parser.cpp PathTracer.cpp MeshLoader.cpp Mesh.cpp Math.cpp Spectrum.cpp Color.cpp Camera.cpp Scene.cpp KdTree.cpp Atmosphere.cpp)
+add_library(iris SHARED Settings.cpp)
 
-add_executable(iris-gui Window.cpp main.cpp)
 
 #require pkg-config support
 find_package(PkgConfig REQUIRED)
-
-#required pkg-config libs
-pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
-pkg_check_modules(GTKSOURCEVIEWMM REQUIRED gtksourceviewmm-3.0)
 
 
 pkg_check_modules(LUA lua)
@@ -19,8 +14,11 @@ if(NOT LUA_FOUND MATCHES 1)
 	pkg_check_modules(LUA lua5.2)
 endif()
 
+
+target_include_directories (iris PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
 #add include dirs
-include_directories(${LUA_INCLUDE_DIRS} ${GTKMM_INCLUDE_DIRS} ${GTKSOURCEVIEWMM_INCLUDE_DIRS})
+include_directories(${LUA_INCLUDE_DIRS})
 
 #add library paths
 link_directories(${LUA_LIBRARY_DIRS})
@@ -29,15 +27,13 @@ link_directories(${LUA_LIBRARY_DIRS})
 add_definitions(${LUA_CFLAGS_OTHER} -D_IRIS_SSE_ -D_IRIS_SSE4_)
 
 #set link libraries
-target_link_libraries(iris ${LUA_LIBRARIES} freeimageplus pthread c++abi)
-
-target_link_libraries(iris-gui iris ${GTKMM_LIBRARIES} ${GTKSOURCEVIEWMM_LIBRARIES} pthread c++abi)
+target_link_libraries(iris ${LUA_LIBRARIES} pthread c++abi)
 
 #set compiler
 set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
 
 #compiler extra options
-set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++ -march=native -O3 -fomit-frame-pointer")
+set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++ -march=native -O3")
 #set(CMAKE_CXX_FLAGS "-std=c++11 -march=native -O3")
 
 

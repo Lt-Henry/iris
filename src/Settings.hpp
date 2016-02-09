@@ -3,6 +3,8 @@
 
 #include <cstdint>
 #include <string>
+#include <map>
+#include <vector>
 
 namespace com
 {
@@ -27,6 +29,7 @@ namespace com
 				
 				public:
 				
+				Value();
 				Value(ValueType type);
 				virtual ~Value();
 				
@@ -100,22 +103,28 @@ namespace com
 			{
 				protected:
 				
-				std::map<std::string,Value> values;
+				std::map<std::string,Value *> values;
 				
 				public:
 				
 				Settings();
+				~Settings();
 				
+				void Set(std::string key,Value * value);
 				void Set(std::string key,int value);
 				void Set(std::string key,float value);
 				void Set(std::string key,std::string value);
 				void Set(std::string key,bool value);
 				
-				Value Get(std::string key);
+				Value * Get(std::string key);
 				
 				void Merge(Settings & settings);
+				
+				std::vector<std::string> GetKeys();
 			};
 		
 		}
 	}
 }
+
+#endif

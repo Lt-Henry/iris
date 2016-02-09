@@ -5,6 +5,11 @@
 using namespace std;
 using namespace com::toxiclabs::iris;
 
+Value::Value()
+{
+	this->type=ValueType::None;
+}
+
 
 Value::Value(ValueType type)
 {
@@ -20,6 +25,10 @@ ValueType Value::GetType()
 	return type;
 }
 
+string Value::GetSignature()
+{
+	return string("n");
+}
 
 ValueInteger::ValueInteger(int data):Value(ValueType::Integer)
 {
@@ -86,33 +95,67 @@ Settings::Settings()
 {
 }
 
+Settings::~Settings()
+{
+}
+
+void Settings::Set(string key,Value * value)
+{
+	map<string,Value *>::iterator it;
+	
+	it = values.find(key);
+	
+	if(it!=values.end())
+	{
+		delete it->second;
+	}
+	
+	values[key]=value;
+}
 
 void Settings::Set(string key,int value)
 {
-	values[key]=ValueInteger(value);
+	Set(key,new ValueInteger(value));
 }
 
 void Settings::Set(string key,float value)
 {
-	values[key]=ValueFloat(value);
+	Set(key,new ValueFloat(value));
 }
 
 void Settings::Set(string key,string value)
 {
-	values[key]=ValueString(value);
+	Set(key,new ValueString(value));
 }
 
 void Settings::Set(string key,bool value)
 {
-	values[key]=ValueBoolean(value);
+	Set(key,new ValueBoolean(value));
 }
 
-Value Settings::Get(string key)
+Value * Settings::Get(string key)
 {
 	return values[key];
 }
 
 void Settings::Merge(Settings & settings)
 {
+	vector<string> keys = settings.GetKeys();
 	
+	for(string key : keys)
+	{
+		Set(key,settings.Get(key));
+	}
+}
+
+vector<string> Settings::GetKeys()
+{
+	vector<string> keys;
+	
+	for(pair<string,Value*> v:values)
+	{
+		keys.push_back(v.first);
+	}
+	
+	return keys;
 }
