@@ -31,7 +31,7 @@ int main(int argc,char * argv[])
 	for(string key: keys)
 	{
 		ValueFloat * v=static_cast<ValueFloat *>(settings.Get(key));
-		cout<<"key:"<<v->Get()<<endl;
+		cout<<key<<" "<<v->Get()<<endl;
 	}
 	
 	

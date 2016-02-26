@@ -97,6 +97,11 @@ Settings::Settings()
 
 Settings::~Settings()
 {
+	for(pair<string,Value* > p: values)
+	{
+		//delete p.second;
+		cout<<"deleting: "<<p.first<<endl;
+	}
 }
 
 void Settings::Set(string key,Value * value)
@@ -107,6 +112,7 @@ void Settings::Set(string key,Value * value)
 	
 	if(it!=values.end())
 	{
+		values.erase(it);
 		delete it->second;
 	}
 	
@@ -135,23 +141,82 @@ void Settings::Set(string key,bool value)
 
 Value * Settings::Get(string key)
 {
-	return values[key];
+	map<string,Value*>::iterator it;
+
+	it=values.find(key);
+
+	if(it==values.end())
+	{
+		return nullptr;
+	}
+	else
+	{
+		return *it;
+	}
+
 }
 
-void Settings::Merge(Settings & settings)
+int Settings::Get(std::string key,int value)
 {
-	vector<string> keys = settings.GetKeys();
-	
-	for(string key : keys)
+	Value * v = Get(key);
+
+	if(v==nullptr)
 	{
-		Set(key,settings.Get(key));
+		return value;
+	}
+	else
+	{
+		return static_cast<ValueInteger*>(v)->Get();
+	}
+}
+
+float Settings::Get(std::string key,float value)
+{
+	Value * v = Get(key);
+
+	if(v==nullptr)
+	{
+		return value;
+	}
+	else
+	{
+		return static_cast<ValueFloat*>(v)->Get();
+	}
+}
+
+string Settings::Get(string key,string value)
+{
+	Value * v = Get(key);
+	
+	if(v==nullptr)
+	{
+		return value;
+	}
+	else
+	{
+		return static_cast<ValueString*>(v)->Get();
+	}
+
+}
+
+bool Settings::Get(string key,bool value)
+{
+	Value * v = Get(key);
+
+	if(v==nullptr)
+	{
+		return value;
+	}
+	else
+	{
+		return static_cast<ValueBoolean*>(v)->Get();
 	}
 }
 
 vector<string> Settings::GetKeys()
 {
 	vector<string> keys;
-	
+
 	for(pair<string,Value*> v:values)
 	{
 		keys.push_back(v.first);

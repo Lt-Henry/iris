@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <iostream>
 
 namespace com
 {
@@ -63,7 +64,12 @@ namespace com
 				public:
 				
 				ValueFloat(float data);
-				
+				~ValueFloat()
+				{
+					std::cout<<"float destructor"<<std::endl;
+				};
+
+
 				float Get();
 				
 				std::string GetSignature();
@@ -118,8 +124,11 @@ namespace com
 				
 				Value * Get(std::string key);
 				
-				void Merge(Settings & settings);
-				
+				int Get(std::string key,int value);
+				float Get(std::string key,float value);
+				std::string Get(std::string key,std::string value);
+				bool Get(std::string key,bool value);
+
 				std::vector<std::string> GetKeys();
 			};
 		
