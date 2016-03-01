@@ -151,7 +151,7 @@ Value * Settings::Get(string key)
 	}
 	else
 	{
-		return *it;
+		return it->second;
 	}
 
 }

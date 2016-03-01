@@ -7,8 +7,41 @@ using namespace std;
 using namespace com::toxiclabs::iris;
 
 
-Atmosphere::Atmosphere()
+Atmosphere::Atmosphere(Settings & settings)
 {
+	int year;
+	int month;
+	int day;
+
+	int hour;
+	int minute;
+
+	float latitude;
+	float longitude;
+
+
+	//get some vars
+	year=settings.Get("world.year",2016);
+	month=settings.Get("world.month",1);
+	day=settings.Get("world.day",1);
+
+	hour=settings.Get("world.hour",12);
+	minute=settings.Get("world.minute",0);
+
+	latitude=settings.Get("world.latitude",39.471690f);
+	longitude=settings.Get("world.longitude",-0.323460f);
+
+
+	//compute sun position
+
+
+	int jd;
+
+	//get julian date
+	jd=367*year - int(7*(year+int((month+9)/12))/4);
+
+	cout<<"Julian date:"<<jd<<endl;
+
 	sun_position=Vector(0.0,1.0,1.0,0.0);
 	sun_position.Normalize();
 	
