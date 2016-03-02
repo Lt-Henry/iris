@@ -5,12 +5,15 @@
 #include <stdint.h>
 #include <cmath>
 
+#ifdef IRIS_X86_MATH
 
 #include <xmmintrin.h>
 #include <pmmintrin.h>
 
-#ifdef _IRIS_SSE4_
+#ifdef IRIS_SSE4
 #include <smmintrin.h>
+#endif
+
 #endif
 
 #define EPSILON 0.000001
@@ -33,10 +36,12 @@ namespace com
 			{
 				return (rad*180.0f)/M_PI;
 			}
+
+
 				
 			inline bool IsZero(float v)
 			{
-			
+#ifdef IRIS_X86_MATH
 				static const __m128 E=_mm_set1_ps(EPSILON);
 			/*
 			abs code credits:
@@ -56,11 +61,22 @@ namespace com
 				ret=_mm_extract_epi32(_mm_castps_si128(R),0);
 				
 				return (bool)ret;
+				
+#elseif
+
+				float t = std::abs(0.0f - v);
+				
+				return (t<EPSILON);
+#endif
 			}
-			
-			
+
+
+
+
 			inline float Maxf(float a,float b)
 			{
+#ifdef IRIS_X86_MATH
+
 				__m128 A;
 				__m128 B;
 				__m128 R;
@@ -71,7 +87,21 @@ namespace com
 				//_mm_store_ss(&ret,R);
 				ret=_mm_cvtss_f32(R);
 				return ret;
+
+#elseif
+
+				if(a>b)
+				{
+					return a;
+				}
+				else
+				{
+					return b;
+				}
+				
+#endif
 			}
+
 							
 			/*!
 				Simple homogeneus matrix class
@@ -106,7 +136,11 @@ namespace com
 							float z;
 							float w;
 						};
+#ifdef IRIS_X86_MATH
 						__m128 data;
+#elseif
+						float data[4];
+#endif
 					};
 					/*!
 						Empty constructor
@@ -160,7 +194,11 @@ namespace com
 					*/
 					inline float& operator[] (int n)
 					{
+#ifdef IRIS_X86_MATH
 						return ((float*)&data)[n];
+#elseif
+						return data[n];
+#endif
 					}
 				
 			};

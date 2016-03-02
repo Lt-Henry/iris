@@ -65,7 +65,8 @@ namespace com
 			float Vector::Module()
 			{
 		
-				
+#ifdef IRIS_X86_MATH
+
 				float dist;
 				__m128 R;
 				
@@ -75,6 +76,14 @@ namespace com
 				dist=_mm_cvtss_f32(R);
 									
 				return dist;
+
+#elseif
+				float t;
+				
+				t=(x*x)+(y*y)+(z*z);
+				
+				return std::sqrt(t);
+#endif				
 		
 			}
 			
@@ -88,6 +97,9 @@ namespace com
 			
 			void Vector::Normalize()
 			{
+
+#ifdef IRIS_X86_MATH
+
 				static const __m128 ONE=_mm_set1_ps(1.0f);
 				
 				__m128 R;
@@ -102,6 +114,14 @@ namespace com
 				
 				S=_mm_set1_ps(s);//broadcast content to four elements
 				data=_mm_mul_ps(data,S);
+#elseif
+
+				float module = 1.0f/Module();
+				x=x*module;
+				y=y*module;
+				z=z*module;
+
+#endif
 			
 			}
 			
@@ -117,6 +137,9 @@ namespace com
 			
 			void Vector::Abs()
 			{
+
+#ifdef IRIS_X86_MATH
+
 				static const __m128 SIGNMASK =
 					_mm_castsi128_ps(_mm_set1_epi32(0x80000000));
 				__m128 V; 
@@ -127,6 +150,12 @@ namespace com
 				//absval= _mm_andnot_ps(SIGNMASK, V); // absval = abs(val)
 				data=_mm_andnot_ps(SIGNMASK,data);
 				//_mm_storeu_ps(data,absval);
+				
+#elseif
+
+			
+
+#endif
 				
 			}
 			
