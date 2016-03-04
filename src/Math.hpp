@@ -62,7 +62,7 @@ namespace com
 				
 				return (bool)ret;
 				
-#elseif
+#else
 
 				float t = std::abs(0.0f - v);
 				
@@ -88,7 +88,7 @@ namespace com
 				ret=_mm_cvtss_f32(R);
 				return ret;
 
-#elseif
+#else
 
 				if(a>b)
 				{
@@ -138,7 +138,7 @@ namespace com
 						};
 #ifdef IRIS_X86_MATH
 						__m128 data;
-#elseif
+#else
 						float data[4];
 #endif
 					};
@@ -196,7 +196,7 @@ namespace com
 					{
 #ifdef IRIS_X86_MATH
 						return ((float*)&data)[n];
-#elseif
+#else
 						return data[n];
 #endif
 					}

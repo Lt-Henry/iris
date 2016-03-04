@@ -77,7 +77,7 @@ namespace com
 									
 				return dist;
 
-#elseif
+#else
 				float t;
 				
 				t=(x*x)+(y*y)+(z*z);
@@ -114,7 +114,7 @@ namespace com
 				
 				S=_mm_set1_ps(s);//broadcast content to four elements
 				data=_mm_mul_ps(data,S);
-#elseif
+#else
 
 				float module = 1.0f/Module();
 				x=x*module;
@@ -151,9 +151,12 @@ namespace com
 				data=_mm_andnot_ps(SIGNMASK,data);
 				//_mm_storeu_ps(data,absval);
 				
-#elseif
+#else
 
-			
+			data[0]=std::abs(data[0]);
+			data[1]=std::abs(data[1]);
+			data[2]=std::abs(data[2]);
+			data[3]=std::abs(data[3]);
 
 #endif
 				
@@ -167,22 +170,53 @@ namespace com
 			
 			Vector operator+(Vector  a,Vector &b)
 			{
+#ifdef IRIS_X86_MATH
 				
 				Vector v;
 				v.data=_mm_add_ps(a.data,b.data);
 				return v;
+#else
+				
+				Vector v;
+				
+				v.data[0]=a.data[0]+b.data[0];
+				v.data[1]=a.data[1]+b.data[1];
+				v.data[2]=a.data[2]+b.data[2];
+				v.data[3]=a.data[3]+b.data[3];
+				
+				return v;
+
+#endif
 			}
 			
 			Vector operator-(Vector  a,Vector &b)
 			{
+				
+#ifdef IRIS_X86_MATH
+
 				Vector v;
 				v.data=_mm_sub_ps(a.data,b.data);
 				return v;
+				
+#else
+				Vector v;
+				
+				v.data[0]=a.data[0]-b.data[0];
+				v.data[1]=a.data[1]-b.data[1];
+				v.data[2]=a.data[2]-b.data[2];
+				v.data[3]=a.data[3]-b.data[3];
+				
+				return v;
+				
+#endif
+
 			}
 			
 			float operator*(Vector &a,Vector &b)
 			{
-#ifdef _IRIS_SSE4_
+				
+#ifdef IRIS_X86_MATH
+#ifdef IRIS_SSE4
 				float ret;
 						
 				__m128 R;
@@ -206,6 +240,14 @@ namespace com
 				_mm_store_ss(&ret, R3);
 				
 				return ret;
+#endif
+
+#else
+			float ret;
+			
+			ret=(a.data[0]*b.data[0]) + (a.data[1]*b.data[1]) + (a.data[2]*b.data[2]);
+			
+			return ret;
 #endif
 			}
 			
