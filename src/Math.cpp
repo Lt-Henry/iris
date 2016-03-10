@@ -265,6 +265,7 @@ namespace com
 			
 			Vector operator*(Vector &a,float s)
 			{
+#ifdef IRIS_X86_MATH
 				Vector r;
 			
 				__m128 F;
@@ -272,6 +273,16 @@ namespace com
 				r.data=_mm_mul_ps(a.data,F);
 				
 				return r;
+#else
+				Vector r;
+				
+				a.data[0]*=s;
+				a.data[1]*=s;
+				a.data[2]*=s;
+				a.data[3]*=s;
+				
+				return r;
+#endif
 			}
 			
 			Vector operator*(Vector &v,Matrix &m)

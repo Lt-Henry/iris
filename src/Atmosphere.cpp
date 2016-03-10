@@ -35,12 +35,60 @@ Atmosphere::Atmosphere(Settings & settings)
 	//compute sun position
 
 
-	int jd;
-
+	float jd;
+	float A,B;
+	
+	if(month<=2)
+	{
+		month+=12;
+		year-=1;
+	}
+	
+	A=int(year/100.0f);
+	B=2-A+int(A/4.0f);
+	
+	
+	
 	//get julian date
-	jd=367*year - int(7*(year+int((month+9)/12))/4);
+	
+	jd=int(365.25f * (year+4716.0f)) + int(30.6001f * (month+1)) + day + B - 1524.5f;
 
-	cout<<"Julian date:"<<jd<<endl;
+	cout<<"Julian date:"<<int(jd+0.5f)<<endl;
+	
+	//ecliptic coordinates
+	float n;
+	float L;
+	float g;
+	float lambda;
+	float beta;
+	float R;
+	
+	//number of days since Greenwhich noon
+	n = jd - 2451545.0f;
+	
+	//mean latitude
+	L = 280.460f + 0.9856474f * n;
+	
+	//mean anomaly
+	g = 357.528f + 0.9856003f * n;
+	
+	//ecliptic longitude
+	lambda = L + 1.915f * sin(g) + 0.020f * sin(2.0f*g);
+	
+	//ecliptic latitude
+	beta = 0.0f;
+	
+	//Sun distance in astronomical units
+	R = 1.00014f - 0.01671f *cos(g) - 0.00014f*cos(2.0f*g);
+	
+	//equatorial coordinates
+	float ascension;
+	float declination;
+	
+	ascension=asin(sin(-23.44f) * sin(lambda));
+	
+	cout<<"Longitude: "<<lambda<<endl;
+	cout<<"ascension: "<<ascension<<endl;
 
 	sun_position=Vector(0.0,1.0,1.0,0.0);
 	sun_position.Normalize();
