@@ -37,6 +37,17 @@ namespace com
 				return (rad*180.0f)/M_PI;
 			}
 
+			inline float RadToDegNice(float rad)
+			{
+				float deg=RadToDeg(rad)/360.0f;
+				
+				int ideg=(int)deg;
+				
+				float fraction=deg-ideg;
+				
+				return 360.0f*fraction;
+				
+			}
 
 				
 			inline bool IsZero(float v)

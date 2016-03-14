@@ -2,9 +2,12 @@
 #include "Atmosphere.hpp"
 
 #include <cmath>
+#include <iomanip>
 
 using namespace std;
 using namespace com::toxiclabs::iris;
+
+const float Atmosphere::obliquity=0.409f; // 23.44 degrees;
 
 
 Atmosphere::Atmosphere(Settings & settings)
@@ -18,6 +21,7 @@ Atmosphere::Atmosphere(Settings & settings)
 
 	float latitude;
 	float longitude;
+	float elevation;
 
 
 	//get some vars
@@ -30,10 +34,18 @@ Atmosphere::Atmosphere(Settings & settings)
 
 	latitude=settings.Get("world.latitude",39.471690f);
 	longitude=settings.Get("world.longitude",-0.323460f);
+	elevation=settings.Get("world.elevation",0.0f);
 
 
-	//compute sun position
-
+	/*
+	 * compute sun position
+	 * 
+	 * Expected altitude
+	 * 27.527778022354987
+	 * 
+	 * Expected Azimuth 
+	 * -358.8058486943063
+	 */
 
 	float jd;
 	float A,B;
@@ -53,42 +65,49 @@ Atmosphere::Atmosphere(Settings & settings)
 	
 	jd=int(365.25f * (year+4716.0f)) + int(30.6001f * (month+1)) + day + B - 1524.5f;
 
-	cout<<"Julian date:"<<int(jd+0.5f)<<endl;
+	cout<<std::fixed<<std::setprecision(3)<<"Julian date:"<<jd<<endl;
 	
 	//ecliptic coordinates
 	float n;
-	float L;
-	float g;
-	float lambda;
-	float beta;
+	float gmls; //geometric mean longitude of sun
+	float gmas; //geometric mean anomaly of sun
+	float eLon;
+	float eLat;
 	float R;
 	
 	//number of days since Greenwhich noon
 	n = jd - 2451545.0f;
 	
-	//mean latitude
-	L = 280.460f + 0.9856474f * n;
+	//geometric mean longitude of sun
+	gmls = DegToRad(280.460f) + (DegToRad(0.9856474f) * n);
 	
-	//mean anomaly
-	g = 357.528f + 0.9856003f * n;
+	//geometric mean anomaly of sun
+	gmas = DegToRad(357.528f) + (DegToRad(0.9856003f) * n);
 	
 	//ecliptic longitude
-	lambda = L + 1.915f * sin(g) + 0.020f * sin(2.0f*g);
+	eLon = gmls + (DegToRad(1.915f) * sin(gmas)) + (DegToRad(0.020f) * sin(2.0f*gmas));
 	
 	//ecliptic latitude
-	beta = 0.0f;
+	eLat = 0.0f;
 	
 	//Sun distance in astronomical units
-	R = 1.00014f - 0.01671f *cos(g) - 0.00014f*cos(2.0f*g);
+	R = 1.00014f - 0.01671f *cos(gmas) - 0.00014f*cos(2.0f*gmas);
 	
 	//equatorial coordinates
 	float ascension;
 	float declination;
 	
-	ascension=asin(sin(-23.44f) * sin(lambda));
+	ascension=atan(cos(-Atmosphere::obliquity) * tan(eLon));
+	declination=asin(sin(-Atmosphere::obliquity) * sin(eLon));
 	
-	cout<<"Longitude: "<<lambda<<endl;
-	cout<<"ascension: "<<ascension<<endl;
+	cout<<"days since Greenwhich noon: "<<n<<endl;
+	cout<<"geometric mean longitude: "<<RadToDegNice(gmls)<<endl;
+	cout<<"geometric mean anomaly: "<<RadToDeg(gmas)<<endl;
+	cout<<"ecliptic longitude: "<<RadToDegNice(eLon)<<endl;
+	cout<<"ecliptic latitude: "<<RadToDegNice(eLat)<<endl;
+	cout<<"sun distance: "<<R<<endl;
+	cout<<"ascension: "<<RadToDegNice(ascension)<<endl;
+	cout<<"declination: "<<RadToDegNice(declination)<<endl;
 
 	sun_position=Vector(0.0,1.0,1.0,0.0);
 	sun_position.Normalize();
