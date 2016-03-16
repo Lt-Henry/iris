@@ -1,6 +1,7 @@
 #ifndef _IRIS_SENSOR_
 #define _IRIS_SENSOR_
 
+#include "Settings.hpp"
 #include "Color.hpp"
 #include "Spectrum.hpp"
 
@@ -23,9 +24,11 @@ namespace com
 			{
 				private:
 				
+				//number of pixels
 				int width;
 				int height;
 
+				//physical sensor size, in mm
 				float sensor_width;
 				float sensor_height;
 
@@ -33,7 +36,7 @@ namespace com
 
 				public:
 				
-				Sensor(int width,int height,float sensor_width,float sensor_height);
+				Sensor(Settings & settings);
 
 				~Sensor();
 

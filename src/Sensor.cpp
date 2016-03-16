@@ -5,12 +5,13 @@ using namespace std;
 using namespace com::toxiclabs::iris;
 
 
-Sensor::Sensor(int width,int height,float sensor_width,float sensor_height)
+Sensor::Sensor(Settings & settings)
 {
-	this->width=width;
-	this->height=height;
-	this->sensor_width=sensor_width;
-	this->sensor_height=sensor_height;
+	width=settings.Get("sensor.width",800);
+	height=settings.Get("sensor.height",600);
+
+	sensor_width=settings.Get("sensor.size.width",40.0f);
+	sensor_height=settings.Get("sensor.size.height",30.0f);
 
 	buffer=new float[width*height];
 
@@ -39,14 +40,13 @@ void Sensor::SetPixel(int x,int y,Spectrum & spr)
 
 	value=(x%2) | ((y%2)<<1);
 
-	float value=0.0f;
 
 	//Bayer filter RGGB
 	switch(value)
 	{
 		//R
 		case 0:
-			ColorRGB
+
 		break;
 
 		//G

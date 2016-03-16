@@ -1,6 +1,7 @@
 
 #create an executable as target
-add_library(iris SHARED Settings.cpp Spectrum.cpp Color.cpp Math.cpp Atmosphere.cpp)
+add_library(iris SHARED Settings.cpp Spectrum.cpp Color.cpp Math.cpp 
+Atmosphere.cpp Sensor.cpp)
 
 
 #require pkg-config support

@@ -16,8 +16,7 @@ namespace com
 			{
 				public:
 				
-				static const float obliquity;
-				
+
 				Vector sun_position;
 				Spectrum sunlight;
 				Spectrum sky;
