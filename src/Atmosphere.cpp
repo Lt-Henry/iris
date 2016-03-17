@@ -93,6 +93,13 @@ Atmosphere::Atmosphere(Settings & settings)
 	float oc; //oblique correction
 	float sra; //sun right ascension
 	float sd; //sun declination
+	float vy; //var y
+	float eot; //equation of time (minutes)
+	
+	float tst; //true solar time
+	
+	float sza;	//solar zenith angle
+	float sea; //solar elevation angle
 
 
 
@@ -137,12 +144,29 @@ Atmosphere::Atmosphere(Settings & settings)
 
 	//sun declination
 	sd=asin(sin(oc)*sin(sal));
-	//=degrees(asin(sin(radians(R2))*sin(radians(P2))))
+	
+	//var y
+	vy=tan(oc/2.0f)*tan(oc/2.0f);
+	
+	//equation of time
+	eot=4.0f*(vy*sin(2.0f*(gmls))-2.0f*eeo*sin((gmas))+4.0f*eeo*vy*sin((gmas))*cos(2.0f*(gmls))-0.5f*vy*vy*sin(4.0f*(gmls))-1.25f*eeo*eeo*sin(2.0f*(gmas)));
+	
+	
+	//true solar time
+	tst=((minute+hour*60.0f)/1440.0f)*1440.0f+eot+4.0f*DegToRad(longitude)-60.0f*timezone;
+	
+	
+	
+	//solar zenith angle
+	//sza=acos(sin(latitude)*sin(sd)+cos(latitude)*cos(sd)*cos(AC2));
+	
+	
+	//solar elevation angle
 
 	cout<<"geometric mean longitude: "<<RadToDegNice(gmls)<<endl;
 	cout<<"geometric mean anomaly: "<<RadToDeg(gmas)<<endl;
 	cout<<"eccent earth orbit: "<<eeo<<endl;
-	cout<<"sun eq of ctr: "<<seoc<<endl;
+	cout<<"sun eq of ctr: "<<RadToDeg(seoc)<<endl;
 	cout<<"sun true longitude: "<<RadToDegNice(stl)<<endl;
 	cout<<"sun true anomaly: "<<RadToDeg(sta)<<endl;
 	cout<<"sun radius vector: "<<srv<<endl;
@@ -151,6 +175,10 @@ Atmosphere::Atmosphere(Settings & settings)
 	cout<<"oblique correction: "<<RadToDegNice(oc)<<endl;
 	cout<<"sun right ascension: "<<RadToDeg(sra)<<endl;
 	cout<<"sun declination: "<<RadToDeg(sd)<<endl;
+	cout<<"var y: "<<vy<<endl;
+	cout<<"equation of time: "<<RadToDeg(eot)<<endl;
+	cout<<"true solar time: "<<(tst)<<endl;
+	
 
 	sun_position=Vector(0.0,1.0,1.0,0.0);
 	sun_position.Normalize();
