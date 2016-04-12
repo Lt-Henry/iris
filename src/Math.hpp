@@ -27,19 +27,19 @@ namespace com
 		namespace iris
 		{
 			
-			inline float DegToRad(float degree)
+			inline float Radians(float degree)
 			{
 				return degree*0.01745329251f; //Pi/180.0
 			}
 			
-			inline float RadToDeg(float rad)
+			inline float Degrees(float rad)
 			{
 				return (rad*180.0f)/M_PI;
 			}
 
-			inline float RadToDegNice(float rad)
+			inline float DegreesNice(float rad)
 			{
-				float deg=RadToDeg(rad)/360.0f;
+				float deg=Degrees(rad)/360.0f;
 				
 				int ideg=(int)deg;
 				

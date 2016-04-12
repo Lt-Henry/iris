@@ -77,9 +77,9 @@ Atmosphere::Atmosphere(Settings & settings)
 
 	jc=(jd - 2451545.0f) / 36525.0f;
 
-	cout<<std::fixed<<std::setprecision(4)<<"Julian date:"<<jd<<endl;
-	cout<<"Julian century:"<<jc<<endl;
-
+	cout<<std::fixed<<std::setprecision(8)<<"Julian date: "<<jd<<endl;
+	cout<<"Julian century: "<<jc<<endl;
+	
 
 	float gmls; //geometric mean longitude of sun
 	float gmas; //geometric mean anomaly of sun
@@ -98,16 +98,19 @@ Atmosphere::Atmosphere(Settings & settings)
 	
 	float tst; //true solar time
 	
+	float ha; //hour angle
+	
 	float sza;	//solar zenith angle
 	float sea; //solar elevation angle
 
 
 
 	//geometric mean longitude of sun
-	gmls = DegToRad(280.46646f) + (jc * (DegToRad(36000.76983f)+ jc*DegToRad(0.0003032f)));
+	gmls = Radians(280.46646f) + (jc * (Radians(36000.76983f)+ jc*Radians(0.0003032f)));
+	
 
 	//geometric mean anomaly of sun
-	gmas = DegToRad(357.52911f) + jc * (DegToRad(35999.05029f)-DegToRad(0.0001537f)*jc);
+	gmas = Radians(357.52911f) + jc * (Radians(35999.05029f)-Radians(0.0001537f)*jc);
 
 	//eccent earth orbit
 	eeo=0.016708634f-jc*(4.2037e-05f+1.267e-07f*jc);
@@ -115,7 +118,7 @@ Atmosphere::Atmosphere(Settings & settings)
 	//sun equation of center
 	//constants in degrees
 	seoc=sin(gmas)*(1.914602f-jc*(0.004817f+1.4e-05f*jc))+sin((2.0f*gmas))*(0.019993f-0.000101f*jc)+sin((3.0f*gmas))*0.000289f;
-	seoc=DegToRad(seoc);
+	seoc=Radians(seoc);
 
 
 	//sun true longitude
@@ -129,15 +132,15 @@ Atmosphere::Atmosphere(Settings & settings)
 
 
 	//sun apparent longitude
-	sal=stl-DegToRad(0.00569f)-DegToRad(0.00478f)*sin(DegToRad(125.04f)-DegToRad(1934.136f)*jc);
+	sal=stl-Radians(0.00569f)-Radians(0.00478f)*sin(Radians(125.04f)-Radians(1934.136f)*jc);
 
 
 	//mean oblique ecliptic (constants in degrees)
 	moe=23.0f+(26.0f+((21.448f-jc*(46.815f+jc*(0.00059f-jc*0.001813f))))/60.0f)/60.0f;
-	moe=DegToRad(moe);
+	moe=Radians(moe);
 	
 	//oblique correction
-	oc=moe+DegToRad(0.00256f)*cos(DegToRad(125.04f-1934.136f*jc));
+	oc=moe+Radians(0.00256f)*cos(Radians(125.04f-1934.136f*jc));
 
 	//sun right ascension
 	sra=atan2(cos(oc)*sin(sal),cos(sal));
@@ -153,9 +156,10 @@ Atmosphere::Atmosphere(Settings & settings)
 	
 	
 	//true solar time
-	tst=((minute+hour*60.0f)/1440.0f)*1440.0f+eot+4.0f*DegToRad(longitude)-60.0f*timezone;
+	tst=((hour*60.0f + minute)/1440.0f)*1440.0f+Degrees(eot)+4.0f*longitude-60.0f*timezone;
 	
-	
+	//=if(AB2/4<0;AB2/4+180;AB2/4-180)
+	ha=(tst/4.0f<0.0f) ? tst/4.0f+180.0f : tst/4.0f-180.0f;
 	
 	//solar zenith angle
 	//sza=acos(sin(latitude)*sin(sd)+cos(latitude)*cos(sd)*cos(AC2));
@@ -163,21 +167,22 @@ Atmosphere::Atmosphere(Settings & settings)
 	
 	//solar elevation angle
 
-	cout<<"geometric mean longitude: "<<RadToDegNice(gmls)<<endl;
-	cout<<"geometric mean anomaly: "<<RadToDeg(gmas)<<endl;
+	cout<<"geometric mean longitude: "<<DegreesNice(gmls)<<endl;
+	cout<<"geometric mean anomaly: "<<Degrees(gmas)<<endl;
 	cout<<"eccent earth orbit: "<<eeo<<endl;
-	cout<<"sun eq of ctr: "<<RadToDeg(seoc)<<endl;
-	cout<<"sun true longitude: "<<RadToDegNice(stl)<<endl;
-	cout<<"sun true anomaly: "<<RadToDeg(sta)<<endl;
+	cout<<"sun eq of ctr: "<<Degrees(seoc)<<endl;
+	cout<<"sun true longitude: "<<DegreesNice(stl)<<endl;
+	cout<<"sun true anomaly: "<<Degrees(sta)<<endl;
 	cout<<"sun radius vector: "<<srv<<endl;
-	cout<<"sun apparent longitude: "<<RadToDegNice(sal)<<endl;
-	cout<<"mean oblique ecliptic: "<<RadToDegNice(moe)<<endl;
-	cout<<"oblique correction: "<<RadToDegNice(oc)<<endl;
-	cout<<"sun right ascension: "<<RadToDeg(sra)<<endl;
-	cout<<"sun declination: "<<RadToDeg(sd)<<endl;
+	cout<<"sun apparent longitude: "<<DegreesNice(sal)<<endl;
+	cout<<"mean oblique ecliptic: "<<DegreesNice(moe)<<endl;
+	cout<<"oblique correction: "<<DegreesNice(oc)<<endl;
+	cout<<"sun right ascension: "<<Degrees(sra)<<endl;
+	cout<<"sun declination: "<<Degrees(sd)<<endl;
 	cout<<"var y: "<<vy<<endl;
-	cout<<"equation of time: "<<RadToDeg(eot)<<endl;
-	cout<<"true solar time: "<<(tst)<<endl;
+	cout<<"equation of time: "<<Degrees(eot)<<endl;
+	cout<<"true solar time: "<<tst<<endl;
+	cout<<"hour angle : "<<ha<<endl;
 	
 
 	sun_position=Vector(0.0,1.0,1.0,0.0);
