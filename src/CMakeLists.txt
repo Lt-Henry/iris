@@ -8,7 +8,9 @@ Atmosphere.cpp Sensor.cpp)
 find_package(PkgConfig REQUIRED)
 
 
+#lookup lua
 pkg_check_modules(LUA lua)
+
 
 if(NOT LUA_FOUND MATCHES 1)
 	message("Using lua 5.2")
@@ -25,17 +27,14 @@ include_directories(${LUA_INCLUDE_DIRS})
 link_directories(${LUA_LIBRARY_DIRS})
 
 #add custom lib flags
-add_definitions(${LUA_CFLAGS_OTHER} -D_IRIS_SSE_ -D_IRIS_SSE4_)
+#add_definitions(${LUA_CFLAGS_OTHER} -D_IRIS_SSE_ -D_IRIS_SSE4_)
+add_definitions(${LUA_CFLAGS_OTHER})
 
 #set link libraries
-target_link_libraries(iris ${LUA_LIBRARIES} pthread c++abi)
-
-#set compiler
-set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
+target_link_libraries(iris ${LUA_LIBRARIES})
 
 #compiler extra options
-set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++ -march=native -O3")
-#set(CMAKE_CXX_FLAGS "-std=c++11 -march=native -O3")
+set(CMAKE_CXX_FLAGS "-std=c++11 -march=native -O3")
 
 
 

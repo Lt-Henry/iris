@@ -1,11 +1,28 @@
+/*
+	Iris raytracer
+	
+	Copyright (C) 2016  Enrique Medina Gremaldos <quiqueiii@gmail.com>
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #include "Math.hpp"
+
 #include <cmath>
 #include <cstring>
 #include <unistd.h>
 #include <iostream>
-
-
 
 
 
@@ -33,7 +50,7 @@ namespace com
 			Matrix Matrix::CreateTranslation(float x,float y,float z)
 			{
 				Matrix m = CreateIdentity();
-								
+				
 				
 				m.data[12]=x;
 				m.data[13]=y;
@@ -153,10 +170,10 @@ namespace com
 				
 #else
 
-			data[0]=std::abs(data[0]);
-			data[1]=std::abs(data[1]);
-			data[2]=std::abs(data[2]);
-			data[3]=std::abs(data[3]);
+				data[0]=std::abs(data[0]);
+				data[1]=std::abs(data[1]);
+				data[2]=std::abs(data[2]);
+				data[3]=std::abs(data[3]);
 
 #endif
 				
@@ -166,7 +183,13 @@ namespace com
 			{
 				std::cout<<"vector:"<<data[0]<<","<<data[1]<<","<<data[2]<<","<<data[3]<<std::endl;
 			}
-						
+			
+			
+			string Vector::ToString()
+			{
+				return "ToDo";
+			}
+			
 			
 			Vector operator+(Vector  a,Vector &b)
 			{
@@ -188,6 +211,7 @@ namespace com
 
 #endif
 			}
+			
 			
 			Vector operator-(Vector  a,Vector &b)
 			{
@@ -211,6 +235,7 @@ namespace com
 #endif
 
 			}
+			
 			
 			float operator*(Vector &a,Vector &b)
 			{
@@ -243,13 +268,14 @@ namespace com
 #endif
 
 #else
-			float ret;
+				float ret;
 			
-			ret=(a.data[0]*b.data[0]) + (a.data[1]*b.data[1]) + (a.data[2]*b.data[2]);
+				ret=(a.data[0]*b.data[0]) + (a.data[1]*b.data[1]) + (a.data[2]*b.data[2]);
 			
-			return ret;
+				return ret;
 #endif
 			}
+			
 			
 			Vector operator^(Vector &a,Vector &b)
 			{
@@ -301,6 +327,8 @@ namespace com
 			{
 				Matrix m;
 				
+				//Holy shit!
+				
 				m.data[0 + 0*4]=a.data[0 + 0*4]*b.data[0 + 0*4] + a.data[0 + 1*4]*b.data[1 + 0*4] + a.data[0 + 2*4]*b.data[2 + 0*4] + a.data[0 + 3*4]*b.data[3 + 0*4];
 				m.data[1 + 0*4]=a.data[1 + 0*4]*b.data[0 + 0*4] + a.data[1 + 1*4]*b.data[1 + 0*4] + a.data[1 + 2*4]*b.data[2 + 0*4] + a.data[1 + 3*4]*b.data[3 + 0*4];
 				m.data[2 + 0*4]=a.data[2 + 0*4]*b.data[0 + 0*4] + a.data[2 + 1*4]*b.data[1 + 0*4] + a.data[2 + 2*4]*b.data[2 + 0*4] + a.data[2 + 3*4]*b.data[3 + 0*4];
@@ -333,7 +361,7 @@ namespace com
 				r.data[1]=a.data[1] + factor*(b.data[1]-a.data[1]);
 				r.data[2]=a.data[2] + factor*(b.data[2]-a.data[2]);
 				r.data[3]=a.data[3] + factor*(b.data[3]-a.data[3]);
-									
+				
 				return r;
 			}
 		}
