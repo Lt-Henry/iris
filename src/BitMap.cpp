@@ -24,6 +24,7 @@
 
 #include <cstdio>
 #include <stdexcept>
+#include <iostream>
 
 using namespace com::toxiclabs::iris;
 using namespace std;
@@ -59,7 +60,7 @@ void BitMap::PutPixel(int x,int y,ColorRGB & color)
 	buffer[index+3]=255.0f*color.a;
 }
 
-void BitMap::Save(string & filename)
+void BitMap::Save(string filename)
 {
 	FILE * fp;
 	
@@ -96,18 +97,24 @@ void BitMap::Save(string & filename)
 		info,
 		width, height,
 		8,
-		PNG_COLOR_TYPE_RGBA,
+		PNG_COLOR_TYPE_RGB_ALPHA,
 		PNG_INTERLACE_NONE,
 		PNG_COMPRESSION_TYPE_DEFAULT,
 		PNG_FILTER_TYPE_DEFAULT
 	);
 	
+	cout<<"stage 1"<<endl;
 	png_write_info(png, info);
 
+	png_bytepp row_pointers;
+	cout<<"stage 2"<<endl;
+	row_pointers=static_cast<unsigned char **>(&buffer);
+	cout<<"stage 3"<<endl;
 	png_write_image(png, row_pointers);
+	cout<<"stage 4"<<endl;
 	png_write_end(png, nullptr);
 
-	
+	cout<<"stage 5"<<endl;
 	fclose(fp);
 
 }

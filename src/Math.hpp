@@ -20,7 +20,8 @@
 #ifndef _IRIS_MATH_
 #define _IRIS_MATH_
 
-#include <stdint.h>
+#include <cstdint>
+#include <string>
 #include <cmath>
 
 #ifdef IRIS_X86_MATH

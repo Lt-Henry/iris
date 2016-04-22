@@ -48,7 +48,7 @@ namespace com
 				
 				void PutPixel(int x,int y,ColorRGB & color);
 				
-				void Save(std::string & filename);
+				void Save(std::string filename);
 				
 			};
 		}
