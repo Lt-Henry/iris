@@ -4,6 +4,7 @@
 #include "Settings.hpp"
 #include "Color.hpp"
 #include "Spectrum.hpp"
+#include "BitMap.hpp"
 
 namespace com
 {
@@ -25,14 +26,17 @@ namespace com
 				private:
 				
 				//number of pixels
-				int width;
-				int height;
+				int cols;
+				int rows;
 
-				//physical sensor size, in mm
-				float sensor_width;
-				float sensor_height;
+				//physical sensor size, in meters
+				float width;
+				float height;
 
+				//cell buffer
 				float * buffer;
+				
+				BitMap * bitmap;
 
 				public:
 				
@@ -40,10 +44,15 @@ namespace com
 
 				~Sensor();
 
-				int GetWidth();
-				int GetHeight();
+				float GetWidth();
+				float GetHeight();
+				
+				int GetColumns();
+				int GetRows();
 
-				void SetPixel(int x,int y,Spectrum & spr);
+				void SetCell(int x,int y,Spectrum & spr);
+				BitMap * Process();
+				
 			};
 		}
 	}

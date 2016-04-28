@@ -56,7 +56,7 @@ int BitMap::GetHeight()
 	return height;
 }
 
-void BitMap::PutPixel(int x,int y,const ColorRGB & color)
+void BitMap::PutPixel(int x,int y,ColorRGB & color)
 {
 	int index;
 	
@@ -71,7 +71,7 @@ void BitMap::PutPixel(int x,int y,const ColorRGB & color)
 }
 
 
-ColorRGB::GetPixel(int x,int y)
+ColorRGB BitMap::GetPixel(int x,int y)
 {
 	ColorRGB color;
 	
@@ -87,7 +87,7 @@ ColorRGB::GetPixel(int x,int y)
 	return color;
 }
 
-void BitMap::Save(string & filename)
+void BitMap::Save(string filename)
 {
 	FILE * fp;
 	

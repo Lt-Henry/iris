@@ -49,10 +49,10 @@ namespace com
 				int GetWidth();
 				int GetHeight();
 				
-				void PutPixel(int x,int y,const ColorRGB & color);
+				void PutPixel(int x,int y,ColorRGB & color);
 				ColorRGB GetPixel(int x,int y);
 				
-				void Save(std::string & filename);
+				void Save(std::string filename);
 				
 			};
 		}

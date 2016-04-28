@@ -7,33 +7,45 @@ using namespace com::toxiclabs::iris;
 
 Sensor::Sensor(Settings & settings)
 {
-	width=settings.Get("sensor.width",800);
-	height=settings.Get("sensor.height",600);
+	cols=settings.Get("sensor.columns",800);
+	rows=settings.Get("sensor.rows",600);
 
-	sensor_width=settings.Get("sensor.size.width",40.0f);
-	sensor_height=settings.Get("sensor.size.height",30.0f);
+	width=settings.Get("sensor.width",0.04f);
+	height=settings.Get("sensor.height",0.03f);
 
-	buffer=new float[width*height];
+	buffer=new float[cols*rows];
 
+	bitmap=new BitMap(cols,rows);
 }
 
 
 Sensor::~Sensor()
 {
 	delete buffer;
+	delete bitmap;
 }
 
-int Sensor::GetWidth()
+float Sensor::GetWidth()
 {
 	return width;
 }
 
-int Sensor::GetHeight()
+float Sensor::GetHeight()
 {
 	return height;
 }
 
-void Sensor::SetPixel(int x,int y,Spectrum & spr)
+int Sensor::GetColumns()
+{
+	return cols;
+}
+
+int Sensor::GetRows()
+{
+	return rows;
+}
+
+void Sensor::SetCell(int x,int y,Spectrum & spr)
 {
 
 	unsigned char value;
@@ -61,4 +73,29 @@ void Sensor::SetPixel(int x,int y,Spectrum & spr)
 		break;
 	}
 
+}
+
+
+BitMap * Sensor::Process()
+{
+	//generate random noise
+	
+	for(int r=0;r<rows;r++)
+	{
+		for(int c=0;c<cols;c++)
+		{
+			float f=rand()/(float)RAND_MAX;
+			buffer[c+r*cols]=f;
+			
+			ColorRGB color;
+			
+			color.r=f;
+			color.g=f;
+			color.b=f;
+			color.a=1;
+			bitmap->PutPixel(c,r,color);
+		}
+	}
+
+	return bitmap;
 }
