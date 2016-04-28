@@ -46,7 +46,17 @@ BitMap::~BitMap()
 	delete buffer;
 }
 
-void BitMap::PutPixel(int x,int y,ColorRGB & color)
+int BitMap::GetWidth()
+{
+	return width;
+}
+
+int BitMap::GetHeight()
+{
+	return height;
+}
+
+void BitMap::PutPixel(int x,int y,const ColorRGB & color)
 {
 	int index;
 	
@@ -60,7 +70,24 @@ void BitMap::PutPixel(int x,int y,ColorRGB & color)
 	buffer[index+3]=255.0f*color.a;
 }
 
-void BitMap::Save(string filename)
+
+ColorRGB::GetPixel(int x,int y)
+{
+	ColorRGB color;
+	
+	int index;
+	
+	index = (x*4)+(y*width*4);
+	
+	color.r=buffer[index+0]/255.0f;
+	color.g=buffer[index+1]/255.0f;
+	color.b=buffer[index+2]/255.0f;
+	color.a=buffer[index+3]/255.0f;
+	
+	return color;
+}
+
+void BitMap::Save(string & filename)
 {
 	FILE * fp;
 	
@@ -103,18 +130,23 @@ void BitMap::Save(string filename)
 		PNG_FILTER_TYPE_DEFAULT
 	);
 	
-	cout<<"stage 1"<<endl;
 	png_write_info(png, info);
 
 	png_bytepp row_pointers;
-	cout<<"stage 2"<<endl;
-	row_pointers=static_cast<unsigned char **>(&buffer);
-	cout<<"stage 3"<<endl;
+	
+	//create a list of row pointers
+	row_pointers=new png_bytep[height];
+
+	for(int n=0;n<height;n++) 
+	{
+		row_pointers[n]=buffer+(width*n);
+	}
+
+	
 	png_write_image(png, row_pointers);
-	cout<<"stage 4"<<endl;
 	png_write_end(png, nullptr);
 
-	cout<<"stage 5"<<endl;
 	fclose(fp);
 
+	delete row_pointers;
 }

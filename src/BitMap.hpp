@@ -46,9 +46,13 @@ namespace com
 				BitMap(int width,int height);
 				~BitMap();
 				
-				void PutPixel(int x,int y,ColorRGB & color);
+				int GetWidth();
+				int GetHeight();
 				
-				void Save(std::string filename);
+				void PutPixel(int x,int y,const ColorRGB & color);
+				ColorRGB GetPixel(int x,int y);
+				
+				void Save(std::string & filename);
 				
 			};
 		}
