@@ -75,23 +75,79 @@ void Sensor::SetCell(int x,int y,Spectrum & spr)
 
 }
 
+void Sensor::Clear()
+{
+	for(int r=0;r<rows;r++)
+	{
+		for(int c=0;c<cols;c++)
+		{
+			buffer[c+r*cols]=0.0f;
+		}
+	}
+}
 
 BitMap * Sensor::Process()
 {
+
+	//clear sensor
+	Clear();
+
 	//generate random noise
+	float noise=0.3f;
 	
 	for(int r=0;r<rows;r++)
 	{
 		for(int c=0;c<cols;c++)
 		{
 			float f=rand()/(float)RAND_MAX;
-			buffer[c+r*cols]=f;
+			
+			float v = buffer[c+r*cols];
+			
+			buffer[c+r*cols]= v + (noise*f);
+		}
+	}
+	
+	//ADC
+	for(int r=0;r<rows;r++)
+	{
+		for(int c=0;c<cols;c++)
+		{
+			float v = buffer[c+r*cols];
 			
 			ColorRGB color;
 			
-			color.r=f;
-			color.g=f;
-			color.b=f;
+			unsigned char value;
+
+			value=(c%2) + ((r%2)*2);
+			
+
+			//Bayer filter RGGB
+			switch(value)
+			{
+				//R
+				case 0:
+					color.r=v;
+					color.g=0;
+					color.b=0;
+				break;
+
+				//G
+				case 1:
+				case 2:
+					color.r=0;
+					color.g=v;
+					color.b=0;
+				break;
+
+				//B
+				case 3:
+					color.r=0;
+					color.g=0;
+					color.b=v;
+				break;
+			}
+
+
 			color.a=1;
 			bitmap->PutPixel(c,r,color);
 		}

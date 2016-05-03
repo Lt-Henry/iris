@@ -51,6 +51,10 @@ namespace com
 				int GetRows();
 
 				void SetCell(int x,int y,Spectrum & spr);
+				
+				/*! clear sensor */
+				void Clear();
+				
 				BitMap * Process();
 				
 			};
