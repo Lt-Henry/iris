@@ -44,6 +44,7 @@ namespace com
 
 				~Sensor();
 
+
 				float GetWidth();
 				float GetHeight();
 				
@@ -55,6 +56,7 @@ namespace com
 				/*! clear sensor */
 				void Clear();
 				
+				/*! simulate a CCD to bitmap process */
 				BitMap * Process();
 				
 			};

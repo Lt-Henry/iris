@@ -93,7 +93,7 @@ BitMap * Sensor::Process()
 	Clear();
 
 	//generate random noise
-	float noise=0.3f;
+	float noise=0.1f;
 	
 	for(int r=0;r<rows;r++)
 	{
@@ -112,38 +112,87 @@ BitMap * Sensor::Process()
 	{
 		for(int c=0;c<cols;c++)
 		{
-			float v = buffer[c+r*cols];
+			//simple debayer
 			
+			int nc;
+			int nr;
+			
+			if(r==rows-1)
+			{
+				nr=-1;
+			}
+			else
+			{
+				nr=1;
+			}
+			
+			if(c==cols-1)
+			{
+				nc=-1;
+			}
+			else
+			{
+				nc=1;
+			}
+
+			
+			float A,B,C,D;
 			ColorRGB color;
-			
 			unsigned char value;
 
 			value=(c%2) + ((r%2)*2);
-			
+
+			/*
+				AB
+				CD
+			*/
+			A=buffer[c+r*cols];
+			B=buffer[(c+nc)+r*cols];
+			C=buffer[c+(r+nr)*cols];
+			D=buffer[(c+nc)+(r+nr)*cols];
+
 
 			//Bayer filter RGGB
 			switch(value)
 			{
-				//R
+				/*
+					RG
+					GB
+				*/
 				case 0:
-					color.r=v;
-					color.g=0;
-					color.b=0;
+					color.r=A;
+					color.g=(B*0.5f)+(C*0.5f);
+					color.b=D;
 				break;
 
-				//G
+				/*
+					GR
+					BG
+				*/
 				case 1:
+					color.r=B;
+					color.g=(A*0.75f)+(D*0.25f);
+					color.b=C;				
+				break;
+				
+				/*
+					GB
+					RG
+				*/
 				case 2:
-					color.r=0;
-					color.g=v;
-					color.b=0;
+					color.r=C;
+					color.g=(A*0.75f)+(D*0.25f);
+					color.b=B;
 				break;
 
-				//B
+				/*
+					BG
+					GR
+				*/
 				case 3:
-					color.r=0;
-					color.g=0;
-					color.b=v;
+					color.r=D;
+					color.g=(B*0.5f)+(C*0.5f);
+					color.b=A;
 				break;
 			}
 

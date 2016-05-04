@@ -139,7 +139,7 @@ void BitMap::Save(string filename)
 
 	for(int n=0;n<height;n++) 
 	{
-		row_pointers[n]=buffer+(width*n);
+		row_pointers[n]=buffer+(width*4*n);
 	}
 
 	
