@@ -16,6 +16,14 @@ Sensor::Sensor(Settings & settings)
 	buffer=new float[cols*rows];
 
 	bitmap=new BitMap(cols,rows);
+	
+	//create fake bayer filters
+	for(int n=0;n<32;n++)
+	{
+		red.data[n]=Spectrum::X[n];
+		green.data[n]=Spectrum::Y[n];
+		blue.data[n]=Spectrum::Z[n];
+	}
 }
 
 
@@ -49,8 +57,11 @@ void Sensor::SetCell(int x,int y,Spectrum & spr)
 {
 
 	unsigned char value;
+	
+	Spectrum s;
+	
 
-	value=(x%2) | ((y%2)<<1);
+	value=(x%2) + ((y%2)*2);
 
 
 	//Bayer filter RGGB
@@ -58,20 +69,24 @@ void Sensor::SetCell(int x,int y,Spectrum & spr)
 	{
 		//R
 		case 0:
-
+			s=spr*red;
 		break;
 
 		//G
 		case 1:
 		case 2:
-
+			s=spr*green;
 		break;
 
 		//B
 		case 3:
-
+			s=spr*blue;
 		break;
 	}
+
+	int index=x+y*cols;
+	
+	buffer[index]=s.Energy()*1e-15f;
 
 }
 
@@ -91,6 +106,19 @@ BitMap * Sensor::Process()
 
 	//clear sensor
 	Clear();
+	
+	//generate a fake input
+	Spectrum light(3200);
+
+	
+	for(int r=0;r<rows;r++)
+	{
+		for(int c=0;c<cols;c++)
+		{
+			SetCell(c,r,light);
+		}
+	}
+	
 
 	//generate random noise
 	float noise=0.1f;

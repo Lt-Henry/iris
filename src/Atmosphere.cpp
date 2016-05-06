@@ -30,8 +30,8 @@ Atmosphere::Atmosphere(Settings & settings)
 	month=settings.Get("world.month",1);
 	day=settings.Get("world.day",1);
 
-	hour=settings.Get("world.hour",0);
-	minute=settings.Get("world.minute",6);
+	hour=settings.Get("world.hour",9);
+	minute=settings.Get("world.minute",0);
 
 	timezone=settings.Get("world.timezone",0);
 
@@ -39,16 +39,6 @@ Atmosphere::Atmosphere(Settings & settings)
 	longitude=settings.Get("world.longitude",-0.323460f);
 	elevation=settings.Get("world.elevation",0.0f);
 
-
-	/*
-	 * compute sun position
-	 * 
-	 * Expected altitude
-	 * 27.527778022354987
-	 * 
-	 * Expected Azimuth 
-	 * -358.8058486943063
-	 */
 
 	//julian day
 	float jd;

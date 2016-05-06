@@ -18,13 +18,13 @@ int main(int argc,char * argv[])
 	Settings settings;
 
 	Atmosphere atmosphere(settings);
-	/*
+	
 	Sensor sensor(settings);
 	
 	BitMap * bitmap;
 	
 	bitmap=sensor.Process();
 	bitmap->Save("out.png");
-	*/
+	
 	return 0;
 }

@@ -37,6 +37,11 @@ namespace com
 				float * buffer;
 				
 				BitMap * bitmap;
+				
+				//bayer filter
+				Spectrum red;
+				Spectrum green;
+				Spectrum blue;
 
 				public:
 				

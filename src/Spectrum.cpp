@@ -301,6 +301,19 @@ void Spectrum::Normalize()
 }
 
 
+float Spectrum::Energy()
+{
+	float total=0.0f;
+	
+	for(int n=0;n<32;n++)
+	{
+		total+=data[n];
+	}
+	
+	return total;
+}
+
+
 Spectrum com::toxiclabs::iris::operator+(Spectrum a,Spectrum & b)
 {
 	Spectrum ret;

@@ -83,6 +83,12 @@ namespace com
 				 */ 
 				 void Normalize();
 				
+				
+				/*!
+				* Total sum of wavelengeths
+				*/
+				float Energy();
+				
 			};
 			
 			Spectrum operator+(Spectrum a,Spectrum & b);
