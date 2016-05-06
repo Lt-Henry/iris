@@ -95,14 +95,13 @@ Atmosphere::Atmosphere(Settings & settings)
 	float sd; //sun declination
 	float vy; //var y
 	float eot; //equation of time (minutes)
-	
 	float tst; //true solar time
-	
 	float ha; //hour angle
-	
 	float sza;	//solar zenith angle
 	float sea; //solar elevation angle
-
+	float aar; //approximate atmospheric refraction
+	float secar; //solar elevation corrected for atmospheric refraction
+	float saa; //solar azimuth angle
 
 
 	//geometric mean longitude of sun
@@ -160,12 +159,54 @@ Atmosphere::Atmosphere(Settings & settings)
 	
 	//=if(AB2/4<0;AB2/4+180;AB2/4-180)
 	ha=(tst/4.0f<0.0f) ? tst/4.0f+180.0f : tst/4.0f-180.0f;
+	ha=Radians(ha);
 	
 	//solar zenith angle
-	//sza=acos(sin(latitude)*sin(sd)+cos(latitude)*cos(sd)*cos(AC2));
-	
+	sza=acos(sin(Radians(latitude))*sin(sd)+cos(Radians(latitude))*cos(sd)*cos(ha));
 	
 	//solar elevation angle
+	sea=(M_PI/2.0f)-sza;
+	
+	//approximate atmospheric refraction
+	//mother of God :D
+	if(Degrees(sea)>85.0)
+	{
+		aar=0.0f;
+	}
+	else
+	{
+		if(Degrees(sea)>5)
+		{
+			aar=58.1f/tan(sea)-0.07/std::pow(tan(sea),3)+8.6e-05/std::pow(tan(sea),5);
+		}
+		else
+		{
+			if(Degrees(sea)>-0.575f)
+			{
+				aar=1735+sea*(-518.2f+sea*(103.4f+sea*(-12.79f+sea*0.711f)));
+			}
+			else
+			{
+				aar=-20.772f/tan(sea);
+			}
+		}
+	}
+	
+	aar=Radians(aar/3600.0f);
+	
+	//solar elevation corrected for atmospheric refraction
+	secar=sea+aar;
+
+	//solar azimuth angle
+	if(Degrees(ha)>0)
+	{
+		saa=acos(((sin(Radians(latitude))*cos(sza))-sin(sd))/(cos(Radians(latitude))*sin(sza)))+M_PI;
+	}
+	else
+	{
+		saa=Radians(540.0f)-(acos(((sin(Radians(latitude))*cos(sza))-sin(sd))/(cos(Radians(latitude))*sin(sza))));
+	}
+	
 
 	cout<<"geometric mean longitude: "<<DegreesNice(gmls)<<endl;
 	cout<<"geometric mean anomaly: "<<Degrees(gmas)<<endl;
@@ -182,8 +223,13 @@ Atmosphere::Atmosphere(Settings & settings)
 	cout<<"var y: "<<vy<<endl;
 	cout<<"equation of time: "<<Degrees(eot)<<endl;
 	cout<<"true solar time: "<<tst<<endl;
-	cout<<"hour angle : "<<ha<<endl;
-	
+	cout<<"hour angle : "<<Degrees(ha)<<endl;
+	cout<<"solar zenith angle: "<<Degrees(sza)<<endl;
+	cout<<"solar elevation angle: "<<Degrees(sea)<<endl;
+	cout<<"approximate atmospheric refaction: "<<Degrees(aar)<<endl;
+	cout<<"solar elevation corrected for atmospheric refraction: "<<Degrees(secar)<<endl;
+	cout<<"solar azimuth angle: "<<DegreesNice(saa)<<endl;
+
 
 	sun_position=Vector(0.0,1.0,1.0,0.0);
 	sun_position.Normalize();
