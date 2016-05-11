@@ -32,6 +32,18 @@ namespace com
 				//physical sensor size, in meters
 				float width;
 				float height;
+				
+				//shutter exposure time in seconds 
+				float exposure_time;
+				
+				//sensor sinsivity in mV/lux-sec
+				float sensivity;
+				
+				//dark current in mV/sec
+				float dark_current;
+				
+				//dynamic range in Db
+				float dynamic_range;
 
 				//cell buffer
 				float * buffer;

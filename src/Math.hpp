@@ -55,6 +55,11 @@ namespace com
 			{
 				return (rad*180.0f)/M_PI;
 			}
+			
+			inline float Linear(float db)
+			{
+				return (std::pow(10.0f,db/20.0f));
+			}
 
 			inline float DegreesNice(float rad)
 			{

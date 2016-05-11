@@ -1,5 +1,5 @@
 #include "Sensor.hpp"
-
+#include "Math.hpp"
 
 using namespace std;
 using namespace com::toxiclabs::iris;
@@ -12,7 +12,13 @@ Sensor::Sensor(Settings & settings)
 
 	width=settings.Get("sensor.width",0.04f);
 	height=settings.Get("sensor.height",0.03f);
+	
+	exposure_time=settings.Get("sensor.exposure_time",0.25f);
+	sensivity=settings.Get("sensor.sensivity",625.0f);
+	dark_current=settings.Get("sensor.dark_current",16.0f);
+	dynamic_range=settings.Get("sensor.dynamic_range",46.0f);
 
+	
 	buffer=new float[cols*rows];
 
 	bitmap=new BitMap(cols,rows);
@@ -86,7 +92,7 @@ void Sensor::SetCell(int x,int y,Spectrum & spr)
 
 	int index=x+y*cols;
 	
-	buffer[index]=s.Energy()*1e-15f;
+	buffer[index]=s.Energy();
 
 }
 
@@ -107,21 +113,10 @@ BitMap * Sensor::Process()
 	//clear sensor
 	Clear();
 	
-	//generate a fake input
-	Spectrum light(3200);
-
-	
-	for(int r=0;r<rows;r++)
-	{
-		for(int c=0;c<cols;c++)
-		{
-			SetCell(c,r,light);
-		}
-	}
 	
 
 	//generate random noise
-	float noise=0.1f;
+	float noise=dark_current*exposure_time;
 	
 	for(int r=0;r<rows;r++)
 	{
@@ -224,6 +219,28 @@ BitMap * Sensor::Process()
 				break;
 			}
 
+			float dr=Linear(dynamic_range);
+
+			//saturation
+			if(color.r>dr)
+			{
+				color.r=dr;
+			}
+			
+			if(color.g>dr)
+			{
+				color.g=dr;
+			}
+			
+			if(color.b>dr)
+			{
+				color.b=dr;
+			}
+			
+			//clamp
+			color.r=color.r/dr;
+			color.g=color.g/dr;
+			color.b=color.b/dr;
 
 			color.a=1;
 			bitmap->PutPixel(c,r,color);
