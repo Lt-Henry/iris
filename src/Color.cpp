@@ -53,6 +53,15 @@ void ColorRGB::Clamp()
 	
 }
 
+void ColorRGB::Clamp(float min,float max)
+{
+	for(int n=0;n<4;n++)
+	{
+		if(data[n]>max)data[n]=max;
+		if(data[n]<min)data[n]=min;
+	}
+}
+
 uint32_t ColorRGB::ToPixel()
 {
 	uint32_t pixel = 0;
@@ -72,6 +81,29 @@ uint32_t ColorRGB::ToPixel()
 	return pixel;
 }
 
+ColorRGB com::toxiclabs::iris::operator*(ColorRGB c,float f)
+{
+	ColorRGB r;
+	
+	for(int n=0;n<4;n++)
+	{
+		r.data[n]=c.data[n]*f;
+	}
+	
+	return r;
+}
+
+ColorRGB com::toxiclabs::iris::operator/(ColorRGB c,float f)
+{
+	ColorRGB r;
+	
+	for(int n=0;n<4;n++)
+	{
+		r.data[n]=c.data[n]/f;
+	}
+	
+	return r;
+}
 
 ColorXYZ::ColorXYZ()
 {

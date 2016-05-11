@@ -222,25 +222,10 @@ BitMap * Sensor::Process()
 			float dr=Linear(dynamic_range);
 
 			//saturation
-			if(color.r>dr)
-			{
-				color.r=dr;
-			}
+			color.Clamp(0.0f,dr);
 			
-			if(color.g>dr)
-			{
-				color.g=dr;
-			}
-			
-			if(color.b>dr)
-			{
-				color.b=dr;
-			}
-			
-			//clamp
-			color.r=color.r/dr;
-			color.g=color.g/dr;
-			color.b=color.b/dr;
+			//normalize
+			color=color/dr;
 
 			color.a=1;
 			bitmap->PutPixel(c,r,color);

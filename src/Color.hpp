@@ -60,10 +60,14 @@ namespace com
 				void Black();
 				void White();
 				void Clamp();
+				void Clamp(float min,float max);
 				
 				uint32_t ToPixel();
 				
 			};
+			
+			ColorRGB operator * (ColorRGB c,float f);
+			ColorRGB operator / (ColorRGB c,float f);
 
 			class ColorXYZ : public Color
 			{
