@@ -242,6 +242,17 @@ namespace Math
 	};
 	
 	/*
+		Point (just a Vector with homogeneus component equal to 1)
+	*/
+	class Point: public Vector {
+	public:
+	
+		Point(float x,float y,float z);
+	};
+	
+	
+	
+	/*
 		vector addition
 	*/
 	Vector operator+(Vector  a,Vector &b);
