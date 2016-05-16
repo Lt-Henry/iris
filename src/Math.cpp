@@ -280,133 +280,107 @@ namespace Math
 		return ret;
 #endif
 	}
-
-}
-
-
-namespace com
-{
-	namespace toxiclabs
-	{
-		namespace iris
-		{
-			
-			
-			
-			
-			
-			
-
-			
-		
-			
-
-			
-
-			
-			
 	
-			
-			
-			
-			
-			
-			
-			
-			
+	
+	
+	Vector operator^(Vector &a,Vector &b)
+	{
+		Vector ret;
+		
+		//TODO: complete formula for w
+		ret.data[0] = a.data[1]*b.data[2] - a.data[2]*b.data[1];
+		ret.data[1] = a.data[2]*b.data[0] - a.data[0]*b.data[2];
+		ret.data[2] = a.data[0]*b.data[1] - a.data[1]*b.data[0];
+		ret.data[3]=0.0f;
+		
+		return ret;
+	}
+	
+	
+	Vector operator*(Vector &a,float s)
+	{
+#ifdef IRIS_X86_MATH
+		Vector ret;
+	
+		__m128 F;
+		F=_mm_set1_ps(s);
+		ret.data=_mm_mul_ps(a.data,F);
+		
+		return ret;
+#else
+		Vector ret;
+		
+		ret.data[0]=a.data[0]*s;
+		ret.data[1]=a.data[1]*s;
+		ret.data[2]=a.data[2]*s;
+		ret.data[3]=a.data[3]*s;
+		
+		return ret;
+#endif
+	}
+
 
 			
-			
+	Vector operator*(Vector &v,Matrix &m)
+	{
+		Vector ret;
 		
-			
-			
-			Vector operator^(Vector &a,Vector &b)
-			{
-				Vector r;
-				
-				r.data[0] = a.data[1]*b.data[2] - a.data[2]*b.data[1];
-				r.data[1] = a.data[2]*b.data[0] - a.data[0]*b.data[2];
-				r.data[2] = a.data[0]*b.data[1] - a.data[1]*b.data[0];
-				r.data[3]=0.0f;
-				
-				return r;
-			}
-			
-			Vector operator*(Vector &a,float s)
-			{
-#ifdef IRIS_X86_MATH
-				Vector r;
-			
-				__m128 F;
-				F=_mm_set1_ps(s);
-				r.data=_mm_mul_ps(a.data,F);
-				
-				return r;
-#else
-				Vector r;
-				
-				a.data[0]*=s;
-				a.data[1]*=s;
-				a.data[2]*=s;
-				a.data[3]*=s;
-				
-				return r;
-#endif
-			}
-			
-			Vector operator*(Vector &v,Matrix &m)
-			{
-				Vector r;
-				
-				r.data[0]=v.data[0]*m.data[0] + v.data[1]*m.data[4] + v.data[2]*m.data[8] + v.data[3]*m.data[12];
-				r.data[1]=v.data[0]*m.data[1] + v.data[1]*m.data[5] + v.data[2]*m.data[9] + v.data[3]*m.data[13];
-				r.data[2]=v.data[0]*m.data[2] + v.data[1]*m.data[6] + v.data[2]*m.data[10] + v.data[3]*m.data[14];
-				r.data[3]=v.data[0]*m.data[3] + v.data[1]*m.data[7] + v.data[2]*m.data[11] + v.data[3]*m.data[15];
-						 
-				return r;
-			}
-			
-			Matrix operator*(Matrix &a,Matrix &b)
-			{
-				Matrix m;
-				
-				//Holy shit!
-				
-				m.data[0 + 0*4]=a.data[0 + 0*4]*b.data[0 + 0*4] + a.data[0 + 1*4]*b.data[1 + 0*4] + a.data[0 + 2*4]*b.data[2 + 0*4] + a.data[0 + 3*4]*b.data[3 + 0*4];
-				m.data[1 + 0*4]=a.data[1 + 0*4]*b.data[0 + 0*4] + a.data[1 + 1*4]*b.data[1 + 0*4] + a.data[1 + 2*4]*b.data[2 + 0*4] + a.data[1 + 3*4]*b.data[3 + 0*4];
-				m.data[2 + 0*4]=a.data[2 + 0*4]*b.data[0 + 0*4] + a.data[2 + 1*4]*b.data[1 + 0*4] + a.data[2 + 2*4]*b.data[2 + 0*4] + a.data[2 + 3*4]*b.data[3 + 0*4];
-				m.data[3 + 0*4]=a.data[3 + 0*4]*b.data[0 + 0*4] + a.data[3 + 1*4]*b.data[1 + 0*4] + a.data[3 + 2*4]*b.data[2 + 0*4] + a.data[3 + 3*4]*b.data[3 + 0*4];
-				
-				m.data[0 + 1*4]=a.data[0 + 0*4]*b.data[0 + 1*4] + a.data[0 + 1*4]*b.data[1 + 1*4] + a.data[0 + 2*4]*b.data[2 + 1*4] + a.data[0 + 3*4]*b.data[3 + 1*4];
-				m.data[1 + 1*4]=a.data[1 + 0*4]*b.data[0 + 1*4] + a.data[1 + 1*4]*b.data[1 + 1*4] + a.data[1 + 2*4]*b.data[2 + 1*4] + a.data[1 + 3*4]*b.data[3 + 1*4];
-				m.data[2 + 1*4]=a.data[2 + 0*4]*b.data[0 + 1*4] + a.data[2 + 1*4]*b.data[1 + 1*4] + a.data[2 + 2*4]*b.data[2 + 1*4] + a.data[2 + 3*4]*b.data[3 + 1*4];
-				m.data[3 + 1*4]=a.data[3 + 0*4]*b.data[0 + 1*4] + a.data[3 + 1*4]*b.data[1 + 1*4] + a.data[3 + 2*4]*b.data[2 + 1*4] + a.data[3 + 3*4]*b.data[3 + 1*4];
-				
-				m.data[0 + 2*4]=a.data[0 + 0*4]*b.data[0 + 2*4] + a.data[0 + 1*4]*b.data[1 + 2*4] + a.data[0 + 2*4]*b.data[2 + 2*4] + a.data[0 + 3*4]*b.data[3 + 2*4];
-				m.data[1 + 2*4]=a.data[1 + 0*4]*b.data[0 + 2*4] + a.data[1 + 1*4]*b.data[1 + 2*4] + a.data[1 + 2*4]*b.data[2 + 2*4] + a.data[1 + 3*4]*b.data[3 + 2*4];
-				m.data[2 + 2*4]=a.data[2 + 0*4]*b.data[0 + 2*4] + a.data[2 + 1*4]*b.data[1 + 2*4] + a.data[2 + 2*4]*b.data[2 + 2*4] + a.data[2 + 3*4]*b.data[3 + 2*4];
-				m.data[3 + 2*4]=a.data[3 + 0*4]*b.data[0 + 2*4] + a.data[3 + 1*4]*b.data[1 + 2*4] + a.data[3 + 2*4]*b.data[2 + 2*4] + a.data[3 + 3*4]*b.data[3 + 2*4];
-				
-				m.data[0 + 3*4]=a.data[0 + 0*4]*b.data[0 + 3*4] + a.data[0 + 1*4]*b.data[1 + 3*4] + a.data[0 + 2*4]*b.data[2 + 3*4] + a.data[0 + 3*4]*b.data[3 + 3*4];
-				m.data[1 + 3*4]=a.data[1 + 0*4]*b.data[0 + 3*4] + a.data[1 + 1*4]*b.data[1 + 3*4] + a.data[1 + 2*4]*b.data[2 + 3*4] + a.data[1 + 3*4]*b.data[3 + 3*4];
-				m.data[2 + 3*4]=a.data[2 + 0*4]*b.data[0 + 3*4] + a.data[2 + 1*4]*b.data[1 + 3*4] + a.data[2 + 2*4]*b.data[2 + 3*4] + a.data[2 + 3*4]*b.data[3 + 3*4];
-				m.data[3 + 3*4]=a.data[3 + 0*4]*b.data[0 + 3*4] + a.data[3 + 1*4]*b.data[1 + 3*4] + a.data[3 + 2*4]*b.data[2 + 3*4] + a.data[3 + 3*4]*b.data[3 + 3*4];
-				
-				
-				return m;
-			}
-			
-			Vector Lerp(Vector &a,Vector &b,float factor)
-			{
-				Vector r;
-				
-				r.data[0]=a.data[0] + factor*(b.data[0]-a.data[0]);
-				r.data[1]=a.data[1] + factor*(b.data[1]-a.data[1]);
-				r.data[2]=a.data[2] + factor*(b.data[2]-a.data[2]);
-				r.data[3]=a.data[3] + factor*(b.data[3]-a.data[3]);
-				
-				return r;
-			}
-		}
+		ret.data[0]=v.data[0]*m.data[0] + v.data[1]*m.data[4] + v.data[2]*m.data[8] + v.data[3]*m.data[12];
+		ret.data[1]=v.data[0]*m.data[1] + v.data[1]*m.data[5] + v.data[2]*m.data[9] + v.data[3]*m.data[13];
+		ret.data[2]=v.data[0]*m.data[2] + v.data[1]*m.data[6] + v.data[2]*m.data[10] + v.data[3]*m.data[14];
+		ret.data[3]=v.data[0]*m.data[3] + v.data[1]*m.data[7] + v.data[2]*m.data[11] + v.data[3]*m.data[15];
+				 
+		return ret;
 	}
+
+
+	
+	
+	Matrix operator*(Matrix &a,Matrix &b)
+	{
+		Matrix m;
+		
+		//Holy shit!
+		
+		m.data[0 + 0*4]=a.data[0 + 0*4]*b.data[0 + 0*4] + a.data[0 + 1*4]*b.data[1 + 0*4] + a.data[0 + 2*4]*b.data[2 + 0*4] + a.data[0 + 3*4]*b.data[3 + 0*4];
+		m.data[1 + 0*4]=a.data[1 + 0*4]*b.data[0 + 0*4] + a.data[1 + 1*4]*b.data[1 + 0*4] + a.data[1 + 2*4]*b.data[2 + 0*4] + a.data[1 + 3*4]*b.data[3 + 0*4];
+		m.data[2 + 0*4]=a.data[2 + 0*4]*b.data[0 + 0*4] + a.data[2 + 1*4]*b.data[1 + 0*4] + a.data[2 + 2*4]*b.data[2 + 0*4] + a.data[2 + 3*4]*b.data[3 + 0*4];
+		m.data[3 + 0*4]=a.data[3 + 0*4]*b.data[0 + 0*4] + a.data[3 + 1*4]*b.data[1 + 0*4] + a.data[3 + 2*4]*b.data[2 + 0*4] + a.data[3 + 3*4]*b.data[3 + 0*4];
+		
+		m.data[0 + 1*4]=a.data[0 + 0*4]*b.data[0 + 1*4] + a.data[0 + 1*4]*b.data[1 + 1*4] + a.data[0 + 2*4]*b.data[2 + 1*4] + a.data[0 + 3*4]*b.data[3 + 1*4];
+		m.data[1 + 1*4]=a.data[1 + 0*4]*b.data[0 + 1*4] + a.data[1 + 1*4]*b.data[1 + 1*4] + a.data[1 + 2*4]*b.data[2 + 1*4] + a.data[1 + 3*4]*b.data[3 + 1*4];
+		m.data[2 + 1*4]=a.data[2 + 0*4]*b.data[0 + 1*4] + a.data[2 + 1*4]*b.data[1 + 1*4] + a.data[2 + 2*4]*b.data[2 + 1*4] + a.data[2 + 3*4]*b.data[3 + 1*4];
+		m.data[3 + 1*4]=a.data[3 + 0*4]*b.data[0 + 1*4] + a.data[3 + 1*4]*b.data[1 + 1*4] + a.data[3 + 2*4]*b.data[2 + 1*4] + a.data[3 + 3*4]*b.data[3 + 1*4];
+		
+		m.data[0 + 2*4]=a.data[0 + 0*4]*b.data[0 + 2*4] + a.data[0 + 1*4]*b.data[1 + 2*4] + a.data[0 + 2*4]*b.data[2 + 2*4] + a.data[0 + 3*4]*b.data[3 + 2*4];
+		m.data[1 + 2*4]=a.data[1 + 0*4]*b.data[0 + 2*4] + a.data[1 + 1*4]*b.data[1 + 2*4] + a.data[1 + 2*4]*b.data[2 + 2*4] + a.data[1 + 3*4]*b.data[3 + 2*4];
+		m.data[2 + 2*4]=a.data[2 + 0*4]*b.data[0 + 2*4] + a.data[2 + 1*4]*b.data[1 + 2*4] + a.data[2 + 2*4]*b.data[2 + 2*4] + a.data[2 + 3*4]*b.data[3 + 2*4];
+		m.data[3 + 2*4]=a.data[3 + 0*4]*b.data[0 + 2*4] + a.data[3 + 1*4]*b.data[1 + 2*4] + a.data[3 + 2*4]*b.data[2 + 2*4] + a.data[3 + 3*4]*b.data[3 + 2*4];
+		
+		m.data[0 + 3*4]=a.data[0 + 0*4]*b.data[0 + 3*4] + a.data[0 + 1*4]*b.data[1 + 3*4] + a.data[0 + 2*4]*b.data[2 + 3*4] + a.data[0 + 3*4]*b.data[3 + 3*4];
+		m.data[1 + 3*4]=a.data[1 + 0*4]*b.data[0 + 3*4] + a.data[1 + 1*4]*b.data[1 + 3*4] + a.data[1 + 2*4]*b.data[2 + 3*4] + a.data[1 + 3*4]*b.data[3 + 3*4];
+		m.data[2 + 3*4]=a.data[2 + 0*4]*b.data[0 + 3*4] + a.data[2 + 1*4]*b.data[1 + 3*4] + a.data[2 + 2*4]*b.data[2 + 3*4] + a.data[2 + 3*4]*b.data[3 + 3*4];
+		m.data[3 + 3*4]=a.data[3 + 0*4]*b.data[0 + 3*4] + a.data[3 + 1*4]*b.data[1 + 3*4] + a.data[3 + 2*4]*b.data[2 + 3*4] + a.data[3 + 3*4]*b.data[3 + 3*4];
+		
+		
+		return m;
+	}
+	
+	
+	
+	Vector lerp(Vector &a,Vector &b,float factor)
+	{
+		Vector ret;
+		
+		ret.data[0]=a.data[0] + factor*(b.data[0]-a.data[0]);
+		ret.data[1]=a.data[1] + factor*(b.data[1]-a.data[1]);
+		ret.data[2]=a.data[2] + factor*(b.data[2]-a.data[2]);
+		ret.data[3]=a.data[3] + factor*(b.data[3]-a.data[3]);
+		
+		return ret;
+	}
+
 }
+
+
+
