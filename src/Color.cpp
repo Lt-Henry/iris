@@ -1,3 +1,21 @@
+/*
+	Iris raytracer
+	
+	Copyright (C) 2016  Enrique Medina Gremaldos <quiqueiii@gmail.com>
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #include "Color.hpp"
 #include "Math.hpp"
@@ -5,6 +23,8 @@
 #include <iostream>
 
 using namespace Color;
+using namespace Math;
+
 using namespace std;
 
 
@@ -114,6 +134,92 @@ RGB::RGB(float r,float g,float b,float a) : RGB()
 	this->a=a;
 }
 
+
+RGB::RGB(XYZ & xyz) : RGB()
+{
+		
+	r=3.240479f*xyz.x - 1.537150f*xyz.y - 0.498535f*xyz.z;
+	g=-0.969256f*xyz.x + 1.875991f*xyz.y + 0.041556f*xyz.z;
+	b=0.055648f*xyz.x - 0.204043f*xyz.y + 1.057311f*xyz.z;
+	a=1.0f;
+	
+	Clamp();
+}
+
+
+
+RGB::RGB(HSV & hsv) : RGB()
+{
+	
+
+	int hi;
+	float hp;
+
+	float f;
+	float pv,qv,tv;
+
+	a=1.0f;
+
+	if (is_zero(s)) {
+		r=hsv.v;
+		g=hsv.v;
+		b=hsv.v;
+	}
+	else {
+		hp=hsv.h/60.0f;
+		hi=std::floor(hp);
+
+		f=hp-hi;
+
+		pv = hsv.v * ( 1 - hsv.s );
+		qv = hsv.v * ( 1 - hsv.s * f );
+		tv = hsv.v * ( 1 - hsv.s * ( 1 - f ) );
+
+		switch (hi) {
+
+			case 0:
+				r=hsv.v;
+				g=tv;
+				b=pv;
+			break;
+
+			case 1:
+				r=qv;
+				g=hsv.v;
+				b=pv;
+			break;
+
+			case 2:
+				r=pv;
+				g=hsv.v;
+				b=tv;
+			break;
+
+			case 3:
+				r=pv;
+				g=qv;
+				b=hsv.v;
+			break;
+
+			case 4:
+				r=tv;
+				g=pv;
+				b=hsv.v;
+			break;
+
+			case 5:
+				r=hsv.v;
+				g=pv;
+				b=qv;
+			break;
+		}
+
+	}
+
+
+}
+
+
 void RGB::black()
 {
 	r=0.0f;
@@ -189,90 +295,3 @@ RGB Color::operator/(ColorRGB c,float f)
 }
 
 
-
-
-ColorRGB ColorXYZ::ToRGB()
-{
-	ColorRGB ret;
-		
-	ret.r=3.240479f*x - 1.537150f*y - 0.498535f*z;
-	ret.g=-0.969256f*x + 1.875991f*y + 0.041556f*z;
-	ret.b=0.055648f*x - 0.204043f*y + 1.057311f*z;
-	ret.a=1.0f;
-	
-	ret.Clamp();
-	return ret;
-}
-
-
-ColorRGB ColorHSV::ToRGB()
-{
-	ColorRGB color;
-
-	int hi;
-	float hp;
-
-	float f;
-	float pv,qv,tv;
-
-	if(IsZero(s))
-	{
-		color.r=v;
-		color.g=v;
-		color.b=v;
-	}
-	else
-	{
-		hp=h/60.0f;
-		hi=std::floor(hp);
-
-		f=hp-hi;
-
-		pv = v * ( 1 - s );
-		qv = v * ( 1 - s * f );
-		tv = v * ( 1 - s * ( 1 - f ) );
-
-		switch(hi)
-		{
-			case 0:
-				color.r=v;
-				color.g=tv;
-				color.b=pv;
-			break;
-
-			case 1:
-				color.r=qv;
-				color.g=v;
-				color.b=pv;
-			break;
-
-			case 2:
-				color.r=pv;
-				color.g=v;
-				color.b=tv;
-			break;
-
-			case 3:
-				color.r=pv;
-				color.g=qv;
-				color.b=v;
-			break;
-
-			case 4:
-				color.r=tv;
-				color.g=pv;
-				color.b=v;
-			break;
-
-			case 5:
-				color.r=v;
-				color.g=pv;
-				color.b=qv;
-			break;
-		}
-
-	}
-
-
-	return color;
-}
