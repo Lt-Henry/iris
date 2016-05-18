@@ -26,16 +26,14 @@
 #include <stdexcept>
 #include <iostream>
 
-using namespace com::toxiclabs::iris;
+
 using namespace std;
-
-
 
 
 BitMap::BitMap(int width,int height)
 {
-	this->width=width;
-	this->height=height;
+	this->w=width;
+	this->h=height;
 	
 	buffer=new uint8_t[width*height*4];
 }
@@ -46,23 +44,23 @@ BitMap::~BitMap()
 	delete buffer;
 }
 
-int BitMap::GetWidth()
+int BitMap::width()
 {
-	return width;
+	return w;
 }
 
-int BitMap::GetHeight()
+int BitMap::height()
 {
-	return height;
+	return h;
 }
 
-void BitMap::PutPixel(int x,int y,ColorRGB & color)
+void BitMap::put_pixel(int x,int y,Color::RGB & color)
 {
 	int index;
 	
-	index = (x*4)+(y*width*4);
+	index = (x*4)+(y*w*4);
 	
-	color.Clamp();
+	color.clamp();
 	
 	buffer[index+0]=255.0f*color.r;
 	buffer[index+1]=255.0f*color.g;
@@ -71,13 +69,13 @@ void BitMap::PutPixel(int x,int y,ColorRGB & color)
 }
 
 
-ColorRGB BitMap::GetPixel(int x,int y)
+Color::RGB BitMap::get_pixel(int x,int y)
 {
-	ColorRGB color;
+	Color::RGB color;
 	
 	int index;
 	
-	index = (x*4)+(y*width*4);
+	index = (x*4)+(y*w*4);
 	
 	color.r=buffer[index+0]/255.0f;
 	color.g=buffer[index+1]/255.0f;
@@ -87,33 +85,29 @@ ColorRGB BitMap::GetPixel(int x,int y)
 	return color;
 }
 
-void BitMap::Save(string filename)
+void BitMap::save(string filename)
 {
 	FILE * fp;
 	
 	fp=fopen(filename.c_str(),"wb");
 	
-	if(!fp)
-	{
+	if (!fp) {
 		throw runtime_error("Failed to open file");
 	}
 	
 	png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
-	if (!png)
-	{
+	if (!png) {
 		throw runtime_error("Failed to create PNG struct");
 	}
 
 	png_infop info = png_create_info_struct(png);
 	
-	if (!info)
-	{
+	if (!info) {
 		throw runtime_error("Failed to create PNG info struct");
 	}
 	
 	// I hate this shit 
-	if (setjmp(png_jmpbuf(png)))
-	{
+	if (setjmp(png_jmpbuf(png))) {
 		throw runtime_error("Failed to write PNG");
 	}
 	
@@ -122,7 +116,7 @@ void BitMap::Save(string filename)
 	png_set_IHDR(
 		png,
 		info,
-		width, height,
+		w, h,
 		8,
 		PNG_COLOR_TYPE_RGB_ALPHA,
 		PNG_INTERLACE_NONE,
@@ -135,11 +129,10 @@ void BitMap::Save(string filename)
 	png_bytepp row_pointers;
 	
 	//create a list of row pointers
-	row_pointers=new png_bytep[height];
+	row_pointers=new png_bytep[h];
 
-	for(int n=0;n<height;n++) 
-	{
-		row_pointers[n]=buffer+(width*4*n);
+	for (int n=0;n<h;n++) {
+		row_pointers[n]=buffer+(w*4*n);
 	}
 
 	

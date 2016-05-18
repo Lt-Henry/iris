@@ -21,115 +21,122 @@
 
 
 using namespace std;
-using namespace com::toxiclabs::iris;
+using namespace Settings;
 
 Value::Value()
 {
-	this->type=ValueType::None;
+	this->type=Type::None;
 }
 
 
-Value::Value(ValueType type)
+Value::Value(Type type)
 {
 		this->type=type;
 }
+
 
 Value::~Value()
 {
 }
 
-ValueType Value::GetType()
-{
-	return type;
-}
 
-string Value::GetSignature()
+string Value::signature()
 {
 	return string("n");
 }
 
-ValueInteger::ValueInteger(int data):Value(ValueType::Integer)
+
+ValueInteger::ValueInteger(int data):Value(Type::Integer)
 {
 	this->data=data;
 }
 
-int ValueInteger::Get()
+
+int ValueInteger::get()
 {
 	return data;
 }
 
-string ValueInteger::GetSignature()
+string ValueInteger::signature()
 {
 	return string("i");
 }
 
-ValueFloat::ValueFloat(float data):Value(ValueType::Float)
+
+ValueFloat::ValueFloat(float data):Value(Type::Float)
 {
 	this->data=data;
 }
 
-float ValueFloat::Get()
+
+float ValueFloat::get()
 {
 	return data;
 }
 
-string ValueFloat::GetSignature()
+
+string ValueFloat::signature()
 {
 	return string("f");
 }
 
 
-ValueString::ValueString(string data):Value(ValueType::String)
+ValueString::ValueString(string data):Value(Type::String)
 {
 	this->data=data;
 }
 
-string ValueString::Get()
+
+string ValueString::get()
 {
 	return data;
 }
 
-string ValueString::GetSignature()
+
+string ValueString::signature()
 {
 	return string("s");
 }
 
-ValueBoolean::ValueBoolean(bool data):Value(ValueType::Boolean)
+
+ValueBoolean::ValueBoolean(bool data):Value(Type::Boolean)
 {
 	this->data=data;
 }
 
-bool ValueBoolean::Get()
+
+bool ValueBoolean::get()
 {
 	return data;
 }
 
-string ValueBoolean::GetSignature()
+
+string ValueBoolean::signature()
 {
 	return string("b");
 }
 
-Settings::Settings()
+
+DataSet::DataSet()
 {
 }
 
-Settings::~Settings()
+
+DataSet::~DataSet()
 {
-	for(pair<string,Value* > p: values)
-	{
-		//delete p.second;
-		cout<<"deleting: "<<p.first<<endl;
+	for (pair<string,Value* > p: values)	{
+		delete p.second;
 	}
 }
 
-void Settings::Set(string key,Value * value)
+
+void DataSet::set(string key,Value * value)
 {
 	map<string,Value *>::iterator it;
 	
 	it = values.find(key);
 	
-	if(it!=values.end())
-	{
+	if (it!=values.end()) {
 		values.erase(it);
 		delete it->second;
 	}
@@ -137,108 +144,107 @@ void Settings::Set(string key,Value * value)
 	values[key]=value;
 }
 
-void Settings::Set(string key,int value)
+
+void DataSet::set(string key,int value)
 {
-	Set(key,new ValueInteger(value));
+	set(key,new ValueInteger(value));
 }
 
-void Settings::Set(string key,float value)
+
+void DataSet::set(string key,float value)
 {
-	Set(key,new ValueFloat(value));
+	set(key,new ValueFloat(value));
 }
 
-void Settings::Set(string key,string value)
+
+void DataSet::set(string key,string value)
 {
-	Set(key,new ValueString(value));
+	set(key,new ValueString(value));
 }
 
-void Settings::Set(string key,bool value)
+
+void DataSet::set(string key,bool value)
 {
 	Set(key,new ValueBoolean(value));
 }
 
-Value * Settings::Get(string key)
+
+Value * DataSet::get(string key)
 {
 	map<string,Value*>::iterator it;
 
 	it=values.find(key);
 
-	if(it==values.end())
-	{
+	if (it==values.end()) {
 		return nullptr;
 	}
-	else
-	{
+	else {
 		return it->second;
 	}
 
 }
 
-int Settings::Get(std::string key,int value)
-{
-	Value * v = Get(key);
 
-	if(v==nullptr)
-	{
+int DataSet::get(std::string key,int value)
+{
+	Value * v = get(key);
+
+	if (v==nullptr) {
 		return value;
 	}
-	else
-	{
-		return static_cast<ValueInteger*>(v)->Get();
+	else {
+		return static_cast<ValueInteger*>(v)->get();
 	}
 }
 
-float Settings::Get(std::string key,float value)
-{
-	Value * v = Get(key);
 
-	if(v==nullptr)
-	{
+float DataSet::get(std::string key,float value)
+{
+	Value * v = get(key);
+
+	if (v==nullptr) {
 		return value;
 	}
-	else
-	{
-		return static_cast<ValueFloat*>(v)->Get();
+	else {
+		return static_cast<ValueFloat*>(v)->get();
 	}
 }
 
-string Settings::Get(string key,string value)
+
+string DataSet::get(string key,string value)
 {
-	Value * v = Get(key);
+	Value * v = get(key);
 	
-	if(v==nullptr)
-	{
+	if (v==nullptr) {
 		return value;
 	}
-	else
-	{
-		return static_cast<ValueString*>(v)->Get();
+	else {
+		return static_cast<ValueString*>(v)->get();
 	}
 
 }
 
-bool Settings::Get(string key,bool value)
-{
-	Value * v = Get(key);
 
-	if(v==nullptr)
-	{
+bool DataSet::get(string key,bool value)
+{
+	Value * v = get(key);
+
+	if (v==nullptr) {
 		return value;
 	}
-	else
-	{
-		return static_cast<ValueBoolean*>(v)->Get();
+	else {
+		return static_cast<ValueBoolean*>(v)->get();
 	}
 }
 
-vector<string> Settings::GetKeys()
-{
-	vector<string> keys;
 
-	for(pair<string,Value*> v:values)
-	{
-		keys.push_back(v.first);
+vector<string> DataSet::keys()
+{
+	vector<string> ret;
+
+	for (pair<string,Value*> v:values) {
+		ret.push_back(v.first);
 	}
 	
-	return keys;
+	return ret;
 }

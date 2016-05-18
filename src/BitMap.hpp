@@ -25,39 +25,53 @@
 #include <cstdint>
 #include <string>
 
-namespace com
-{
-	namespace toxiclabs
-	{
-		namespace iris
-		{
-			class BitMap
-			{
-				private:
-				
-				/* RGBA buffer */
-				uint8_t * buffer;
-				
-				int width;
-				int height;
-			
-				public:
-				
-				BitMap(int width,int height);
-				~BitMap();
-				
-				int GetWidth();
-				int GetHeight();
-				
-				void PutPixel(int x,int y,ColorRGB & color);
-				ColorRGB GetPixel(int x,int y);
-				
-				void Save(std::string filename);
-				
-			};
-		}
-	}
-}
 
+class BitMap {
+private:
+	
+	/* RGBA buffer */
+	uint8_t * buffer;
+	
+	int w;
+	int h;
+
+public:
+	
+	/*
+		Creates a bitmap with given dimensions
+	*/
+	BitMap(int width,int height);
+	
+	/*
+		Destroys the bitmap (and allocated structures)
+	*/
+	~BitMap();
+	
+	/*
+		gets width
+	*/
+	int width();
+	
+	/*
+		gets height
+	*/
+	int height();
+	
+	/*
+		Puts a rgb pixel
+	*/
+	void put_pixel(int x,int y,Color::RGB & color);
+	
+	/*
+		Reads a RGB pixel
+	*/
+	Color::RGB get_pixel(int x,int y);
+	
+	/*
+		Save as a png image
+	*/
+	void save(std::string filename);
+	
+};
 
 #endif
