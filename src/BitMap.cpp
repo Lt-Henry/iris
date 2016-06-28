@@ -27,7 +27,10 @@
 #include <iostream>
 
 
+using namespace Iris;
+
 using namespace std;
+
 
 
 BitMap::BitMap(int width,int height)
@@ -44,17 +47,20 @@ BitMap::~BitMap()
 	delete buffer;
 }
 
-int BitMap::width()
+
+int BitMap::Width()
 {
 	return w;
 }
 
-int BitMap::height()
+
+int BitMap::Height()
 {
 	return h;
 }
 
-void BitMap::put_pixel(int x,int y,Color::RGB & color)
+
+void BitMap::PutPixel(int x,int y,Color::RGB & color)
 {
 	int index;
 	
@@ -69,7 +75,7 @@ void BitMap::put_pixel(int x,int y,Color::RGB & color)
 }
 
 
-Color::RGB BitMap::get_pixel(int x,int y)
+Color::RGB BitMap::GetPixel(int x,int y)
 {
 	Color::RGB color;
 	
@@ -85,7 +91,8 @@ Color::RGB BitMap::get_pixel(int x,int y)
 	return color;
 }
 
-void BitMap::save(string filename)
+
+void BitMap::Save(string filename)
 {
 	FILE * fp;
 	

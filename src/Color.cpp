@@ -22,8 +22,8 @@
 
 #include <iostream>
 
-using namespace Color;
-using namespace Math;
+using namespace Iris::Color;
+using namespace Iris::Math;
 
 using namespace std;
 
@@ -41,21 +41,24 @@ XYZ::XYZ(float x,float y,float z) : XYZ()
 	this->z=z;
 }
 
-void XYZ::black()
+
+void XYZ::Black()
 {
 	x=0.0f;
 	y=0.0f;
-	z=0.0f;	
+	z=0.0f;
 }
 
-void XYZ::white()
+
+void XYZ::White()
 {
 	x=1.0f;
 	y=1.0f;
 	z=1.0f;
 }
 
-void XYZ::clamp()
+
+void XYZ::Clamp()
 {
 	for(int n=0;n<4;n++)
 	{
@@ -78,21 +81,24 @@ HSV::HSV(float h,float s,float v):HSV()
 	this->v=v;
 }
 
-void HSV::white()
+
+void HSV::White()
 {
 	h=0.0f;
 	s=0.0f;
 	v=1.0f;
 }
 
-void HSV::black()
+
+void HSV::Black()
 {
 	h=0.0f;
 	s=1.0f;
 	v=0.0f;
 }
 
-void HSV::clamp()
+
+void HSV::Clamp()
 {
 	if (h<0.0f) {
 		h=0.0f;
@@ -120,11 +126,11 @@ void HSV::clamp()
 }
 
 
-
 RGB::RGB()
 {
 	type=Type::RGB;
 }
+
 
 RGB::RGB(float r,float g,float b,float a) : RGB()
 {
@@ -220,7 +226,7 @@ RGB::RGB(HSV & hsv) : RGB()
 }
 
 
-void RGB::black()
+void RGB::Black()
 {
 	r=0.0f;
 	g=0.0f;
@@ -228,7 +234,8 @@ void RGB::black()
 	a=1.0f;
 }
 
-void RGB::white()
+
+void RGB::White()
 {
 	r=1.0f;
 	g=1.0f;
@@ -236,7 +243,8 @@ void RGB::white()
 	a=1.0f;
 }
 
-void RGB::clamp()
+
+void RGB::Clamp()
 {
 	for (int n=0;n<4;n++) {
 		if (data[n]>1.0f) data[n]=1.0f;
@@ -245,7 +253,8 @@ void RGB::clamp()
 	
 }
 
-void RGB::clamp(float min,float max)
+
+void RGB::Clamp(float min,float max)
 {
 	for (int n=0;n<4;n++) {
 		if (data[n]>max) data[n]=max;
@@ -253,7 +262,8 @@ void RGB::clamp(float min,float max)
 	}
 }
 
-uint32_t RGB::pixel()
+
+uint32_t RGB::Pixel()
 {
 	uint32_t pixel = 0;
 	
@@ -272,6 +282,7 @@ uint32_t RGB::pixel()
 	return pixel;
 }
 
+
 RGB Color::operator*(ColorRGB c,float f)
 {
 	RGB r;
@@ -282,6 +293,7 @@ RGB Color::operator*(ColorRGB c,float f)
 	
 	return r;
 }
+
 
 RGB Color::operator/(ColorRGB c,float f)
 {
